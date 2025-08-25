@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model CartItem {
+  id         String    @id @default(uuid()) @map("_id")
+  userId     String    // no relation, just a string
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  quantity   Int       @default(1)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Product {
+  id          String    @id @default(cuid()) @map("_id")
+  name        String
+  description String?
+  category    String
+  price       Float
+  imageUrl    String?
+  userId      String
+  downloadUrl String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  CartItem    CartItem[]
+   OrderItem   OrderItem[] 
+  
+}
+
+
+model Order {
+  id        String      @id @default(uuid()) @map("_id")
+  userId    String
+  email     String
+  total     Float
+  status    String      @default("completed")
+  createdAt DateTime    @default(now())
+
+  items     OrderItem[] // 1-to-many relation
+}
+
+model OrderItem {
+  id         String    @id @default(uuid()) @map("_id")
+  userId     String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  order      Order     @relation(fields: [orderId], references: [id])
+  orderId    String
+  quantity   Int
+  price      Float
+}
