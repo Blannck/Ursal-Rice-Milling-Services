@@ -31,6 +31,8 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
       <div className="flex items-center">
         <Link href="/" className="text-xl font-bold tracking-wider">
           🌾  Ursal Rice Milling Services
+        <Link href="/" className="text-xl font-bold font-mono tracking-wider">
+          Ursal Rice Milling Services
         </Link>
       </div>
 
