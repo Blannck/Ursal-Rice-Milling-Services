@@ -30,7 +30,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
       {/* Logo */}
       <div className="flex items-center">
         <Link href="/" className="text-xl font-bold font-mono tracking-wider">
-          ✳️ Ursal Rice Milling Services
+          Ursal Rice Milling Services
         </Link>
       </div>
 
