@@ -48,7 +48,7 @@ export default function MobileNavbar({
             className="text-xl font-bold font-mono tracking-wider"
             onClick={() => setMenuOpen(false)}
           >
-            ✳️ StoreKO
+            🌾  Ursal Rice Milling Services
           </Link>
 
           {/* Hamburger button */}
