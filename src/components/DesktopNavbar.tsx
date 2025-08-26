@@ -31,11 +31,8 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
       <div className="flex items-center">
         <Link href="/" className="text-xl font-bold tracking-wider">
           🌾  Ursal Rice Milling Services
-        <Link href="/" className="text-xl font-bold font-mono tracking-wider">
-          Ursal Rice Milling Services
         </Link>
       </div>
-
       {/* Navigation */}
       <div className="flex items-center space-x-4">
         <Button variant="ghost" className="flex items-center gap-2" asChild>
