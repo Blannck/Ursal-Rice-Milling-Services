@@ -167,13 +167,13 @@ export default function CardList({ products }: CardListProps) {
             {filteredProducts.map((product) => (
               <Card
                 key={product.id}
-                className={`group cursor-pointer border-[1px] shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1  ${
+                className={`group cursor-pointer bg-black text-white border-[1px] shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1  ${
                   viewMode === "list" ? "flex flex-row overflow-hidden" : ""
                 }`}
                 onClick={() => handleProductClick(product)}
               >
                 <CardContent
-                  className={`p-0 ${
+                  className={`p-0 ${  
                     viewMode === "list" ? "flex flex-row w-full" : ""
                   }`}
                 >

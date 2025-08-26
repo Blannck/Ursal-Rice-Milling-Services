@@ -3,7 +3,7 @@ import { stackServerApp } from "@/lib/stack";
 import { notFound } from "next/navigation";
 
 export default async function AdminUsersPage() {
- const user = await stackServerApp.getUser();
+  const user = await stackServerApp.getUser();
 
   // Grab admin credentials from environment
   const adminId = process.env.ADMIN_ID;
