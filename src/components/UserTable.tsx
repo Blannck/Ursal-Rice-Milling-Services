@@ -1,4 +1,4 @@
-"use client";  // This tells Next.js that this component is a Client Component
+"use client"; 
 
 import {
   Table,
@@ -49,7 +49,6 @@ export default function ClientUserTable({ users }: { users: User[] }) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>User ID</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Display Name</TableHead>
           <TableHead>Signed Up</TableHead>
@@ -59,7 +58,6 @@ export default function ClientUserTable({ users }: { users: User[] }) {
       <TableBody>
         {users.map((user) => (
           <TableRow key={user.id}>
-            <TableCell>{user.id.slice(0, 10)}...</TableCell>
             <TableCell>{user.primaryEmail}</TableCell>
             <TableCell>{user.displayName}</TableCell>
             <TableCell>{new Date(user.signedUpAt).toLocaleString()}</TableCell>
