@@ -25,8 +25,6 @@ async function Page({ params }: { params: { slug: string } }) {
   const product = await getProductById(id);
 
   if (!product) throw new Error("Product not found");
-
-  // Convert null fields to undefined to match Product type
   const safeProduct = product
     ? {
         ...product,

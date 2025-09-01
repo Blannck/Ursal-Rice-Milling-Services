@@ -171,7 +171,7 @@ async function deleteUser(id: string) {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border bg-background/40 shadow-sm">
+      <div className="overflow-hidden rounded-xl border bg-background/100 shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>

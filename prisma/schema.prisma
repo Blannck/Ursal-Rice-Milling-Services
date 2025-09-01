@@ -20,7 +20,7 @@ datasource db {
 
 model CartItem {
   id        String  @id @default(uuid()) @map("_id")
-  userId    String // no relation, just a string
+  userId    String 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   quantity  Int     @default(1)
@@ -41,8 +41,11 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  CartItem  CartItem[]
-  OrderItem OrderItem[]
+  supplierId String?
+  supplier   Supplier?   @relation(fields: [supplierId], references: [id])
+  
+  CartItem   CartItem[]
+  OrderItem  OrderItem[]
 }
 
 model Order {
@@ -53,7 +56,7 @@ model Order {
   status    String   @default("completed")
   createdAt DateTime @default(now())
 
-  items OrderItem[] // 1-to-many relation
+  items OrderItem[] 
 }
 
 model OrderItem {
@@ -68,10 +71,10 @@ model OrderItem {
 }
 
 model AppUser {
-  id            String     @id @default(uuid()) @map("_id") // Stack Auth user id
+  id            String     @id @default(uuid()) @map("_id") 
   email         String?
   displayName   String?
-  authMethod    String? // e.g. "password" | "google"
+  authMethod    String? 
   status        UserStatus @default(ACTIVE)
   blockedAt     DateTime?
   blockReason   String?
@@ -82,4 +85,19 @@ model AppUser {
 
   @@index([email])
   @@index([status])
+}
+
+model Supplier {
+  id       String  @id @default(uuid()) @map("_id")
+  name     String
+  email    String?
+  phone    String?
+  address  String?
+  note     String?
+  isActive Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products   Product[]
+  @@index([name])
 }
