@@ -112,7 +112,7 @@ export default async function OrdersPage() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold ">
-                      ${order.total.toFixed(2)}
+                      ₱{order.total.toFixed(2)}
                     </div>
                     <div className="text-sm ">
                       {order.items.length} item
@@ -165,14 +165,14 @@ export default async function OrdersPage() {
                                   <span className="">
                                     Price:{" "}
                                     <span className="font-semibold ">
-                                      ${price.toFixed(2)}
+                                      ₱{price.toFixed(2)}
                                     </span>
                                   </span>
                                   {quantity > 1 && (
                                     <span className="">
                                       Subtotal:{" "}
                                       <span className="font-semibold ">
-                                        ${subtotal.toFixed(2)}
+                                        ₱{subtotal.toFixed(2)}
                                       </span>
                                     </span>
                                   )}

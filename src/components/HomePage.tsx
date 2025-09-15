@@ -302,7 +302,7 @@ export  default async function HomePage() {
 
                     <div className="flex items-center justify-between">
                       <div className="text-3xl font-bold ">
-                        ${product.price.toLocaleString()}
+                        ₱{product.price.toLocaleString()}
                       </div>
                       <Button className="bg-blue-600 hover:bg-blue-700  px-6 py-2 rounded-xl font-semibold">
                         <ShoppingCart className="h-4 w-4 mr-2" />

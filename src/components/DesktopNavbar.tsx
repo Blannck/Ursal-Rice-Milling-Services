@@ -1,3 +1,4 @@
+// components/DesktopNavbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -14,27 +15,31 @@ import {
 } from "lucide-react";
 import { UserButton } from "@stackframe/stack";
 import ModeToggle from "./ModeTogggle";
+import AdminSideBar from "@/components/admin/AdminSideBar";
 
 type Props = {
   user: any;
-  app: {
-    signIn: string;
-    signOut: string;
-  };
+  app: { signIn: string; signOut: string };
   isAdmin: boolean;
 };
 
 export default function DesktopNavbar({ user, app, isAdmin }: Props) {
+  // If admin, render the collapsible sidebar and bail out
+  if (isAdmin) {
+    return <AdminSideBar user={user} app={app} />;
+  }
+
+  // Otherwise keep the top navbar
   return (
     <div className="hidden md:flex items-center h-16 justify-between max-w-7xl mx-auto px-4">
       {/* Logo */}
       <div className="flex items-center">
-        <Link 
-        href="/" 
-        className="flex items-center gap-2 text-xl font-bold tracking-wider whitespace-nowrap"
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xl font-bold tracking-wider whitespace-nowrap"
         >
           🌾
-          <span> Ursal Rice Milling Services</span>
+          <span>Ursal Rice Milling Services</span>
         </Link>
       </div>
       {/* Navigation */}
@@ -60,23 +65,6 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
           </Link>
         </Button>
 
-        {isAdmin && (
-          <>
-            <Button variant="ghost" className="flex items-center gap-2" asChild>
-              <Link href="/admin/myproducts">
-                <Settings className="w-4 h-4" />
-                <span className="hidden lg:inline">Manage Products</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" className="flex items-center gap-2" asChild>
-              <Link href="/admin/users">
-                <Users className="w-4 h-4" />
-                <span className="hidden lg:inline">Manage Supplier & Users</span>
-              </Link>
-            </Button>
-          </>
-        )}
-
         {user ? (
           <>
             <Button variant="ghost" className="flex items-center gap-2" asChild>
@@ -86,11 +74,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
               </Link>
             </Button>
             <ModeToggle />
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              asChild
-            >
+            <Button variant="outline" className="flex items-center gap-2" asChild>
               <Link href={app.signOut}>
                 <LogOut className="w-4 h-4" />
                 <span className="hidden lg:inline">Sign Out</span>
