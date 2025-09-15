@@ -29,8 +29,8 @@ model CartItem {
   updatedAt DateTime @updatedAt
 }
 
-model Product { 
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+model Product {
+  id          String   @id @default(cuid()) @map("_id")
   name        String
   description String?
   category    String
@@ -41,11 +41,12 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  supplierId String?   @db.ObjectId
+  supplierId String?
   supplier   Supplier?   @relation(fields: [supplierId], references: [id])
   
   CartItem   CartItem[]
   OrderItem  OrderItem[]
+  purchaseOrderItems PurchaseOrderItem[]
 }
 
 model Order {
@@ -88,15 +89,39 @@ model AppUser {
 }
 
 model Supplier {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  id       String  @id @default(uuid()) @map("_id")
   name     String
   email    String?
   phone    String?
   address  String?
   note     String?
   isActive Boolean @default(true)
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products   Product[]
+  purchaseOrders PurchaseOrder[]
   @@index([name])
+}
+
+model PurchaseOrder {
+  id          String              @id @default(uuid()) @map("_id")
+  supplier    Supplier           @relation(fields: [supplierId], references: [id])
+  supplierId  String
+  orderDate   DateTime           @default(now())
+  status      String             @default("pending")
+  items       PurchaseOrderItem[]
+  note        String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model PurchaseOrderItem {
+  id              String         @id @default(uuid()) @map("_id")
+  purchaseOrder   PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String
+  product         Product        @relation(fields: [productId], references: [id])
+  productId       String
+  quantity        Int
+  price           Float
 }
