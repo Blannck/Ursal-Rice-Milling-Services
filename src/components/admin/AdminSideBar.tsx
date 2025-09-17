@@ -13,11 +13,12 @@ import {
   ChevronRight,
   ClipboardList,
   LogOut,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
 import ModeToggle from "@/components/ModeTogggle";
-import { cn } from "@/lib/utils"; // 
+import { cn } from "@/lib/utils";
 
 type Props = {
   user: { displayName?: string | null; primaryEmail?: string | null } | null;
@@ -66,8 +67,7 @@ export default function AdminSidebar({ user, app }: Props) {
   }, []);
   useEffect(() => {
     localStorage.setItem("admin-sidebar-collapsed", collapsed ? "1" : "0");
-      collapsed ? "4rem" : "16rem"
-   
+    collapsed ? "4rem" : "16rem";
   }, [collapsed]);
 
   const name = user?.displayName || user?.primaryEmail || "Admin";
@@ -137,6 +137,13 @@ export default function AdminSidebar({ user, app }: Props) {
             active={pathname.startsWith("/cart")}
             collapsed={collapsed}
           />
+          <NavItem
+            href="/orders"
+            label="Orders"
+            icon={ClipboardList}
+            active={pathname.startsWith("/orders")}
+            collapsed={collapsed}
+          />
           {/* Admin stuff */}
           <div className={cn("pt-2", collapsed ? "text-center" : "px-2 text-xs text-muted-foreground")}>
             {!collapsed && <span>Admin</span>}
@@ -156,10 +163,10 @@ export default function AdminSidebar({ user, app }: Props) {
             collapsed={collapsed}
           />
           <NavItem
-            href="/orders"
-            label="Orders"
-            icon={ClipboardList}
-            active={pathname.startsWith("/orders")}
+            href="/admin/purchase-orders"
+            label="Manage Purchase Orders"
+            icon={FileText}
+            active={pathname.startsWith("/admin/purchase-orders")}
             collapsed={collapsed}
           />
         </nav>
