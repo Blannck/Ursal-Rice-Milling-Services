@@ -25,11 +25,9 @@ interface ComboboxProps {
 
 const productCategories = [
   { value: "-", label: "None" },
-  { value: "code", label: "Code Projects" },
-  { value: "courses", label: "Mini-Courses" },
-  { value: "guides", label: "PDF Guides" },
-  { value: "templates", label: "Productivity Templates" },
-  { value: "snippets", label: "Reference Snippets" },
+  { value: "Ordinary", label: "Ordinary" },
+  { value: "Toner", label: "Toner" },
+  { value: "RC-160", label: "RC-160" },
 ];
 
 

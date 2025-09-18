@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse  } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/admin";
-import { Network } from "lucide-react";
+
 
 export async function GET(_req: Request, { params }:  { params: { id: string } }) {
   try {
@@ -16,7 +16,7 @@ export async function GET(_req: Request, { params }:  { params: { id: string } }
   }
 }
 
-export async function PATH(req: Request, { params }: { params: { id: string }}) {
+export async function PATCH(req: Request, { params }: { params: { id: string }}) {
   try {
     await assertAdmin();
     const body = await req.json();

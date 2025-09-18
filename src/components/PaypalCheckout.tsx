@@ -21,7 +21,7 @@ export default function PayPalCheckout({ total, selectedCartItemIds }: PayPalChe
         {
           amount: {
             value: total.toFixed(2),
-            currency_code: "USD",
+            currency_code: "PHP",
           },
           description: `Farm Market Order`,
         },

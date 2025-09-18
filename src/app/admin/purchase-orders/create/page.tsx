@@ -87,19 +87,25 @@ export default function CreatePurchaseOrderPage() {
 
   const fetchInitialData = async () => {
     try {
-      const [suppliersRes] = await Promise.all([
-        fetch("/api/admin/suppliers?active=true"),
-      ]);
+      console.log("Fetching suppliers..."); // Debug log
+      const suppliersRes = await fetch("/api/admin/suppliers");
+      console.log("Suppliers response status:", suppliersRes.status); // Debug log
       
-      const [suppliersData] = await Promise.all([
-        suppliersRes.json(),
-      ]);
+      const suppliersData = await suppliersRes.json();
+      console.log("Suppliers data:", suppliersData); // Debug log
       
-      if (suppliersData.success) {
-        setSuppliers(suppliersData.suppliers);
+      if (suppliersData.ok && suppliersData.data) {
+        // Filter for active suppliers on the client side since your API doesn't support the active filter
+        const activeSuppliers = suppliersData.data.filter((supplier: Supplier) => supplier.isActive);
+        setSuppliers(activeSuppliers);
+        console.log("Active suppliers loaded:", activeSuppliers.length); // Debug log
+      } else {
+        console.error("Suppliers API response:", suppliersData);
+        alert(suppliersData.error || "Failed to fetch suppliers");
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching suppliers:", error);
+      alert("Failed to fetch suppliers");
     } finally {
       setLoading(false);
     }
@@ -107,14 +113,25 @@ export default function CreatePurchaseOrderPage() {
 
   const fetchSupplierProducts = async (supplierId: string) => {
     try {
+      console.log("Fetching products for supplier:", supplierId); // Debug log
       const response = await fetch(`/api/admin/products?supplierId=${supplierId}`);
-      const data = await response.json();
+      console.log("Products response status:", response.status); // Debug log
       
-      if (data.success) {
+      const data = await response.json();
+      console.log("Products data:", data); // Debug log
+      
+      if (data.success && data.products) {
         setProducts(data.products);
+        console.log("Products loaded:", data.products.length); // Debug log
+      } else {
+        console.error("Products API response:", data);
+        alert(data.error || "Failed to fetch products");
+        setProducts([]);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
+      alert("Failed to fetch products");
+      setProducts([]);
     }
   };
 
@@ -195,6 +212,16 @@ export default function CreatePurchaseOrderPage() {
     setSubmitting(true);
     
     try {
+      console.log("Submitting purchase order:", {
+        supplierId: selectedSupplierId,
+        note,
+        items: orderItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      });
+
       const response = await fetch("/api/admin/purchase-orders", {
         method: "POST",
         headers: {
@@ -211,13 +238,12 @@ export default function CreatePurchaseOrderPage() {
         }),
       });
       
-      const data = await response.json();
-      
-      if (data.success) {
-        router.push("/admin/purchase-orders");
-      } else {
-        alert(data.error || "Failed to create purchase order");
-      }
+     const data = await response.json();
+if (data?.ok || data?.success) {
+  router.push("/admin/purchase-orders?justCreated=1");
+} else {
+  alert(data.error || "Failed to create purchase order");
+}
     } catch (error) {
       console.error("Error creating purchase order:", error);
       alert("Failed to create purchase order");
@@ -226,8 +252,9 @@ export default function CreatePurchaseOrderPage() {
     }
   };
 
-   return (
-    <div className="min-h-screen bg-transparent p-6"> {/* Changed bg-gradient-to-br to bg-transparent */}
+
+  return (
+    <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -238,6 +265,7 @@ export default function CreatePurchaseOrderPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-semibold text-white-900">Create Purchase Order</h1>
+            <p className="text-white-600">Create a new purchase order for items from suppliers</p>
           </div>
         </div>
 
@@ -253,22 +281,29 @@ export default function CreatePurchaseOrderPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="supplier">Supplier *</Label>
+                    <Label htmlFor="supplier">Supplier</Label>
                     <Select value={selectedSupplierId} onValueChange={setSelectedSupplierId}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white text-black">
                         <SelectValue placeholder="Select a supplier" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {suppliers.map((supplier) => (
-                          <SelectItem key={supplier.id} value={supplier.id}>
-                            <div className="flex flex-col">
-                              <span>{supplier.name}</span>
-                              <span className="text-sm text-gray-500">{supplier.email}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
+                      <SelectContent className="bg-white border border-gray-200 max-h-60 overflow-y-auto">
+                        {suppliers.length === 0 ? (
+                          <div className="p-2 text-gray-500 text-center">No suppliers found</div>
+                        ) : (
+                          suppliers.map((supplier) => (
+                            <SelectItem key={supplier.id} value={supplier.id} className="text-black hover:bg-gray-100">
+                              <div className="flex flex-col">
+                                <span className="font-medium">{supplier.name}</span>
+                                <span className="text-sm text-gray-500">{supplier.email || "No email"}</span>
+                              </div>
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
+                    {suppliers.length === 0 && !loading && (
+                      <p className="text-sm text-red-600 mt-1">No active suppliers found. Please add suppliers first.</p>
+                    )}
                   </div>
                   
                   <div>
@@ -293,7 +328,7 @@ export default function CreatePurchaseOrderPage() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
-                        <Label>Product *</Label>
+                        <Label>Product</Label>
                         <Select value={selectedProductId} onValueChange={setSelectedProductId}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select product" />
@@ -314,7 +349,7 @@ export default function CreatePurchaseOrderPage() {
                       </div>
                       
                       <div>
-                        <Label>Quantity *</Label>
+                        <Label>Quantity</Label>
                         <Input
                           type="number"
                           min="1"
@@ -328,7 +363,7 @@ export default function CreatePurchaseOrderPage() {
                         <Input
                           type="number"
                           step="0.01"
-                          placeholder="Override default price"
+                          placeholder=""
                           value={customPrice}
                           onChange={(e) => setCustomPrice(e.target.value)}
                         />
@@ -436,10 +471,10 @@ export default function CreatePurchaseOrderPage() {
                 </CardContent>
               </Card>
 
-              <div className="space-y-6"> {/* Increased space-y-3 to space-y-6 */}
+              <div className="space-y-6">
                 <Button
                   type="submit"
-                  className="w-full bg-green-600 hover:bg-green-700 mb-3"
+                  className="w-full bg-green-600 hover:bg-green-700 mb-2"
                   disabled={submitting || !selectedSupplierId || orderItems.length === 0}
                 >
                   {submitting ? "Creating..." : "Create Purchase Order"}
