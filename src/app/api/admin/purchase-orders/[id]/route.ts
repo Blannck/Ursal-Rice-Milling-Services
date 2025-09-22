@@ -1,30 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+export const runtime = "nodejs";
 
-const prisma = new PrismaClient();
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { assertAdmin } from "@/lib/admin";
 
 // GET Request to fetch a specific purchase order by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    await assertAdmin();
+
     const purchaseOrder = await prisma.purchaseOrder.findUnique({
       where: { id: params.id },
       include: {
         supplier: true,
-        items: { include: { product: true } },
+        items: { 
+          include: { 
+            product: true 
+          } 
+        },
       },
     });
 
     if (!purchaseOrder) {
       return NextResponse.json(
-        { success: false, error: "Purchase order not found" },
+        { ok: false, error: "Purchase order not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, purchaseOrder });
+    // Return consistent format for both success and purchaseOrder
+    return NextResponse.json({ 
+      success: true, 
+      ok: true,
+      purchaseOrder 
+    });
   } catch (error) {
+    console.error("Error fetching purchase order:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch purchase order" },
+      { success: false, ok: false, error: "Failed to fetch purchase order" },
       { status: 500 }
     );
   }
@@ -33,7 +46,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT Request to update a specific purchase order by ID
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    await assertAdmin();
     const { status, note, items } = await request.json();
+
+    console.log("Updating purchase order:", params.id, { status, note, itemsCount: items?.length });
 
     // Update purchase order
     const updatedOrder = await prisma.$transaction(async (tx) => {
@@ -46,21 +62,23 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       });
 
       // If items are provided, update them
-      if (items) {
+      if (items && Array.isArray(items)) {
         // Delete existing items
         await tx.purchaseOrderItem.deleteMany({
           where: { purchaseOrderId: params.id },
         });
 
         // Create new items
-        await tx.purchaseOrderItem.createMany({
-          data: items.map((item: any) => ({
-            purchaseOrderId: params.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        });
+        if (items.length > 0) {
+          await tx.purchaseOrderItem.createMany({
+            data: items.map((item: any) => ({
+              purchaseOrderId: params.id,
+              productId: item.productId,
+              quantity: Number(item.quantity),
+              price: Number(item.price),
+            })),
+          });
+        }
       }
 
       return order;
@@ -81,12 +99,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json({
       ok: true,
+      success: true,
       data: { purchaseOrder },
+      purchaseOrder, // For backward compatibility
     });
   } catch (error) {
     console.error("Error updating purchase order:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to update purchase order" },
+      { success: false, ok: false, error: "Failed to update purchase order" },
       { status: 500 }
     );
   }
@@ -95,6 +115,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE Request to delete a specific purchase order by ID
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    await assertAdmin();
+
     await prisma.$transaction(async (tx) => {
       // Delete items first (due to foreign key constraint)
       await tx.purchaseOrderItem.deleteMany({
@@ -109,12 +131,13 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     return NextResponse.json({
       ok: true,
+      success: true,
       data: { message: "Purchase order deleted successfully" },
     });
   } catch (error) {
     console.error("Error deleting purchase order:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to delete purchase order" },
+      { success: false, ok: false, error: "Failed to delete purchase order" },
       { status: 500 }
     );
   }

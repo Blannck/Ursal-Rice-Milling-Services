@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -13,11 +13,12 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // + modal
-import { Label } from "@/components/ui/label"; // + labels
-import { Textarea } from "@/components/ui/textarea"; // + textarea
-import { Switch } from "@/components/ui/switch"; // + switch (or swap for a checkbox if you don't have it)
-import { MoreHorizontal, Edit3, Trash2, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { MoreHorizontal, Edit3, Trash2, Plus, Search } from "lucide-react";
 
 type Supplier = {
   id: string;
@@ -30,6 +31,17 @@ type Supplier = {
   createdAt: string;
 };
 
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  supplierId?: string | null;
+  supplier?: {
+    name: string;
+  } | null;
+};
+
 export default function SuppliersClient({ initialData }: { initialData: Supplier[] }) {
   const router = useRouter();
 
@@ -40,8 +52,14 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
   const [page, setPage] = useState(1);
 
   // form state (create + edit)
-  const [open, setOpen] = useState(false);            // + modal open
-  const [editing, setEditing] = useState<Supplier | null>(null); // + current row
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Supplier | null>(null);
+
+  // product selection state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [productSearch, setProductSearch] = useState("");
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -56,6 +74,37 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const paged = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
+  // Filter products based on search
+  const filteredProducts = useMemo(() => {
+    const searchTerm = productSearch.toLowerCase();
+    return products.filter(product => 
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm)
+    );
+  }, [products, productSearch]);
+
+  // Fetch products when modal opens
+  useEffect(() => {
+    if (open && products.length === 0) {
+      fetchProducts();
+    }
+  }, [open]);
+
+  async function fetchProducts() {
+    setLoadingProducts(true);
+    try {
+      const res = await fetch("/api/admin/products");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setProducts(data.products);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  }
+
   // actions
   function startCreate() {
     setEditing({
@@ -68,12 +117,38 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       isActive: true,
       createdAt: new Date().toISOString(),
     });
+    setSelectedProducts([]);
+    setProductSearch("");
     setOpen(true);
   }
 
-  function startEdit(s: Supplier) {
+  async function startEdit(s: Supplier) {
     setEditing(s);
+    setSelectedProducts([]);
+    setProductSearch("");
+    
+    // Fetch current supplier details including associated products
+    try {
+      const res = await fetch(`/api/admin/suppliers/${s.id}`);
+      const data = await res.json();
+      if (res.ok && data.ok && data.data.products) {
+        // Set currently associated products as selected
+        const currentProductIds = data.data.products.map((p: Product) => p.id);
+        setSelectedProducts(currentProductIds);
+      }
+    } catch (error) {
+      console.error("Failed to fetch supplier details:", error);
+    }
+    
     setOpen(true);
+  }
+
+  function toggleProduct(productId: string) {
+    setSelectedProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
   }
 
   async function save() {
@@ -85,6 +160,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       address: editing.address,
       note: editing.note,
       isActive: editing.isActive,
+      productIds: selectedProducts, // Include selected products
     };
 
     if (!editing.id) {
@@ -133,7 +209,6 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
         </Select>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* + New Supplier button */}
           <Button onClick={startCreate}>
             <Plus className="h-4 w-4 mr-2" />
             New Supplier
@@ -216,13 +291,13 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
 
       {/* Modal Form — create + edit */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[560px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing?.id ? "Edit Supplier" : "New Supplier"}</DialogTitle>
           </DialogHeader>
 
           {editing && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
                 <Label>Name</Label>
                 <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
@@ -234,7 +309,21 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 </div>
                 <div>
                   <Label>Phone</Label>
-                  <Input value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
+                  <Input 
+                    type="tel"
+                    value={editing.phone || ""} 
+                    onChange={(e) => {
+                      // Only allow numbers, spaces, hyphens, parentheses, and plus sign
+                      const value = e.target.value.replace(/[^0-9\s\-\(\)\+]/g, '');
+                      setEditing({ ...editing, phone: value });
+                    }}
+                    onKeyPress={(e) => {
+                      // Prevent non-numeric characters from being typed (except allowed special chars)
+                      if (!/[0-9\s\-\(\)\+]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
                 </div>
               </div>
               <div>
@@ -248,6 +337,82 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
               <div className="flex items-center gap-2 pt-1">
                 <Switch checked={!!editing.isActive} onCheckedChange={(v) => setEditing({ ...editing, isActive: v })} />
                 <Label>Active</Label>
+              </div>
+
+              {/* Product Selection Section */}
+              <div className="space-y-3 border-t pt-4">
+                <div>
+                  <Label className="text-base font-medium">Associate Products</Label>
+                  <p className="text-sm text-muted-foreground">Select products to associate with this supplier</p>
+                </div>
+                
+                {/* Product Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search products..."
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Product List */}
+                <div className="max-h-40 overflow-y-auto border rounded-md">
+                  {loadingProducts ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Loading products...
+                    </div>
+                  ) : filteredProducts.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      {productSearch ? "No products found" : "No products available"}
+                    </div>
+                  ) : (
+                    filteredProducts.map((product) => {
+                      const isSelected = selectedProducts.includes(product.id);
+                      const hasOtherSupplier = product.supplierId && product.supplierId !== editing?.id;
+                      
+                      return (
+                        <div key={product.id} className="flex items-center space-x-3 p-3 hover:bg-gray-600 border-b last:border-b-0">
+                          <Checkbox
+                            id={`product-${product.id}`}
+                            checked={isSelected}
+                            onCheckedChange={() => toggleProduct(product.id)}
+                          />
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{product.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {product.category} • ₱{product.price.toFixed(2)}
+                              {hasOtherSupplier && product.supplier?.name && (
+                                <span className="ml-2 text-blue-600">
+                                </span>
+                              )}
+                              {isSelected && editing?.id && (
+                                <span className="ml-2 text-green-600">
+                                  • Will be associated
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Selected Products Summary */}
+                {selectedProducts.length > 0 && (
+                  <div className="text-sm">
+                    <div className="font-medium text-green-600 mb-2">
+                      {selectedProducts.length} product{selectedProducts.length === 1 ? '' : 's'} selected
+                    </div>
+                    {editing?.id && (
+                      <div className="text-xs text-muted-foreground">
+                        Changes will be saved when you click "Save changes"
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}

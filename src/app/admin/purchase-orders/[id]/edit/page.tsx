@@ -369,7 +369,7 @@ export default function PurchaseOrderEditPage() {
                     </Select>
                   </div>
                   <div>
-                    <Label>Quantity</Label>
+                    <Label>Kilos</Label>
                     <Input
                       type="number"
                       min={1}
@@ -471,7 +471,7 @@ export default function PurchaseOrderEditPage() {
                   <span className="font-medium">{items.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Total Quantity</span>
+                  <span>Total Kilos</span>
                   <span className="font-medium">{totalQty}</span>
                 </div>
                 <div className="border-t pt-3">

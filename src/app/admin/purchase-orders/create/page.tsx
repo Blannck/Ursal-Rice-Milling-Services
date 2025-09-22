@@ -349,7 +349,7 @@ if (data?.ok || data?.success) {
                       </div>
                       
                       <div>
-                        <Label>Quantity</Label>
+                        <Label>Kilos</Label>
                         <Input
                           type="number"
                           min="1"
@@ -391,7 +391,7 @@ if (data?.ok || data?.success) {
                         <TableRow>
                           <TableHead>Product</TableHead>
                           <TableHead>Category</TableHead>
-                          <TableHead>Quantity</TableHead>
+                          <TableHead>Kilos</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead>Total</TableHead>
                           <TableHead>Actions</TableHead>
@@ -459,7 +459,7 @@ if (data?.ok || data?.success) {
                     <span>{orderItems.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Total Quantity:</span>
+                    <span>Total Kilos:</span>
                     <span>{orderItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
                   </div>
                   <div className="border-t pt-4">

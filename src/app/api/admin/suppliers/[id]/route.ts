@@ -1,51 +1,112 @@
 export const runtime = "nodejs";
 
-import { NextResponse  } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/admin";
 
-
-export async function GET(_req: Request, { params }:  { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     await assertAdmin();
-    const row = await prisma.supplier.findUnique({ where: { id: params.id } });
-    if (!row) return NextResponse.json({ ok: false, error: "Not Found" }, { status: 404});
-    return NextResponse.json({ ok: true, data: row});
+    const supplier = await prisma.supplier.findUnique({
+      where: { id: params.id },
+      include: {
+        products: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            price: true,
+          }
+        },
+      },
+    });
+    
+    if (!supplier) {
+      return NextResponse.json({ ok: false, error: "Supplier not found" }, { status: 404 });
+    }
+    
+    return NextResponse.json({ ok: true, data: supplier });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500});
+    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500 });
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string }}) {
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     await assertAdmin();
-    const body = await req.json();
-    const { name, email, phone, address, note, isActive } = body;
+    const { name, email, phone, address, note, isActive, productIds } = await req.json();
 
+    if (!name?.trim()) {
+      return NextResponse.json({ ok: false, error: "Name Required" }, { status: 400 });
+    }
+
+    // Update supplier
     const updated = await prisma.supplier.update({
       where: { id: params.id },
       data: {
-        ...(name !== undefined ? { name: String(name).trim() } : {}),
-        ...(email !== undefined ? { email: email?.trim() || null } : {}),
-        ...(phone !== undefined? { phone: phone?.trim() || null }: {}),
-        ...(address !== undefined ? { address: address?.trim() || null } : {}),
-        ...(note !== undefined ? { note: note?.trim() || null } : {}),
-        ...(isActive !== undefined ? { isActive: !!isActive } : {}),
+        name: name.trim(),
+        email: email?.trim() || null,
+        phone: phone?.trim() || null,
+        address: address?.trim() || null,
+        note: note?.trim() || null,
+        isActive: typeof isActive === "boolean" ? isActive : true,
       },
     });
 
+    // Handle product associations if provided
+    if (productIds && Array.isArray(productIds)) {
+      // First, remove this supplier from all products that were previously associated
+      await prisma.product.updateMany({
+        where: {
+          supplierId: params.id,
+        },
+        data: {
+          supplierId: null,
+        },
+      });
+
+      // Then associate the newly selected products
+      if (productIds.length > 0) {
+        await prisma.product.updateMany({
+          where: {
+            id: {
+              in: productIds,
+            },
+          },
+          data: {
+            supplierId: params.id,
+          },
+        });
+      }
+    }
+
     return NextResponse.json({ ok: true, data: updated });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500})
+    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500 });
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string} }) {
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
     await assertAdmin();
-    await prisma.supplier.delete({ where: { id: params.id } });
-    return NextResponse.json({ ok: true });
-  } catch(e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500});
+    
+    // First, remove supplier association from products
+    await prisma.product.updateMany({
+      where: {
+        supplierId: params.id,
+      },
+      data: {
+        supplierId: null,
+      },
+    });
+
+    // Then delete the supplier
+    const deleted = await prisma.supplier.delete({
+      where: { id: params.id },
+    });
+
+    return NextResponse.json({ ok: true, data: deleted });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: e.status || 500 });
   }
 }

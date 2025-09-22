@@ -161,7 +161,7 @@ export default function PurchaseOrderDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Order Items</CardTitle>
-                <CardDescription>{purchaseOrder.items.length} items • Total quantity: {totalQty}</CardDescription>
+                <CardDescription>{purchaseOrder.items.length} items • Total Kilos: {totalQty}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -169,7 +169,7 @@ export default function PurchaseOrderDetailPage() {
                     <TableRow>
                       <TableHead>Product</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Quantity</TableHead>
+                      <TableHead>Kilos</TableHead>
                       <TableHead>Unit Price</TableHead>
                       <TableHead>Total</TableHead>
                     </TableRow>
@@ -207,7 +207,7 @@ export default function PurchaseOrderDetailPage() {
               <CardHeader><CardTitle>Order Summary</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between"><span>Total Items:</span><span className="font-medium">{purchaseOrder.items.length}</span></div>
-                <div className="flex justify-between"><span>Total Quantity:</span><span className="font-medium">{totalQty}</span></div>
+                <div className="flex justify-between"><span>Total Kilos:</span><span className="font-medium">{totalQty}</span></div>
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-lg">
                     <span className="font-semibold">Total Amount:</span>

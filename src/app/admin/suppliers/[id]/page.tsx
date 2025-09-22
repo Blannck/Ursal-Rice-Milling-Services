@@ -55,14 +55,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
           <div className="mt-1 text-lg">{new Date(supplier.updatedAt).toLocaleString()}</div>
         </div>
         <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Recent items</div>
+          <div className="text-xs text-muted-foreground">Recent Products</div>
           <div className="mt-1 text-lg">{items.length}</div>
         </div>
       </div>
 
       {/* recent items */}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Recent items</h2>
+        <h2 className="text-xl font-semibold">Recent Products</h2>
         <div className="overflow-hidden rounded-xl border bg-black text-white">
           <table className="w-full text-sm">
             <thead className="bg-gray-900">
@@ -78,14 +78,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
                 <tr key={p.id} className="border-t border-gray-700">
                   <td className="px-3 py-2">{p.name}</td>
                   <td className="px-3 py-2">{p.category}</td>
-                  <td className="px-3 py-2">{p.price.toFixed(2)}</td>
+                  <td className="px-3 py-2">₱ {p.price.toFixed(2)}</td>
                   <td className="px-3 py-2">{new Date(p.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
               {!items.length && (
                 <tr>
                   <td className="px-3 py-8 text-center text-gray-400" colSpan={4}>
-                    No items yet for this supplier
+                    No products yet for this supplier
                   </td>
                 </tr>
               )}

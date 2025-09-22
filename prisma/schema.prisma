@@ -113,7 +113,7 @@ model PurchaseOrderItem {
   id              String         @id @default(auto()) @map("_id") @db.ObjectId
   purchaseOrder   PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
   purchaseOrderId String         @db.ObjectId
-  product         Product        @relation(fields: [productId], references: [id])
+  product         Product?        @relation(fields: [productId], references: [id])
   productId       String         @db.ObjectId
   quantity        Int
   price           Float

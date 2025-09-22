@@ -54,6 +54,7 @@ interface PurchaseOrder {
 export default function PurchaseOrdersPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,73 +68,84 @@ export default function PurchaseOrdersPage() {
     { value: "Cancelled", label: "Cancelled" },
   ];
 
-  // Debounced fetch for search/filter
-  useEffect(() => {
-    const id = setTimeout(() => {
-      fetchPurchaseOrders();
-    }, 300);
-    return () => clearTimeout(id);
-  }, [searchTerm, statusFilter]);
-
-  
- useEffect(() => {
-  fetchPurchaseOrders();
-}, [currentPage]); 
-
-
+  // Fetch purchase orders
   const fetchPurchaseOrders = async () => {
-  try {
-    setLoading(true);
-    const params = new URLSearchParams({
-      page: currentPage.toString(),
-      search: searchTerm,
-      status: statusFilter,
-    });
+    try {
+      setLoading(true);
+      setError("");
+      
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        search: searchTerm,
+        status: statusFilter,
+      });
 
-    const res = await fetch(`/api/admin/purchase-orders?${params}`);
-    const data = await res.json();
-    console.log("Fetched purchase orders:", data); // Debug log
+      console.log("Fetching purchase orders with params:", params.toString());
 
-    if (data?.ok && data?.data) {
-      setPurchaseOrders(data.data.purchaseOrders || []);
-      setTotalPages(data.data.totalPages || 1);
-    } else if (data?.success) {
-      setPurchaseOrders(data.purchaseOrders || []);
-      setTotalPages(data.totalPages || 1);
-    } else {
-      console.error("Unexpected API shape:", data);
+      const res = await fetch(`/api/admin/purchase-orders?${params}`);
+      const data = await res.json();
+      
+      console.log("API Response:", data);
+      console.log("Response status:", res.status);
+
+      if (!res.ok) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+
+      if (data?.ok && data?.data) {
+        console.log("Setting purchase orders:", data.data.purchaseOrders);
+        setPurchaseOrders(data.data.purchaseOrders || []);
+        setTotalPages(data.data.totalPages || 1);
+      } else {
+        console.error("Unexpected API response format:", data);
+        setError("Unexpected response format from server");
+        setPurchaseOrders([]);
+        setTotalPages(1);
+      }
+    } catch (error) {
+      console.error("Error fetching purchase orders:", error);
+      setError(`Failed to load purchase orders: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setPurchaseOrders([]);
       setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching purchase orders:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-useEffect(() => {
-    fetchPurchaseOrders();
-  }, [statusFilter, searchTerm, currentPage]);
-
-  // Handle the status change to "All" and ensure the fetch logic works
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
   };
 
+  // Effects
+  useEffect(() => {
+    fetchPurchaseOrders();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page when search/filter changes
+      fetchPurchaseOrders();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, statusFilter]);
+
   const handleDelete = async (id: string) => {
-  if (!confirm("Are you sure you want to delete this purchase order?")) return;
-  try {
-    const response = await fetch(`/api/admin/purchase-orders/${id}`, {
-      method: "DELETE",
-    });
-    if (response.ok) {
-      // Immediately remove the deleted order from the state
-      setPurchaseOrders((prev) => prev.filter((order) => order.id !== id));
+    if (!confirm("Are you sure you want to delete this purchase order?")) return;
+    
+    try {
+      const response = await fetch(`/api/admin/purchase-orders/${id}`, {
+        method: "DELETE",
+      });
+      
+      if (response.ok) {
+        // Remove from local state immediately
+        setPurchaseOrders((prev) => prev.filter((order) => order.id !== id));
+        console.log("Purchase order deleted successfully");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to delete purchase order");
+      }
+    } catch (error) {
+      console.error("Error deleting purchase order:", error);
+      alert("Failed to delete purchase order");
     }
-  } catch (error) {
-    console.error("Error deleting purchase order:", error);
-  }
-};
+  };
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -160,7 +172,10 @@ useEffect(() => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-semibold text-white">Purchase Orders</h1>
-            <p className="text-white/70">Total: {purchaseOrders.length}</p>
+            <p className="text-white/70">
+              Total: {purchaseOrders.length}
+              {error && <span className="text-red-400 ml-4">Error: {error}</span>}
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -198,6 +213,27 @@ useEffect(() => {
           />
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-8">
+            <p className="text-white">Loading purchase orders...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-6">
+            <p className="text-red-300">Error: {error}</p>
+            <Button 
+              onClick={fetchPurchaseOrders} 
+              className="mt-2 bg-red-600 hover:bg-red-700"
+              size="sm"
+            >
+              Retry
+            </Button>
+          </div>
+        )}
+
         {/* Table */}
         <TooltipProvider delayDuration={100}>
           <div className="overflow-hidden rounded-xl border bg-black text-white shadow-sm">
@@ -214,7 +250,7 @@ useEffect(() => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {purchaseOrders.map((order) => (
+                {!loading && purchaseOrders.map((order) => (
                   <TableRow
                     key={order.id}
                     className="cursor-pointer hover:bg-gray-900/60"
@@ -222,7 +258,6 @@ useEffect(() => {
                       (window.location.href = `/admin/purchase-orders/${order.id}`)
                     }
                   >
-                    {/* Option B: Tiny chip + tooltip with copy */}
                     <TableCell className="w-24">
                       <Tooltip>
                         <TooltipTrigger
@@ -338,10 +373,17 @@ useEffect(() => {
                     </TableCell>
                   </TableRow>
                 ))}
-                {purchaseOrders.length === 0 && !loading && (
+                
+                {!loading && purchaseOrders.length === 0 && !error && (
                   <TableRow>
                     <TableCell colSpan={7} className="py-8 text-center text-gray-400">
                       No purchase orders found
+                      <div className="mt-2 text-sm text-gray-500">
+                        {searchTerm || statusFilter !== "all" 
+                          ? "Try adjusting your search or filter criteria"
+                          : "Create your first purchase order to get started"
+                        }
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
@@ -375,11 +417,19 @@ useEffect(() => {
           </div>
         )}
 
-        {purchaseOrders.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg"></p>
+        {/* Debug Info (remove in production) */}
+         {/* process.env.NODE_ENV === 'development' && (
+          <div className="mt-8 p-4 bg-gray-800 rounded-lg text-xs text-gray-300">
+            <p>Debug Info:</p>
+            <p>Loading: {loading.toString()}</p>
+            <p>Error: {error || 'None'}</p>
+            <p>Purchase Orders Count: {purchaseOrders.length}</p>
+            <p>Current Page: {currentPage}</p>
+            <p>Total Pages: {totalPages}</p>
+            <p>Search Term: "{searchTerm}"</p>
+            <p>Status Filter: {statusFilter}</p>
           </div>
-        )}
+        ) */} 
       </div>
     </div>
   );
