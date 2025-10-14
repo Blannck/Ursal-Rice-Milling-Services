@@ -12,7 +12,6 @@ async function AdminPage() {
 
   if (!isAdmin) return notFound();
 
-  // 👇 Redirect to /admin/myproducts
   return redirect("/admin/myproducts");
 }
 
