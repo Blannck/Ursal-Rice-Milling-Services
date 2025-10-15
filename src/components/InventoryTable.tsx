@@ -191,8 +191,8 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               {/* Search and Filters */}
               <div className="flex flex-col sm:flex-row gap-4 flex-1">
                 {/* Search */}
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <div className="relative  bg-white flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
                   <Input
                     placeholder="Search products..."
                     className="pl-10  focus:border-blue-500 focus:ring-blue-500"
@@ -206,7 +206,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   value={selectedCategory}
                   onValueChange={setSelectedCategory}
                 >
-                  <SelectTrigger className="w-full sm:w-48 ">
+                  <SelectTrigger className="w-full  bg-custom-green text-white border-0 sm:w-48 ">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
@@ -222,7 +222,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full sm:w-48 ">
+                  <SelectTrigger className="w-full  bg-custom-green text-white border-0 sm:w-48 ">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -266,19 +266,19 @@ export default function InventoryTable({ products }: InventoryTableProps) {
         {filteredProducts && filteredProducts.length > 0 ? (
           viewMode === "table" ? (
             // Table View
-            <Card className="border-0 shadow-sm ">
+            <Card className="">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="">
-                      <TableHead className="font-semibold ">Product</TableHead>
-                      <TableHead className="font-semibold ">Category</TableHead>
-                      <TableHead className="font-semibold ">Price</TableHead>
-                      <TableHead className="font-semibold ">Created</TableHead>
-                      <TableHead className="font-semibold ">
-                        DownloadUrl
+                    <TableRow className="text-black">
+                      <TableHead className="font-semibold text-black">Product</TableHead>
+                      <TableHead className="font-semibold  text-black ">Category</TableHead>
+                      <TableHead className="font-semibold   text-black">Price</TableHead>
+                      <TableHead className="font-semibold    text-black">Created</TableHead>
+                      <TableHead className="font-semibold  text-black ">
+                        Download Url
                       </TableHead>
-                      <TableHead className="font-semibold  text-right">
+                      <TableHead className="font-semibold   text-black text-right">
                         Actions
                       </TableHead>
                     </TableRow>
@@ -296,7 +296,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               <img
                                 src={
                                   product.imageUrl ||
-                                  "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg"
+                                  "/rice1.png"
                                 }
                                 alt={product.name}
                                 className="w-full h-full object-cover"
@@ -364,7 +364,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                       <img
                         src={
                           product.imageUrl ||
-                          "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg"
+                          "/rice1.png"
                         }
                         alt={product.name}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"

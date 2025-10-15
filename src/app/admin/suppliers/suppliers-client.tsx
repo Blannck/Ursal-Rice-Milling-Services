@@ -217,15 +217,15 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border bg-black text-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-900">
-              <TableHead className="text-white">Name</TableHead>
-              <TableHead className="text-white">Email</TableHead>
-              <TableHead className="text-white">Phone</TableHead>
-              <TableHead className="text-white">Status</TableHead>
-              <TableHead className="text-white text-right">Actions</TableHead>
+            <TableRow className="bg-custom-white ">
+              <TableHead className="text-black">Name</TableHead>
+              <TableHead className="text-black">Email</TableHead>
+              <TableHead className="text-black">Phone</TableHead>
+              <TableHead className="text-black">Status</TableHead>
+              <TableHead className="text-black text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -71,7 +71,7 @@ const Hero7 = ({
         <Button
           asChild
           size="lg"
-          className="bg-yellow-400 hover:bg-yellow-600 text-black font-semibold rounded-full px-6 py-3"
+          className="bg-custom-orange text-white hover:bg-yellow-600  font-semibold rounded-full px-6 py-3"
         >
           <a href={button.url}>{button.text}</a>
         </Button>

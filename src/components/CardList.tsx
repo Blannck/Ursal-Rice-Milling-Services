@@ -83,7 +83,7 @@ export default function CardList({ products }: CardListProps) {
         </div>
 
         {/* Filters and Controls */}
-        <div className=" rounded-2xl shadow-sm border p-6 mb-8">
+        <div className=" rounded-2xl shadow-sm  p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -92,7 +92,7 @@ export default function CardList({ products }: CardListProps) {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2  h-4 w-4" />
                 <Input
                   placeholder="Search products..."
-                  className="pl-10  focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-10 "
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -167,7 +167,7 @@ export default function CardList({ products }: CardListProps) {
             {filteredProducts.map((product) => (
               <Card
                 key={product.id}
-                className={`group cursor-pointer bg-black text-white border-[1px] shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1  ${
+                className={`group cursor-pointer bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1  ${
                   viewMode === "list" ? "flex flex-row overflow-hidden" : ""
                 }`}
                 onClick={() => handleProductClick(product)}

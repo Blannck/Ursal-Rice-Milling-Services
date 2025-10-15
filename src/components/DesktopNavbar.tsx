@@ -31,7 +31,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
 
   // Otherwise keep the top navbar
   return (
-    <div className="hidden md:flex items-center h-16 justify-between max-w-7xl mx-auto px-4">
+    <div className="hidden md:flex items-center bg-custom-green h-16 justify-between w-full mx-auto px-4">
       {/* Logo */}
       <div className="flex items-center">
         <Link
@@ -73,7 +73,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
                 <span className="hidden lg:inline">Orders</span>
               </Link>
             </Button>
-            <ModeToggle />
+            
             <Button variant="outline" className="flex items-center gap-2" asChild>
               <Link href={app.signOut}>
                 <LogOut className="w-4 h-4" />

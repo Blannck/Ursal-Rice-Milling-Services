@@ -41,7 +41,7 @@ export function Combobox({ value, onChange }: ComboboxProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px]  justify-between"
         >
           {value ? value : "Select category..."}
           <ChevronsUpDown className="opacity-50" />

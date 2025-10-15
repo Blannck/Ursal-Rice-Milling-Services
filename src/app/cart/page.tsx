@@ -12,10 +12,10 @@ async function Cart() {
   return (
     <>
       {user ? (
-        <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
           <div className="lg:col-span-full">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-8 mt-7">
               <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
               <p className="text-muted-foreground">
                 Review your selected items and proceed to checkout when ready.

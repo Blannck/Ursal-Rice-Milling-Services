@@ -31,26 +31,25 @@ function NavItem({
   icon: Icon,
   active,
   collapsed,
-  onClick,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active?: boolean;
   collapsed?: boolean;
-  onClick?: () => void;
 }) {
   return (
     <Link
       href={href}
-      onClick={onClick}
       className={cn(
-        "group flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition",
-        active ? "bg-muted font-medium" : "hover:bg-muted/70"
+        "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150",
+        active
+          ? "bg-white/20 text-white"
+          : "text-white/80 hover:bg-white/10 hover:text-white"
       )}
       title={collapsed ? label : undefined}
     >
-      <Icon className="h-5 w-5 shrink-0" />
+      <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
       {!collapsed && <span className="truncate">{label}</span>}
     </Link>
   );
@@ -60,136 +59,161 @@ export default function AdminSidebar({ user, app }: Props) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  // remember preference
+  // Load collapse preference
   useEffect(() => {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
     if (saved) setCollapsed(saved === "1");
   }, []);
+
   useEffect(() => {
     localStorage.setItem("admin-sidebar-collapsed", collapsed ? "1" : "0");
-    collapsed ? "4rem" : "16rem";
   }, [collapsed]);
 
   const name = user?.displayName || user?.primaryEmail || "Admin";
 
   return (
-    <>
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden border-r bg-background md:flex md:flex-col transition-[width] duration-200",
-          collapsed ? "w-16" : "w-64"
+    <aside
+      className={cn(
+        "fixed   h-screen left-0 z-40 flex-1  bg-custom-green drop-shadow-md transition-shadow flex flex-col   ",
+        
+      )}
+      
+    >
+      {/* Brand + Collapse Button */}
+      <div className="flex items-center justify-between px-3 py-4 border-b border-white/20">
+        <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-2 font-semibold whitespace-nowrap text-white transition-all",
+            collapsed ? "justify-center" : ""
+          )}
+          title="Ursal Rice Milling Services"
+        >
+          <span className="text-lg">🌾</span>
+          {!collapsed && (
+            <span className="text-sm">Ursal Rice Milling Services</span>
+          )}
+        </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setCollapsed((v) => !v)}
+          className="ml-auto text-white hover:bg-white/20"
+          title={collapsed ? "Expand" : "Collapse"}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+
+      {/* Mode toggle */}
+      
+
+      {/* Navigation */}
+     
+        <div className=" px-2  my-3">  
+        <NavItem
+          
+          href="/"
+          label="Home"
+          icon={HomeIcon}
+          active={pathname === "/"}
+          collapsed={collapsed}
+        />
+        </div>
+        <div className=" px-2   mb-3">  
+        <NavItem
+          href="/products"
+          label="Products"
+          icon={Package}
+          active={pathname.startsWith("/products")}
+          collapsed={collapsed}
+        />
+          </div>
+           <div className=" px-2 mb-3">  
+        <NavItem
+          href="/cart"
+          label="Cart"
+          icon={ShoppingCart}
+          active={pathname.startsWith("/cart")}
+          collapsed={collapsed}
+        />
+          </div>
+           <div className=" px-2 mb-3">  
+        <NavItem
+          href="/orders"
+          label="Orders"
+          icon={ClipboardList}
+          active={pathname.startsWith("/orders")}
+          collapsed={collapsed}
+        />
+          </div>
+
+        {/* Admin Section */}
+        <div
+          className={cn(
+            "pt-4 text-xs font-semibold text-white/70",
+            collapsed ? "text-center" : "px-2"
+          )}
+        >
+          {!collapsed && "Admin"}
+        </div>
+        <div className=" px-2 mb-3 mt-3">  
+        <NavItem
+          href="/admin/myproducts"
+          label="Manage Products"
+          icon={Settings}
+          active={pathname.startsWith("/admin/myproducts")}
+          collapsed={collapsed}
+        />
+        </div>
+        <div className=" px-2  mb-3">  
+        <NavItem
+          href="/admin/users"
+          label="Manage Supplier & Users"
+          icon={UsersIcon}
+          active={
+            pathname.startsWith("/admin/users") ||
+            pathname.startsWith("/admin/suppliers")
+          }
+          collapsed={collapsed}
+        />
+        </div>
+        <div className=" px-2 mb-3">
+        <NavItem
+          href="/admin/purchase-orders"
+          label="Manage Purchase Orders"
+          icon={FileText}
+          active={pathname.startsWith("/admin/purchase-orders")}
+          collapsed={collapsed}
+        />
+        </div>
+      
+
+      {/* User Footer */}
+    
+      <div className="bottom-20  mt-auto ">
+      <div className="  px-3 flex items-center gap-3 text-white mb-5">
+        <UserButton />
+        {!collapsed && (
+          <div className="flex flex-col min-w-0">
+            <span className="truncate text-sm font-medium">{name}</span>
+            <Link
+              href={app.signOut}
+              className="flex items-center gap-1 text-xs text-white/80 hover:underline"
+            >
+              <LogOut className="h-3.5 w-3.5 underline-offset-1 " />
+              Sign out
+            </Link>
+          </div>
         )}
-      >
-        {/* Top: brand + collapse toggle */}
-        <div className="flex items-center justify-between gap-2 px-3 py-3">
-          <Link
-            href="/"
-            className={cn(
-              "flex items-center gap-2 font-semibold tracking-wide whitespace-nowrap",
-              collapsed ? "justify-center" : ""
-            )}
-            title="Ursal Rice Milling Services"
-          >
-            <span className="text-base">🌾</span>
-            {!collapsed && <span>Ursal Rice Milling Services</span>}
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCollapsed((v) => !v)}
-            className={cn("ml-auto", collapsed ? "mx-auto" : "")}
-            title={collapsed ? "Expand" : "Collapse"}
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-
-        {/* Mode toggle */}
-        <div className={cn("px-3", collapsed ? "flex justify-center" : "")}>
-          <ModeToggle />
-        </div>
-
-        {/* Nav */}
-        <nav className="mt-3 flex-1 space-y-1 px-2">
-          <NavItem
-            href="/"
-            label="Home"
-            icon={HomeIcon}
-            active={pathname === "/"}
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/products"
-            label="Products"
-            icon={Package}
-            active={pathname.startsWith("/products")}
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/cart"
-            label="Cart"
-            icon={ShoppingCart}
-            active={pathname.startsWith("/cart")}
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/orders"
-            label="Orders"
-            icon={ClipboardList}
-            active={pathname.startsWith("/orders")}
-            collapsed={collapsed}
-          />
-          {/* Admin stuff */}
-          <div className={cn("pt-2", collapsed ? "text-center" : "px-2 text-xs text-muted-foreground")}>
-            {!collapsed && <span>Admin</span>}
-          </div>
-          <NavItem
-            href="/admin/myproducts"
-            label="Manage Products"
-            icon={Settings}
-            active={pathname.startsWith("/admin/myproducts")}
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/admin/users"
-            label="Manage Supplier & Users"
-            icon={UsersIcon}
-            active={pathname.startsWith("/admin/users") || pathname.startsWith("/admin/suppliers")}
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/admin/purchase-orders"
-            label="Manage Purchase Orders"
-            icon={FileText}
-            active={pathname.startsWith("/admin/purchase-orders")}
-            collapsed={collapsed}
-          />
-        </nav>
-
-        {/* Bottom: user info + sign out */}
-        <div className="border-t p-3">
-          <div className="flex items-center gap-3">
-            <UserButton />
-            {!collapsed && (
-              <div className="min-w-0">
-                <div className="truncate text-sm font-medium">{name}</div>
-                <Link href={app.signOut} className="text-xs text-muted-foreground hover:underline inline-flex items-center gap-1">
-                  <LogOut className="h-3.5 w-3.5" />
-                  Sign out
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </aside>
-
-      {/* Spacer for content on md+ screens (keeps your pages from sitting under the sidebar) */}
-      <div className="hidden md:block" style={{ width: collapsed ? "4rem" : "16rem" }} />
-    </>
+      </div>
+      </div>
+      
+      
+    </aside>
   );
 }

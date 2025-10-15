@@ -179,7 +179,7 @@ export default function PurchaseOrdersPage() {
           </div>
           <div className="flex items-center gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-white/95 backdrop-blur-sm text-black border border-gray-300 focus:border-gray-500 focus:ring-0">
+              <SelectTrigger className="w-[180px] bg-custom-green backdrop-blur-sm text-white  ">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200">
@@ -195,7 +195,7 @@ export default function PurchaseOrdersPage() {
               </SelectContent>
             </Select>
             <Link href="/admin/purchase-orders/create">
-              <Button className="bg-green-600 hover:bg-green-700">
+              <Button className="bg-custom-orange hover:bg-custom-orange/80 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 New Purchase Order
               </Button>
@@ -236,17 +236,17 @@ export default function PurchaseOrdersPage() {
 
         {/* Table */}
         <TooltipProvider delayDuration={100}>
-          <div className="overflow-hidden rounded-xl border bg-black text-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-900">
-                  <TableHead className="text-white">ID</TableHead>
-                  <TableHead className="text-white">Supplier</TableHead>
-                  <TableHead className="text-white">Order Date</TableHead>
-                  <TableHead className="text-white">Items</TableHead>
-                  <TableHead className="text-white">Total</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white text-right">Actions</TableHead>
+                <TableRow className="bg-custom-white">
+                  <TableHead className="text-black">ID</TableHead>
+                  <TableHead className="text-black">Supplier</TableHead>
+                  <TableHead className="text-black">Order Date</TableHead>
+                  <TableHead className="text-black">Items</TableHead>
+                  <TableHead className="text-black">Total</TableHead>
+                  <TableHead className="text-black">Status</TableHead>
+                  <TableHead className="text-black text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

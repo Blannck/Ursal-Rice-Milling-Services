@@ -154,26 +154,26 @@ export  default async function HomePage() {
   return (
     <div className="min-h-screen ">
       {/* Stats Section */}
-      <section className="py-16  border-b">
+      <section className="py-16  ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-8 w-8 text-blue-600" />
+              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="h-8 w-8 text-black" />
               </div>
               <h3 className="text-3xl font-bold  mb-2">500+</h3>
-              <p className="">Digital Products</p>
+              <p className="">Product Sales</p>
             </div>
             <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-green-600" />
+              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-black" />
               </div>
               <h3 className="text-3xl font-bold  mb-2">100+</h3>
               <p className="">Happy Customers</p>
             </div>
             <div className="text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-purple-600" />
+              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Award className="h-8 w-8 text-black" />
               </div>
               <h3 className="text-3xl font-bold  mb-2">4.9/5</h3>
               <p className="">Average Rating</p>
@@ -182,65 +182,7 @@ export  default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-20 bg-gradient-to-br ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold  mb-4">
-              Explore Categories
-            </h2>
-            <p className="text-xl  max-w-2xl mx-auto">
-              Find exactly what you need from our carefully curated collection
-              of digital products
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {productCategories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <Link href="/products">
-
-                <Card
-                  key={category.value}
-                  className="group cursor-pointer border-[1px] border-gray-200  shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 "
-                >
-                  <CardContent className="p-8 text-center">
-                    <div
-                      className={`w-16 h-16 rounded-2xl ${category.color} flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <Icon className="h-8 w-8" />
-                    </div>
-                    <h3 className="text-xl font-semibold  mb-3 group-hover:text-blue-600 transition-colors">
-                      {category.label}
-                    </h3>
-                    <p className=" mb-6">
-                      {category.value === "code" &&
-                        "Ready-to-use code templates and projects"}
-                      {category.value === "courses" &&
-                        "Comprehensive learning materials and tutorials"}
-                      {category.value === "guides" &&
-                        "In-depth PDF guides and documentation"}
-                      {category.value === "templates" &&
-                        "Productivity and workflow templates"}
-                      {category.value === "snippets" &&
-                        "Useful code snippets and references"}
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="group-hover:bg-blue-600 group-hover: group-hover:border-blue-600 transition-all duration-300"
-                    >
-                      Explore {category.label}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                  </Card>
-                  </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+    
 
       {/* Featured Products Section */}
       <section className="py-20 ">
@@ -304,7 +246,7 @@ export  default async function HomePage() {
                       <div className="text-3xl font-bold ">
                         ₱{product.price.toLocaleString()}
                       </div>
-                      <Button className="bg-blue-600 hover:bg-blue-700  px-6 py-2 rounded-xl font-semibold">
+                      <Button className="bg-custom-orange hover:bg-custom-orange/700  px-6 py-2 rounded-xl font-semibold">
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         Add to Cart
                       </Button>

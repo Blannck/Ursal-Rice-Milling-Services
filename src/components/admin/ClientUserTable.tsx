@@ -149,7 +149,7 @@ async function deleteUser(id: string) {
             <SelectItem value="google">Google</SelectItem>
           </SelectContent>
         </Select>
-        <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="ml-auto flex items-center gap-2 text-sm text-white">
           <span>Rows per page</span>
           <Select
             value={String(rowsPerPage)}
@@ -171,9 +171,9 @@ async function deleteUser(id: string) {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border bg-background/100 shadow-sm">
+      <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
         <Table>
-          <TableHeader>
+          <TableHeader className="text-black">
             <TableRow>
               <TableHead className="w-[56px]">Avatar</TableHead>
               <TableHead>Display Name</TableHead>
