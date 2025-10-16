@@ -1,5 +1,3 @@
-// src/app/products/[slug]/page.tsx
-
 import React from "react";
 import { stackServerApp } from "@/lib/stack";
 import { getProductById } from "@/actions/product.aciton";

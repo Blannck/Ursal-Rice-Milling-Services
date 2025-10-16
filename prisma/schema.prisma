@@ -34,7 +34,7 @@ model Product {
   downloadUrl String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
+  isHidden    Boolean  @default(false)
   supplierId  String?   @db.ObjectId
   supplier    Supplier? @relation(fields: [supplierId], references: [id])
 
