@@ -28,6 +28,7 @@ import {
   Edit3,
   Trash2,
   Eye,
+  EyeOff,
   Package,
   TrendingUp,
   DollarSign,
@@ -46,8 +47,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import CreateDialog from "./CreateDialog";
 import EditDialog from "./EditDialog";
-import DeleteDialog from "./DeleteDialog";
-import { getProducts } from "@/actions/product.aciton";
+import { getProducts, toggleProductVisibility } from "@/actions/product.aciton";
 
 type Products = Awaited<ReturnType<typeof getProducts>>;
 
@@ -61,6 +61,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
   // Get unique categories for filter dropdown
   const categories = Array.from(
@@ -100,10 +101,32 @@ export default function InventoryTable({ products }: InventoryTableProps) {
 
   // Calculate stats
   const totalProducts = products?.userProducts?.length || 0;
+  const visibleProducts = products?.userProducts?.filter((p) => !p.isHidden).length || 0;
+  const hiddenProducts = totalProducts - visibleProducts;
   const totalValue =
     products?.userProducts?.reduce((sum, product) => sum + product.price, 0) ||
     0;
   const avgPrice = totalProducts > 0 ? totalValue / totalProducts : 0;
+
+  const handleToggleVisibility = async (productId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingStates((prev) => ({ ...prev, [productId]: true }));
+
+    try {
+      const result = await toggleProductVisibility(productId);
+
+      if (result.success) {
+        router.refresh();
+      } else {
+        alert(result.error || "Failed to update product visibility");
+      }
+    } catch (error) {
+      console.error("Error toggling visibility:", error);
+      alert("An error occurred while updating product visibility");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [productId]: false }));
+    }
+  };
 
   const handleProductClick = (product: any) => {
     const slugifiedName = product.name.toLowerCase().replace(/\s+/g, "-");
@@ -136,7 +159,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-sm ">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -155,13 +178,11 @@ export default function InventoryTable({ products }: InventoryTableProps) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium ">Total Value</p>
-                  <p className="text-3xl font-bold ">
-                    ₱{totalValue.toLocaleString()}
-                  </p>
+                  <p className="text-sm font-medium ">Visible</p>
+                  <p className="text-3xl font-bold text-green-600">{visibleProducts}</p>
                 </div>
                 <div className="bg-green-100 p-3 rounded-full">
-                  <DollarSign className="h-6 w-6 text-green-600" />
+                  <Eye className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
@@ -171,13 +192,27 @@ export default function InventoryTable({ products }: InventoryTableProps) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium ">Average Price</p>
+                  <p className="text-sm font-medium ">Hidden</p>
+                  <p className="text-3xl font-bold text-orange-600">{hiddenProducts}</p>
+                </div>
+                <div className="bg-orange-100 p-3 rounded-full">
+                  <EyeOff className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm ">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium ">Total Value</p>
                   <p className="text-3xl font-bold ">
-                    ₱{avgPrice.toLocaleString()}
+                    ₱{totalValue.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-purple-100 p-3 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                  <DollarSign className="h-6 w-6 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -274,6 +309,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                       <TableHead className="font-semibold text-black">Product</TableHead>
                       <TableHead className="font-semibold  text-black ">Category</TableHead>
                       <TableHead className="font-semibold   text-black">Price</TableHead>
+                      <TableHead className="font-semibold text-black">Status</TableHead>
                       <TableHead className="font-semibold    text-black">Created</TableHead>
                       <TableHead className="font-semibold  text-black ">
                         Download Url
@@ -303,9 +339,6 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="font-semibold  truncate">
-                                {product.name}
-                              </p>
                               <p className="text-sm text-gray-500 truncate">
                                 ID: {product.id.slice(0, 8)}...
                               </p>
@@ -320,12 +353,17 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         <TableCell className="font-semibold ">
                           ₱{product.price.toLocaleString()}
                         </TableCell>
+                        <TableCell>
+                          <Badge variant={product.isHidden ? "destructive" : "default"}>
+                            {product.isHidden ? "Hidden" : "Visible"}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="">
                           {formatDate(product.createdAt)}
                         </TableCell>
                         <TableCell className="text-xs text-blue-700 break-all whitespace-normal max-w-xs">
                           {product.downloadUrl || "No URL"}
-                        </TableCell>{" "}
+                        </TableCell>
                         <TableCell className="text-right">
                           <div
                             className="flex items-center justify-end gap-2"
@@ -340,7 +378,27 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               <Eye className="h-4 w-4" />
                             </Button>
                             <EditDialog product={product} />
-                            <DeleteDialog product={product} />
+                            <Button
+                              variant={product.isHidden ? "default" : "outline"}
+                              size="sm"
+                              onClick={(e) => handleToggleVisibility(product.id, e)}
+                              disabled={loadingStates[product.id]}
+                              className="h-8 px-3"
+                            >
+                              {loadingStates[product.id] ? (
+                                "..."
+                              ) : product.isHidden ? (
+                                <>
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  Show
+                                </>
+                              ) : (
+                                <>
+                                  <EyeOff className="h-4 w-4 mr-1" />
+                                  Hide
+                                </>
+                              )}
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -371,50 +429,21 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
+                      {/* Status Badge */}
+                      <Badge
+                        variant={product.isHidden ? "destructive" : "default"}
+                        className="absolute top-3 left-3"
+                      >
+                        {product.isHidden ? "Hidden" : "Visible"}
+                      </Badge>
+
                       {/* Category Badge */}
                       <Badge
                         variant="secondary"
-                        className="absolute top-3 left-3 /90 text-gray-700 border-0"
+                        className="absolute top-3 right-3 /90 text-gray-700 border-0"
                       >
                         {product.category}
                       </Badge>
-
-                      {/* Actions Menu */}
-                      <div
-                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              className="h-8 w-8 p-0 /90 hover:"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleProductClick(product)}
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Product
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit3 className="mr-2 h-4 w-4" />
-                              Edit Product
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600">
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete Product
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
                     </div>
 
                     {/* Product Info */}
@@ -447,7 +476,27 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <EditDialog product={product} />
-                        <DeleteDialog product={product} />
+                        <Button
+                          variant={product.isHidden ? "default" : "outline"}
+                          size="sm"
+                          onClick={(e) => handleToggleVisibility(product.id, e)}
+                          disabled={loadingStates[product.id]}
+                          className="flex-1"
+                        >
+                          {loadingStates[product.id] ? (
+                            "Loading..."
+                          ) : product.isHidden ? (
+                            <>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Show
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="h-4 w-4 mr-2" />
+                              Hide
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

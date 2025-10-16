@@ -1,10 +1,11 @@
+// src/app/products/[slug]/page.tsx
+
 import React from "react";
 import { stackServerApp } from "@/lib/stack";
-import { SignIn } from "@stackframe/stack";
 import { getProductById } from "@/actions/product.aciton";
 import ProductCard from "./ProductCard";
+import { notFound } from "next/navigation";
 
-// 🧠 Dynamic metadata generation for SEO
 export async function generateMetadata({
   params,
 }: {
@@ -25,6 +26,17 @@ async function Page({ params }: { params: { slug: string } }) {
   const product = await getProductById(id);
 
   if (!product) throw new Error("Product not found");
+  
+  // Check if product is hidden and user is not admin
+  const adminId = process.env.ADMIN_ID;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const isAdmin = user && user.id === adminId && user.primaryEmail === adminEmail;
+  
+  // If product is hidden and user is not admin, show 404
+  if (product.isHidden && !isAdmin) {
+    return notFound();
+  }
+
   const safeProduct = product
     ? {
         ...product,

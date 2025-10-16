@@ -34,27 +34,54 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     await assertAdmin();
-    const { name, email, phone, address, note, isActive, productIds } = await req.json();
+    const body = await req.json();
+    const { name, email, phone, address, note, isActive, productIds } = body;
 
-    if (!name?.trim()) {
-      return NextResponse.json({ ok: false, error: "Name Required" }, { status: 400 });
-    }
-
-    // Update supplier
-    const updated = await prisma.supplier.update({
+    // Check if supplier exists
+    const existing = await prisma.supplier.findUnique({
       where: { id: params.id },
-      data: {
-        name: name.trim(),
-        email: email?.trim() || null,
-        phone: phone?.trim() || null,
-        address: address?.trim() || null,
-        note: note?.trim() || null,
-        isActive: typeof isActive === "boolean" ? isActive : true,
-      },
     });
 
-    // Handle product associations if provided
-    if (productIds && Array.isArray(productIds)) {
+    if (!existing) {
+      return NextResponse.json(
+        { ok: false, error: "Supplier not found" },
+        { status: 404 }
+      );
+    }
+
+    // Build update data object (only include fields that are provided)
+    const updateData: any = {};
+    
+    // Only validate and update name if it's provided
+    if (name !== undefined) {
+      if (!name?.trim()) {
+        return NextResponse.json(
+          { ok: false, error: "Name Required" },
+          { status: 400 }
+        );
+      }
+      updateData.name = name.trim();
+    }
+    
+    // Only update other fields if they're provided
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone !== undefined) updateData.phone = phone?.trim() || null;
+    if (address !== undefined) updateData.address = address?.trim() || null;
+    if (note !== undefined) updateData.note = note?.trim() || null;
+    
+    // Handle isActive toggle - this is the key for activate/deactivate
+    if (typeof isActive === "boolean") {
+      updateData.isActive = isActive;
+    }
+
+    // Update supplier with only the provided fields
+    const updated = await prisma.supplier.update({
+      where: { id: params.id },
+      data: updateData,
+    });
+
+    // Handle product associations only if productIds is provided
+    if (productIds !== undefined && Array.isArray(productIds)) {
       // First, remove this supplier from all products that were previously associated
       await prisma.product.updateMany({
         where: {

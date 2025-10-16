@@ -14,10 +14,10 @@ import {
   ClipboardList,
   LogOut,
   FileText,
+  Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
-import ModeToggle from "@/components/ModeTogggle";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -74,10 +74,9 @@ export default function AdminSidebar({ user, app }: Props) {
   return (
     <aside
       className={cn(
-        "fixed   h-screen left-0 z-40 flex-1  bg-custom-green drop-shadow-md transition-shadow flex flex-col   ",
-        
+        "fixed h-screen left-0 z-40 flex-1 bg-custom-green drop-shadow-md transition-shadow flex flex-col",
+        collapsed ? "w-16" : "w-64"
       )}
-      
     >
       {/* Brand + Collapse Button */}
       <div className="flex items-center justify-between px-3 py-4 border-b border-white/20">
@@ -109,111 +108,115 @@ export default function AdminSidebar({ user, app }: Props) {
         </Button>
       </div>
 
-      {/* Mode toggle */}
-      
-
       {/* Navigation */}
-     
-        <div className=" px-2  my-3">  
-        <NavItem
-          
-          href="/"
-          label="Home"
-          icon={HomeIcon}
-          active={pathname === "/"}
-          collapsed={collapsed}
-        />
+      <div className="flex-1 overflow-y-auto py-4">
+        {/* Public Section */}
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/"
+            label="Home"
+            icon={HomeIcon}
+            active={pathname === "/"}
+            collapsed={collapsed}
+          />
         </div>
-        <div className=" px-2   mb-3">  
-        <NavItem
-          href="/products"
-          label="Products"
-          icon={Package}
-          active={pathname.startsWith("/products")}
-          collapsed={collapsed}
-        />
-          </div>
-           <div className=" px-2 mb-3">  
-        <NavItem
-          href="/cart"
-          label="Cart"
-          icon={ShoppingCart}
-          active={pathname.startsWith("/cart")}
-          collapsed={collapsed}
-        />
-          </div>
-           <div className=" px-2 mb-3">  
-        <NavItem
-          href="/orders"
-          label="Orders"
-          icon={ClipboardList}
-          active={pathname.startsWith("/orders")}
-          collapsed={collapsed}
-        />
-          </div>
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/products"
+            label="Products"
+            icon={Package}
+            active={pathname.startsWith("/products")}
+            collapsed={collapsed}
+          />
+        </div>
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/cart"
+            label="Cart"
+            icon={ShoppingCart}
+            active={pathname.startsWith("/cart")}
+            collapsed={collapsed}
+          />
+        </div>
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/orders"
+            label="Orders"
+            icon={ClipboardList}
+            active={pathname.startsWith("/orders")}
+            collapsed={collapsed}
+          />
+        </div>
 
         {/* Admin Section */}
         <div
           className={cn(
-            "pt-4 text-xs font-semibold text-white/70",
-            collapsed ? "text-center" : "px-2"
+            "pt-4 pb-2 text-xs font-semibold text-white/70 border-t border-white/10 mt-4",
+            collapsed ? "text-center px-0" : "px-4"
           )}
         >
-          {!collapsed && "Admin"}
+          {!collapsed && "ADMIN"}
         </div>
-        <div className=" px-2 mb-3 mt-3">  
-        <NavItem
-          href="/admin/myproducts"
-          label="Manage Products"
-          icon={Settings}
-          active={pathname.startsWith("/admin/myproducts")}
-          collapsed={collapsed}
-        />
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/myproducts"
+            label="Manage Products"
+            icon={Settings}
+            active={pathname.startsWith("/admin/myproducts")}
+            collapsed={collapsed}
+          />
         </div>
-        <div className=" px-2  mb-3">  
-        <NavItem
-          href="/admin/users"
-          label="Manage Supplier & Users"
-          icon={UsersIcon}
-          active={
-            pathname.startsWith("/admin/users") ||
-            pathname.startsWith("/admin/suppliers")
-          }
-          collapsed={collapsed}
-        />
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/users"
+            label="Manage Users"
+            icon={UsersIcon}
+            active={pathname.startsWith("/admin/users")}
+            collapsed={collapsed}
+          />
         </div>
-        <div className=" px-2 mb-3">
-        <NavItem
-          href="/admin/purchase-orders"
-          label="Manage Purchase Orders"
-          icon={FileText}
-          active={pathname.startsWith("/admin/purchase-orders")}
-          collapsed={collapsed}
-        />
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/suppliers"
+            label="Manage Suppliers"
+            icon={Truck}
+            active={pathname.startsWith("/admin/suppliers")}
+            collapsed={collapsed}
+          />
         </div>
-      
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/purchase-orders"
+            label="Purchase Orders"
+            icon={FileText}
+            active={pathname.startsWith("/admin/purchase-orders")}
+            collapsed={collapsed}
+          />
+        </div>
+      </div>
 
       {/* User Footer */}
-    
-      <div className="bottom-20  mt-auto ">
-      <div className="  px-3 flex items-center gap-3 text-white mb-5">
-        <UserButton />
-        {!collapsed && (
-          <div className="flex flex-col min-w-0">
-            <span className="truncate text-sm font-medium">{name}</span>
-            <Link
-              href={app.signOut}
-              className="flex items-center gap-1 text-xs text-white/80 hover:underline"
-            >
-              <LogOut className="h-3.5 w-3.5 underline-offset-1 " />
-              Sign out
-            </Link>
-          </div>
-        )}
+      <div className="mt-auto border-t border-white/10">
+        <div className="px-3 py-4 flex items-center gap-3 text-white">
+          <UserButton />
+          {!collapsed && (
+            <div className="flex flex-col min-w-0">
+              <span className="truncate text-sm font-medium">{name}</span>
+              <Link
+                href={app.signOut}
+                className="flex items-center gap-1 text-xs text-white/80 hover:underline"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                Sign out
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
-      </div>
-      
-      
     </aside>
   );
 }

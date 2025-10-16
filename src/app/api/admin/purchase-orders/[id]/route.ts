@@ -5,76 +5,36 @@ import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/admin";
 
 // GET Request to fetch a specific purchase order by ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    await assertAdmin();
-
-    const purchaseOrder = await prisma.purchaseOrder.findUnique({
-      where: { id: params.id },
-      include: {
-        supplier: true,
-        items: { 
-          include: { 
-            product: true 
-          } 
-        },
-      },
-    });
-
-    if (!purchaseOrder) {
-      return NextResponse.json(
-        { ok: false, error: "Purchase order not found" },
-        { status: 404 }
-      );
-    }
-
-    // Return consistent format for both success and purchaseOrder
-    return NextResponse.json({ 
-      success: true, 
-      ok: true,
-      purchaseOrder 
-    });
-  } catch (error) {
-    console.error("Error fetching purchase order:", error);
-    return NextResponse.json(
-      { success: false, ok: false, error: "Failed to fetch purchase order" },
-      { status: 500 }
-    );
-  }
-}
-
-// PUT Request to update a specific purchase order by ID
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await assertAdmin();
-    const { status, note, items } = await request.json();
+    const { status, note, items, invoiceNumber, invoiceDate, expectedDate } = await request.json();
 
-    console.log("Updating purchase order:", params.id, { status, note, itemsCount: items?.length });
-
-    // Update purchase order
     const updatedOrder = await prisma.$transaction(async (tx) => {
       const order = await tx.purchaseOrder.update({
         where: { id: params.id },
         data: {
           status,
           note,
+          invoiceNumber,
+          invoiceDate: invoiceDate ? new Date(invoiceDate) : undefined,
+          expectedDate: expectedDate ? new Date(expectedDate) : undefined,
         },
       });
 
-      // If items are provided, update them
       if (items && Array.isArray(items)) {
-        // Delete existing items
         await tx.purchaseOrderItem.deleteMany({
           where: { purchaseOrderId: params.id },
         });
 
-        // Create new items
         if (items.length > 0) {
           await tx.purchaseOrderItem.createMany({
             data: items.map((item: any) => ({
               purchaseOrderId: params.id,
               productId: item.productId,
               quantity: Number(item.quantity),
+              receivedQuantity: Number(item.receivedQuantity) || 0,
+              backorderQuantity: Number(item.backorderQuantity) || Number(item.quantity),
               price: Number(item.price),
             })),
           });
@@ -84,7 +44,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return order;
     });
 
-    // Fetch updated order with relations
     const purchaseOrder = await prisma.purchaseOrder.findUnique({
       where: { id: params.id },
       include: {
@@ -101,43 +60,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       ok: true,
       success: true,
       data: { purchaseOrder },
-      purchaseOrder, // For backward compatibility
+      purchaseOrder,
     });
   } catch (error) {
     console.error("Error updating purchase order:", error);
     return NextResponse.json(
       { success: false, ok: false, error: "Failed to update purchase order" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE Request to delete a specific purchase order by ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    await assertAdmin();
-
-    await prisma.$transaction(async (tx) => {
-      // Delete items first (due to foreign key constraint)
-      await tx.purchaseOrderItem.deleteMany({
-        where: { purchaseOrderId: params.id },
-      });
-
-      // Delete the purchase order
-      await tx.purchaseOrder.delete({
-        where: { id: params.id },
-      });
-    });
-
-    return NextResponse.json({
-      ok: true,
-      success: true,
-      data: { message: "Purchase order deleted successfully" },
-    });
-  } catch (error) {
-    console.error("Error deleting purchase order:", error);
-    return NextResponse.json(
-      { success: false, ok: false, error: "Failed to delete purchase order" },
       { status: 500 }
     );
   }

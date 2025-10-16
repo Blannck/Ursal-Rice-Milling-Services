@@ -1,4 +1,6 @@
-import { getProducts } from "@/actions/product.aciton";
+// src/app/products/page.tsx
+
+import { getVisibleProducts } from "@/actions/product.aciton";
 import CardList from "@/components/CardList";
 import Spinner from "@/components/Spinner";
 import { stackServerApp } from "@/lib/stack";
@@ -6,7 +8,7 @@ import React, { Suspense } from "react";
 
 async function page() {
   const user = await stackServerApp.getUser();
-  const products = await getProducts();
+  const products = await getVisibleProducts();
 
   return (
     <>

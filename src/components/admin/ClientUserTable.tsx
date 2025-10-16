@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal, Lock, Ban, UserX } from "lucide-react";
+import { Power, Ban, Eye, MoreHorizontal } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -22,13 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface UserRow {
   id: string;
@@ -73,7 +73,8 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const paged = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  async function toggleDeactivate(id: string) {
+  async function toggleDeactivate(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
     const res = await fetch(`/api/admin/users/deactivate/${id}`, { method: "POST" });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
@@ -83,28 +84,21 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
     location.reload();
   }
 
-
-  async function toggleBlock(id: string) {
-  const res = await fetch(`/api/admin/users/block/${id}`, { method: "POST" });
-  if (!res.ok) {
-    const j = await res.json().catch(() => ({}));
-    alert(`Failed to toggle block${j?.error ? ": " + j.error : ""}`);
-    return;
+  async function toggleBlock(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    const res = await fetch(`/api/admin/users/block/${id}`, { method: "POST" });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      alert(`Failed to toggle block${j?.error ? ": " + j.error : ""}`);
+      return;
+    }
+    location.reload();
   }
-  location.reload();
-}
 
-async function deleteUser(id: string) {
-  if (!confirm("Delete this user and their data? This cannot be undone.")) return;
-  const res = await fetch(`/api/admin/users/delete/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const j = await res.json().catch(() => ({}));
-    alert(`Failed to delete user${j?.error ? ": " + j.error : ""}`);
-    return;
+  function viewDetails(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    router.push(`/admin/users/${id}`);
   }
-  location.reload();
-}
-
 
   return (
     <div className="space-y-4">
@@ -112,7 +106,7 @@ async function deleteUser(id: string) {
       <div className="flex flex-wrap items-center gap-3">
         <div className="w-full max-w-sm">
           <Input
-            placeholder="Search table"
+            placeholder="Search users..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -149,7 +143,7 @@ async function deleteUser(id: string) {
             <SelectItem value="google">Google</SelectItem>
           </SelectContent>
         </Select>
-        <div className="ml-auto flex items-center gap-2 text-sm text-white">
+        <div className="ml-auto flex items-center gap-2 text-sm">
           <span>Rows per page</span>
           <Select
             value={String(rowsPerPage)}
@@ -188,9 +182,11 @@ async function deleteUser(id: string) {
             {paged.map((u) => {
               const letter = (u.primaryEmail?.[0] ?? "?").toUpperCase();
               const blocked = !!u.blockedAt;
+              const isDeactivated = u.status === "DEACTIVATED";
+              
               const statusBadge = blocked ? (
                 <Badge variant="destructive">Blocked</Badge>
-              ) : u.status === "DEACTIVATED" ? (
+              ) : isDeactivated ? (
                 <Badge variant="secondary">Deactivated</Badge>
               ) : (
                 <Badge>Active</Badge>
@@ -199,7 +195,7 @@ async function deleteUser(id: string) {
               return (
                 <TableRow
                   key={u.id}
-                  className="cursor-pointer hover:bg-muted/40"
+                  className="cursor-pointer hover:bg-gray-900/60"
                   onClick={() => router.push(`/admin/users/${u.id}`)}
                 >
                   <TableCell>
@@ -223,6 +219,8 @@ async function deleteUser(id: string) {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       {statusBadge}
+                      
+                      {/* Dropdown Menu with ... */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -234,35 +232,24 @@ async function deleteUser(id: string) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Manage</DropdownMenuLabel>
                           <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleDeactivate(u.id);
-                            }}
+                            onClick={(e) => viewDetails(u.id, e)}
                           >
-                            <Lock className="mr-2 h-4 w-4" />
-                            {u.status === "DEACTIVATED"
-                              ? "Activate"
-                              : "Deactivate"}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleBlock(u.id);
-                            }}
-                          >
-                            <Ban className="mr-2 h-4 w-4" />
-                            {u.blockedAt ? "Unblock" : "Block"}
+                            <Eye className="mr-2 h-4 w-4" />
+                            View details
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/admin/users/${u.id}`);
-                            }}
+                            onClick={(e) => toggleDeactivate(u.id, e)}
                           >
-                            <UserX className="mr-2 h-4 w-4" /> View details
+                            <Power className="mr-2 h-4 w-4" />
+                            {isDeactivated ? "Activate" : "Deactivate"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => toggleBlock(u.id, e)}
+                          >
+                            <Ban className="mr-2 h-4 w-4" />
+                            {blocked ? "Unblock" : "Block"}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -271,6 +258,13 @@ async function deleteUser(id: string) {
                 </TableRow>
               );
             })}
+            {paged.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="py-8 text-center text-gray-400">
+                  No users found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

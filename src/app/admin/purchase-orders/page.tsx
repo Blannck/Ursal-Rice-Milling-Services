@@ -20,14 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MoreHorizontal, Eye, Edit, Trash } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { Plus, Eye, Edit } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -125,28 +118,6 @@ export default function PurchaseOrdersPage() {
     return () => clearTimeout(timer);
   }, [searchTerm, statusFilter]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this purchase order?")) return;
-    
-    try {
-      const response = await fetch(`/api/admin/purchase-orders/${id}`, {
-        method: "DELETE",
-      });
-      
-      if (response.ok) {
-        // Remove from local state immediately
-        setPurchaseOrders((prev) => prev.filter((order) => order.id !== id));
-        console.log("Purchase order deleted successfully");
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Failed to delete purchase order");
-      }
-    } catch (error) {
-      console.error("Error deleting purchase order:", error);
-      alert("Failed to delete purchase order");
-    }
-  };
-
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "Pending":
@@ -179,7 +150,7 @@ export default function PurchaseOrdersPage() {
           </div>
           <div className="flex items-center gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-custom-green backdrop-blur-sm text-white  ">
+              <SelectTrigger className="w-[180px] bg-custom-green backdrop-blur-sm text-white">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent className="bg-white/95 backdrop-blur-sm border border-gray-200">
@@ -323,52 +294,28 @@ export default function PurchaseOrdersPage() {
 
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="bg-white border border-gray-200"
-                          >
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.location.href = `/admin/purchase-orders/${order.id}`;
-                              }}
-                              className="text-black hover:bg-gray-100"
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.location.href = `/admin/purchase-orders/${order.id}/edit`;
-                              }}
-                              className="text-black hover:bg-gray-100"
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(order.id);
-                              }}
-                              className="text-red-600 hover:bg-gray-100"
-                            >
-                              <Trash className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/admin/purchase-orders/${order.id}`;
+                          }}
+                          title="View details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/admin/purchase-orders/${order.id}/edit`;
+                          }}
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -416,20 +363,6 @@ export default function PurchaseOrdersPage() {
             </Button>
           </div>
         )}
-
-        {/* Debug Info (remove in production) */}
-         {/* process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-gray-800 rounded-lg text-xs text-gray-300">
-            <p>Debug Info:</p>
-            <p>Loading: {loading.toString()}</p>
-            <p>Error: {error || 'None'}</p>
-            <p>Purchase Orders Count: {purchaseOrders.length}</p>
-            <p>Current Page: {currentPage}</p>
-            <p>Total Pages: {totalPages}</p>
-            <p>Search Term: "{searchTerm}"</p>
-            <p>Status Filter: {statusFilter}</p>
-          </div>
-        ) */} 
       </div>
     </div>
   );

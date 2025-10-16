@@ -8,17 +8,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MoreHorizontal, Edit3, Trash2, Plus, Search } from "lucide-react";
+import { Plus, Search, Edit, Power, MoreHorizontal, Eye } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Supplier = {
   id: string;
@@ -122,7 +126,8 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
     setOpen(true);
   }
 
-  async function startEdit(s: Supplier) {
+  async function startEdit(s: Supplier, e: React.MouseEvent) {
+    e.stopPropagation();
     setEditing(s);
     setSelectedProducts([]);
     setProductSearch("");
@@ -160,7 +165,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       address: editing.address,
       note: editing.note,
       isActive: editing.isActive,
-      productIds: selectedProducts, // Include selected products
+      productIds: selectedProducts,
     };
 
     if (!editing.id) {
@@ -181,15 +186,27 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       if (!res.ok || !j.ok) return alert(j.error || "Update failed");
     }
     setOpen(false);
-    router.refresh(); // quick refetch
+    router.refresh();
   }
 
-  async function remove(id: string) {
-    if (!confirm("Delete this supplier?")) return;
-    const res = await fetch(`/api/admin/suppliers/${id}`, { method: "DELETE" });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok || !j.ok) return alert(j.error || "Delete failed");
+  async function toggleActive(id: string, currentStatus: boolean, e: React.MouseEvent) {
+    e.stopPropagation();
+    const res = await fetch(`/api/admin/suppliers/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: !currentStatus }),
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) {
+      alert(j.error || "Failed to toggle status");
+      return;
+    }
     router.refresh();
+  }
+
+  function viewDetails(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    router.push(`/admin/suppliers/${id}`);
   }
 
   return (
@@ -202,7 +219,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
         <Select value={status} onValueChange={(v) => { setPage(1); setStatus(v); }}>
           <SelectTrigger className="w-[180px]"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Status</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="inactive">Inactive</SelectItem>
           </SelectContent>
@@ -220,7 +237,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-custom-white ">
+            <TableRow className="bg-custom-white">
               <TableHead className="text-black">Name</TableHead>
               <TableHead className="text-black">Email</TableHead>
               <TableHead className="text-black">Phone</TableHead>
@@ -243,22 +260,37 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                   <TableCell>{statusBadge}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
+                      {/* Dropdown Menu with ... */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Manage</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); startEdit(s); }}>
-                            <Edit3 className="mr-2 h-4 w-4" />
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={(e) => viewDetails(s.id, e)}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => startEdit(s, e)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); remove(s.id); }}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                          <DropdownMenuItem
+                            onClick={(e) => toggleActive(s.id, s.isActive, e)}
+                          >
+                            <Power className="mr-2 h-4 w-4" />
+                            {s.isActive ? "Deactivate" : "Activate"}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -313,15 +345,8 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                     type="tel"
                     value={editing.phone || ""} 
                     onChange={(e) => {
-                      // Only allow numbers, spaces, hyphens, parentheses, and plus sign
                       const value = e.target.value.replace(/[^0-9\s\-\(\)\+]/g, '');
                       setEditing({ ...editing, phone: value });
-                    }}
-                    onKeyPress={(e) => {
-                      // Prevent non-numeric characters from being typed (except allowed special chars)
-                      if (!/[0-9\s\-\(\)\+]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                        e.preventDefault();
-                      }
                     }}
                   />
                 </div>
@@ -370,7 +395,6 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                   ) : (
                     filteredProducts.map((product) => {
                       const isSelected = selectedProducts.includes(product.id);
-                      const hasOtherSupplier = product.supplierId && product.supplierId !== editing?.id;
                       
                       return (
                         <div key={product.id} className="flex items-center space-x-3 p-3 hover:bg-gray-600 border-b last:border-b-0">
@@ -383,10 +407,6 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                             <div className="font-medium text-sm">{product.name}</div>
                             <div className="text-xs text-muted-foreground">
                               {product.category} • ₱{product.price.toFixed(2)}
-                              {hasOtherSupplier && product.supplier?.name && (
-                                <span className="ml-2 text-blue-600">
-                                </span>
-                              )}
                               {isSelected && editing?.id && (
                                 <span className="ml-2 text-green-600">
                                   • Will be associated
