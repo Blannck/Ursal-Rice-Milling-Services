@@ -349,7 +349,7 @@ if (data?.ok || data?.success) {
                       </div>
                       
                       <div>
-                        <Label>Kilos</Label>
+                        <Label>Ordered</Label>
                         <Input
                           type="number"
                           min="1"

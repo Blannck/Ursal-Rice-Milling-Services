@@ -69,13 +69,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         });
 
         // Create new items
-        if (items.length > 0) {
-          await tx.purchaseOrderItem.createMany({
-            data: items.map((item: any) => ({
-              purchaseOrderId: params.id,
-              productId: item.productId,
-              quantity: Number(item.quantity),
-              price: Number(item.price),
+        if (items && Array.isArray(items)) {
+  await tx.purchaseOrderItem.deleteMany({
+    where: { purchaseOrderId: params.id },
+  })
+
+  await tx.purchaseOrderItem.createMany({
+    data: items.map((item: any) => ({
+      purchaseOrderId: params.id,
+      productId: item.productId,
+      orderedQty: Number(item.quantity), 
+      price: Number(item.price),
             })),
           });
         }

@@ -401,7 +401,7 @@ export default function PurchaseOrderEditPage() {
                       <TableRow>
                         <TableHead>Product</TableHead>
                         <TableHead>Category</TableHead>
-                        <TableHead>Qty</TableHead>
+                        <TableHead>Ordered</TableHead>
                         <TableHead>Price</TableHead>
                         <TableHead>Total</TableHead>
                         <TableHead>Actions</TableHead>

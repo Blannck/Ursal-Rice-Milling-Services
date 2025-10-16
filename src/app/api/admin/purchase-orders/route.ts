@@ -38,73 +38,100 @@ export async function GET(request: Request) {
 
     console.log("Total count:", totalCount, "Total pages:", totalPages);
 
-    // First, let's get purchase orders without the problematic product relation
+
     const purchaseOrdersRaw = await prisma.purchaseOrder.findMany({
-      where,
-      include: {
-        supplier: { 
-          select: { name: true, email: true } 
-        }, 
-        items: {
-          select: {
-            id: true,
-            productId: true,
-            quantity: true,
-            price: true,
-          }
+  where,
+  include: {
+    supplier: { select: { name: true, email: true } },
+    items: {
+  select: {
+    id: true,
+    productId: true,
+    orderedQty: true,
+    receivedQty: true,
+    returnedQty: true,
+    price: true,
+    backorders: {
+      select: {
+        id: true,
+        quantity: true,
+        status: true,
+      },
+    },
+    returnItems: {
+      select: {
+        id: true,
+        quantity: true,
+        note: true,
+        createdAt: true,
+          },
         },
       },
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: limit,
-    });
+    },
+  },
+  orderBy: { createdAt: "desc" },
+  skip,
+  take: limit,
+});
 
-    // Now let's manually fetch product information and handle missing products
-    const purchaseOrders = await Promise.all(
-      purchaseOrdersRaw.map(async (order) => {
-        const itemsWithProducts = await Promise.all(
-          order.items.map(async (item) => {
-            try {
-              const product = await prisma.product.findUnique({
-                where: { id: item.productId },
-                select: { name: true }
-              });
-              
-              return {
-                ...item,
-                product: product || { name: "Product Deleted" }
-              };
-            } catch (error) {
-              console.warn(`Error fetching product ${item.productId}:`, error);
-              return {
-                ...item,
-                product: { name: "Product Not Found" }
-              };
-            }
-          })
-        );
+   const purchaseOrders = await Promise.all(
+  purchaseOrdersRaw.map(async (order) => {
+    const itemsWithProducts = await Promise.all(
+      order.items.map(async (it) => {
+        const product = await prisma.product.findUnique({
+          where: { id: it.productId },
+          select: { name: true },
+        }).catch(() => null);
 
         return {
-          ...order,
-          items: itemsWithProducts
+          ...it,
+          product: product || { name: "Product Deleted" },
         };
       })
     );
+     const backorderLines = itemsWithProducts
+      .map((it) => it.backorders?.filter(b => b.status !== "Closed") || [])
+      .flat();
+
+    const pendingQty = itemsWithProducts.reduce(
+  (sum, it) => sum + Math.max((it.orderedQty ?? 0) - (it.receivedQty ?? 0), 0),
+  0
+);
+
+const pendingLines = itemsWithProducts.filter(
+  it => (it.receivedQty ?? 0) < (it.orderedQty ?? 0)
+).length;
+
+    const backorderQty = backorderLines.reduce((s, b) => s + (b.quantity || 0), 0);
+    const returnQty = itemsWithProducts.reduce((s, it) => s + (it.returnedQty || 0), 0);
+
+    return {
+      ...order,
+      items: itemsWithProducts,
+      meta: {
+        backorderQty: pendingQty,
+        backorderLinesCount: pendingLines,
+        returnQty,
+      },
+    };
+  })
+);
+
+
 
     console.log("Found purchase orders:", purchaseOrders.length);
 
     const res = NextResponse.json({
-      ok: true,
-      data: { 
-        purchaseOrders, 
-        totalPages, 
-        currentPage: page, 
-        totalCount 
-      },
-    });
-    
-    res.headers.set("Cache-Control", "no-store, must-revalidate");
-    return res;
+  ok: true,
+  data: {
+    purchaseOrders,
+    totalPages,
+    currentPage: page,
+    totalCount,
+  },
+});
+res.headers.set("Cache-Control", "no-store, must-revalidate");
+return res;
   } catch (e: any) {
     console.error("GET /api/admin/purchase-orders error:", e);
     return NextResponse.json(
@@ -179,15 +206,33 @@ export async function POST(request: Request) {
 
       console.log("Created order:", order.id);
 
-      // Create items with additional validation
+      
       await tx.purchaseOrderItem.createMany({
-        data: items.map((it: any) => ({
-          purchaseOrderId: order.id,
-          productId: it.productId,
-          quantity: Number(it.quantity),
-          price: Number(it.price),
-        })),
-      });
+  data: items.map((it: any) => ({
+    purchaseOrderId: order.id,
+    productId: it.productId,
+    orderedQty: Number(it.quantity),
+    price: Number(it.price),
+  })),
+})
+
+for (const it of items) {
+  const qty = Number(it.quantity)
+  await tx.product.update({
+    where: { id: it.productId },
+    data: { stockOnOrder: { increment: qty } },
+  })
+  await tx.inventoryTransaction.create({
+    data: {
+      productId: it.productId,
+      kind: "PO_ON_ORDER",
+      quantity: qty,
+      unitPrice: Number(it.price),
+      purchaseOrderId: order.id,
+      note: "Purchase Order Created",
+    },
+  })
+}
 
       console.log("Created items for order:", order.id);
 
