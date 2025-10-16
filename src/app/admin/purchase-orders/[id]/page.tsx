@@ -62,12 +62,18 @@ interface PurchaseOrder {
 export default function PurchaseOrderDetailPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
-
   const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrder | null>(null);
   const [loading, setLoading] = useState(true);
+  const [returnReason, setReturnReason] = useState("");
+  const [returnQty, setReturnQty] = useState<Record<string, number>>({});
   const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState("");
-
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attType, setAttType] = useState<string>("Invoice");
+  const [attNote, setAttNote] = useState<string>("");
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [reminding, setReminding] = useState<Record<string, boolean>>({});
   const statusOptions = [
     { value: "Pending", label: "Pending", color: "secondary" },
     { value: "Ordered", label: "Ordered", color: "default" },
@@ -94,15 +100,48 @@ const fetchBackorders = async () => {
 
 const remindBackorder = async (backorderId: string) => {
   try {
+    // mark button as busy
+    setReminding((p) => ({ ...p, [backorderId]: true }));
+
     const res = await fetch(`/api/admin/backorders/${backorderId}/remind`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}), // send an empty JSON to avoid errors
     });
-    if (res.ok) fetchBackorders();
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.ok) {
+      console.error("Failed to remind supplier:", data);
+      alert(data?.error || "Failed to remind supplier");
+      return;
+    }
+
+    // ✅ show message and keep item in list
+    alert("Sent reminder to supplier");
+
+    // ✅ update the local list instead of refetching (so it stays visible)
+    setBackorders((prev) =>
+      prev.map((b) =>
+        b.id === backorderId
+          ? {
+              ...b,
+              status: "Reminded",
+              expectedDate:
+                data?.data?.backorder?.expectedDate ?? b.expectedDate,
+            }
+          : b
+      )
+    );
   } catch (e) {
     console.error("Failed to remind supplier", e);
+    alert("Something went wrong");
+  } finally {
+    setReminding((p) => ({ ...p, [backorderId]: false }));
   }
 };
+
+
+
 
 useEffect(() => {
   if (id) fetchBackorders();
@@ -129,6 +168,56 @@ useEffect(() => {
       setLoading(false);
     }
   };
+
+const fetchAttachments = async () => {
+  try {
+    const res = await fetch(`/api/admin/purchase-orders/${id}/attachments`);
+    const data = await res.json();
+    if (data?.ok) setAttachments(data.data.attachments || []);
+  } catch (e) {
+    console.error("Failed to fetch attachments", e);
+  }
+};
+
+useEffect(() => {
+  if (id) fetchAttachments();
+}, [id]);
+
+const handleUploadAttachment = async () => {
+  if (!fileToUpload) {
+    alert("Choose an image first");
+    return;
+  }
+  try {
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", fileToUpload);
+    fd.append("type", attType.toUpperCase());
+    if (attNote) fd.append("note", attNote);
+
+    const res = await fetch(`/api/admin/purchase-orders/${id}/attachments`, {
+      method: "POST",
+      body: fd,
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data?.ok) {
+      console.error("Upload failed:", data);
+      alert(data?.error || "Failed to upload attachment");
+      return;
+    }
+
+    setFileToUpload(null);
+    setAttNote("");
+    await fetchAttachments();
+  } catch (e) {
+    console.error(e);
+    alert("Something went wrong while uploading");
+  } finally {
+    setUploading(false);
+  }
+};
+
 
   const updateStatus = async () => {
     if (!purchaseOrder || newStatus === purchaseOrder.status) return;
@@ -195,19 +284,80 @@ const handleReceive = async (itemId: string, qty: number) => {
       }),
     });
 
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("Receive failed:", err);
-      alert(err.error || "Failed to receive items.");
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.ok) {
+      console.error("Receive failed:", data);
+      alert(data?.error || "Failed to receive items.");
       return;
     }
 
-    await fetchPurchaseOrder(); 
+    // ✅ Instantly update received quantity
+    setPurchaseOrder((prev) => {
+      if (!prev) return prev;
+      const updatedItems = prev.items.map((it) =>
+        it.id === itemId
+          ? { ...it, receivedQty: (it.receivedQty ?? 0) + qty }
+          : it
+      );
+      return { ...prev, items: updatedItems };
+    });
+
+    // ✅ Instantly show latest Back Orders from server
+    if (data.data.backorders) {
+      setBackorders(data.data.backorders);
+    }
+
+    alert("Items received.");
   } catch (err) {
     console.error("Error receiving item:", err);
     alert("Something went wrong while receiving.");
   }
 };
+
+
+
+const handleSubmitReturn = async () => {
+  if (!purchaseOrder) return;
+
+  const items = purchaseOrder.items.map(it => ({
+    purchaseOrderItemId: it.id,
+    quantity: Number(returnQty[it.id] || 0),
+  }));
+
+  const hasQty = items.some(i => i.quantity > 0);
+  if (!hasQty) {
+    alert("Set at least one return quantity");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/purchase-orders/${id}/returns`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reason: returnReason,
+        items,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data?.ok) {
+      console.error("Return failed:", data);
+      alert(data?.error || "Failed to create purchase return");
+      return;
+    }
+
+    setReturnReason("");
+    setReturnQty({});
+    await fetchPurchaseOrder();
+    alert("Return submitted");
+  } catch (e) {
+    console.error(e);
+    alert("Something went wrong while submitting the return");
+  }
+};
+
 
 
   return (
@@ -441,39 +591,85 @@ const handleReceive = async (itemId: string, qty: number) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Attachments */}
               <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-900 text-lg">
-                    Attachments
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 flex-1">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Select>
-                      <SelectTrigger className="w-full sm:w-1/3 bg-white border border-gray-300">
-                        <SelectValue placeholder="Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="invoice">Invoice</SelectItem>
-                        <SelectItem value="receipt">Receipt</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      className="flex-1 bg-white border border-gray-300"
-                      placeholder="File name.ext"
-                    />
-                    <Input
-                      className="flex-1 bg-white border border-gray-300"
-                      placeholder="https://file.url"
-                    />
-                    <Button className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg">
-                      Add
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500 italic">
-                    No attachments yet
-                  </p>
-                </CardContent>
-              </Card>
+  <CardHeader className="pb-2">
+    <CardTitle className="text-amber-900 text-lg">Attachments</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4 flex-1">
+    {/* Upload controls */}
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
+      <div>
+        <label className="text-sm text-gray-700">Type</label>
+        <Select value={attType} onValueChange={setAttType}>
+          <SelectTrigger className="w-full bg-white border border-gray-300">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="invoice">Invoice</SelectItem>
+            <SelectItem value="receipt">Receipt</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="md:col-span-2">
+        <label className="text-sm text-gray-700">Image</label>
+        <Input
+          type="file"
+          accept="image/*"
+          className="bg-white border border-gray-300"
+          onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
+        />
+      </div>
+
+      <div>
+        <label className="text-sm text-gray-700">Note</label>
+        <Input
+          className="bg-white border border-gray-300"
+          placeholder="Optional note"
+          value={attNote}
+          onChange={(e) => setAttNote(e.target.value)}
+        />
+      </div>
+
+      <div className="md:col-span-4">
+        <Button
+          onClick={handleUploadAttachment}
+          disabled={!fileToUpload || uploading}
+          className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+        >
+          {uploading ? "Uploading..." : "Upload"}
+        </Button>
+      </div>
+    </div>
+
+    {/* Gallery */}
+    {attachments.length === 0 ? (
+      <p className="text-sm text-gray-500 italic">No attachments yet</p>
+    ) : (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {attachments.map((att) => (
+          <a
+            key={att.id}
+            href={att.fileUrl}
+            target="_blank"
+            className="block group"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={att.fileUrl}
+              alt={att.fileName}
+              className="h-32 w-full object-cover rounded-lg border border-amber-200"
+            />
+            <div className="mt-1 text-xs text-gray-700 truncate">
+              {att.fileName}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </CardContent>
+</Card>
+
 
               {/* Back Orders */}
               <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
@@ -488,24 +684,31 @@ const handleReceive = async (itemId: string, qty: number) => {
   ) : (
     backorders.map((b) => (
       <div key={b.id} className="flex justify-between items-center">
-        <div>
-          <p className="text-sm font-medium text-gray-800">
-            {b.purchaseOrderItem.product.name}
-          </p>
-          <p className="text-xs text-gray-600">
-            Qty: {b.quantity}{" "}
-            {b.expectedDate &&
-              `• ETA ${new Date(b.expectedDate).toLocaleDateString()}`}
-          </p>
-        </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => remindBackorder(b.id)}
-        >
-          Remind
-        </Button>
-      </div>
+  <div>
+    <p className="text-sm font-medium text-gray-800">
+      {b.purchaseOrderItem.product.name}
+    </p>
+    <p className="text-xs text-gray-600">
+      Qty: {b.quantity}
+      {b.expectedDate && ` • ETA ${new Date(b.expectedDate).toLocaleDateString()}`}
+      {b.status && ` • ${b.status}`}
+    </p>
+  </div>
+  <Button
+  size="sm"
+  variant="outline"
+  onClick={() => remindBackorder(b.id)}
+  disabled={!!reminding[b.id] || b.status === "Reminded"}
+>
+  {reminding[b.id]
+    ? "Sending..."
+    : b.status === "Reminded"
+    ? "Reminded"
+    : "Remind"}
+</Button>
+
+</div>
+
     ))
   )}
 </CardContent>
@@ -576,34 +779,55 @@ const handleReceive = async (itemId: string, qty: number) => {
 
             {/* Purchase Return */}
             <Card className="bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-amber-900 text-lg">
-                  Purchase Return
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Input
-                  placeholder="Reason for return"
-                  className="bg-white border border-gray-300"
-                />
-                {purchaseOrder.items.map((item) => (
-                  <div key={item.id}>
-                    <p className="text-sm font-medium text-gray-700 mb-1">
-                      {item.product.name} – Return up to{" "}
-                      {item.receivedQty ?? 0}
-                    </p>
-                    <Input
-                      type="number"
-                      min="0"
-                      className="w-24 bg-white border border-gray-300"
-                    />
-                  </div>
-                ))}
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg">
-                  Submit Return
-                </Button>
-              </CardContent>
-            </Card>
+  <CardHeader className="pb-2">
+    <CardTitle className="text-amber-900 text-lg">
+      Purchase Return
+    </CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <Input
+      placeholder="Reason for return"
+      className="bg-white border border-gray-300"
+      value={returnReason}
+      onChange={(e) => setReturnReason(e.target.value)}
+    />
+
+    {purchaseOrder.items.map((item) => {
+      const maxReturnable = Math.max(
+        0,
+        (item.receivedQty ?? 0) - (item.returnedQty ?? 0)
+      );
+      return (
+        <div key={item.id}>
+          <p className="text-sm font-medium text-gray-700 mb-1">
+            {item.product.name} — Return up to {maxReturnable}
+          </p>
+          <Input
+            type="number"
+            min="0"
+            max={maxReturnable}
+            className="w-24 bg-white border border-gray-300"
+            value={returnQty[item.id] ?? ""}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              setReturnQty((prev) => ({
+                ...prev,
+                [item.id]: isNaN(val) ? 0 : val,
+              }));
+            }}
+          />
+        </div>
+      );
+    })}
+    <Button
+      className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg"
+      onClick={handleSubmitReturn}
+    >
+      Submit Return
+    </Button>
+  </CardContent>
+</Card>
+
           </div>
         </div>
       </div>

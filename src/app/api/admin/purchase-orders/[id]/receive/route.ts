@@ -126,6 +126,20 @@ if (fullyReceived) {
       return true
     })
 
+    
+const backorders = await prisma.backorder.findMany({
+  where: {
+    purchaseOrderItem: { purchaseOrderId: params.id },
+    status: { in: ["Open", "Reminded"] },
+  },
+  include: {
+    purchaseOrderItem: { include: { product: true } },
+  },
+  orderBy: { createdAt: "desc" },
+});
+
+return NextResponse.json({ ok: true, data: { backorders } });
+
     return NextResponse.json({ ok: true, success: true, data: { updated: result } })
   } catch (e: any) {
     console.error(e)

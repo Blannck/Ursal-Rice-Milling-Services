@@ -109,12 +109,12 @@ export default function PurchaseOrderEditPage() {
       setStatus(po.status);
       setNote(po.note || "");
       setItems(
-        po.items.map((it) => ({
-          id: it.id,
-          productId: it.product.id,
-          product: it.product,
-          quantity: it.quantity,
-          price: it.price,
+        po.items.map((it: any) => ({
+      id: it.id,
+    productId: it.product.id,
+    product: it.product,
+    quantity: Number(it.orderedQty ?? it.quantity ?? 1),
+    price: Number(it.price ?? it.product?.price ?? 0),
         }))
       );
 
@@ -178,38 +178,46 @@ export default function PurchaseOrderEditPage() {
   }
 
   function addItem() {
-    if (!newProductId || newQty <= 0) return;
-    const product = products.find((p) => p.id === newProductId);
-    if (!product) return;
+  if (!newProductId || newQty <= 0) return;
 
-    const existing = items.findIndex((it) => it.productId === newProductId);
-    const price = newPrice ? parseFloat(newPrice) : product.price;
+  const product = products.find((p) => p.id === newProductId);
+  if (!product) return;
 
-    if (existing >= 0) {
-      // overwrite quantity and price
-      const copy = [...items];
-      copy[existing] = {
-        ...copy[existing],
-        quantity: newQty,
-        price,
+  const price = newPrice ? parseFloat(newPrice) : product.price;
+
+  setItems((prev) => {
+    const existingIndex = prev.findIndex((it) => it.productId === newProductId);
+
+    if (existingIndex >= 0) {
+      // Update existing item instead of duplicating
+      const updated = [...prev];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        quantity: Number(newQty),
+        price: Number(price),
       };
-      setItems(copy);
-    } else {
-      setItems((prev) => [
-        ...prev,
-        {
-          productId: product.id,
-          product,
-          quantity: newQty,
-          price,
-        },
-      ]);
+      return updated;
     }
 
-    setNewProductId("");
-    setNewQty(1);
-    setNewPrice("");
-  }
+    // Otherwise, add new
+    return [
+      ...prev,
+      {
+        productId: product.id,
+        product,
+        quantity: Number(newQty),
+        price: Number(price),
+      },
+    ];
+  });
+
+  // Reset input fields AFTER update
+  setNewProductId("");
+  setNewQty(1);
+  setNewPrice("");
+}
+
+
 
   async function onSave() {
     if (!order) return;
@@ -388,10 +396,10 @@ export default function PurchaseOrderEditPage() {
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <Button type="button" onClick={addItem}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Item
-                    </Button>
+                    <Button type="button" onClick={addItem} disabled={!newProductId}>
+  <Plus className="h-4 w-4 mr-2" /> Add Item
+</Button>
+
                   </div>
                 </div>
 
@@ -416,23 +424,29 @@ export default function PurchaseOrderEditPage() {
                           </TableCell>
                           <TableCell className="w-24">
                             <Input
-                              type="number"
-                              min={1}
-                              value={it.quantity}
-                              onChange={(e) => updateItemQty(it.productId, parseInt(e.target.value) || 1)}
-                            />
-                          </TableCell>
-                          <TableCell className="w-28">
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={it.price}
-                              onChange={(e) => updateItemPrice(it.productId, parseFloat(e.target.value) || 0)}
-                            />
+  type="number"
+  min={1}
+  value={Number(it.quantity) || 1}
+  onChange={(e) => updateItemQty(it.productId, parseInt(e.target.value) || 1)}
+/>
+
+<Input
+  type="number"
+  step="0.01"
+  value={Number(it.price) || 0}
+  onChange={(e) => updateItemPrice(it.productId, parseFloat(e.target.value) || 0)}
+/>
+
                           </TableCell>
                           <TableCell className="font-medium">
-                            ₱{(Number(it.quantity) * Number(it.price)).toLocaleString()}
-                          </TableCell>
+  {(() => {
+    const q = Number(it.quantity) || 0;
+    const p = Number(it.price) || 0;
+    const lineTotal = q * p;
+    return `₱${lineTotal.toLocaleString()}`;
+  })()}
+</TableCell>
+
                           <TableCell>
                             <Button
                               type="button"

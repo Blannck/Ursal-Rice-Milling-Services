@@ -8,17 +8,19 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     await assertAdmin();
 
+    const { searchParams } = new URL(request.url);
+    const statusParam = searchParams.get("status"); // e.g. "Open,Reminded"
+    const statuses = statusParam
+      ? statusParam.split(",").map(s => s.trim())
+      : ["Waiting", "Reminded"]; // default
+
     const backorders = await prisma.backorder.findMany({
       where: {
-        purchaseOrderItem: {
-          purchaseOrderId: params.id,
-        },
-        status: "Open",
+        purchaseOrderItem: { purchaseOrderId: params.id },
+        status: { in: statuses },
       },
       include: {
-        purchaseOrderItem: {
-          include: { product: true },
-        },
+        purchaseOrderItem: { include: { product: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -32,3 +34,4 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     );
   }
 }
+
