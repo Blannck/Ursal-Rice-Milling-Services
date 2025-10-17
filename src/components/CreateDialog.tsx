@@ -25,6 +25,7 @@ export default function CreateDialog() {
     description: "",
     downloadUrl: "",
     price: 1,
+    reorderPoint: 0,
     category: "",
     userId: "",
     imageUrl: "",
@@ -46,6 +47,7 @@ export default function CreateDialog() {
         description: "",
         downloadUrl: "",
         price: 1,
+        reorderPoint: 0,
         category: "",
         userId: "",
         imageUrl: "",
@@ -126,6 +128,23 @@ export default function CreateDialog() {
                 value={formData.price}
                 onChange={(e) => handleChange("price", Number(e.target.value))}
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="reorderPoint">Reorder Point</Label>
+              <Input
+                id="reorderPoint"
+                type="number"
+                min="0"
+                placeholder="Minimum stock level (default: 0)"
+                value={formData.reorderPoint}
+                onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Alert when stock falls below this level
+              </p>
             </div>
           </div>
 

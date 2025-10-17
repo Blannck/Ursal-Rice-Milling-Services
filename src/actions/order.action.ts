@@ -31,26 +31,109 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
       0
     );
 
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        email, 
-        total,
-        items: {
-          create: cartItems.map((item) => ({
-            userId,
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.product.price,
-          })),
+    console.log(`\n🛒 Creating order for ${email}`);
+    console.log(`   Total: ₱${total}, Items: ${cartItems.length}`);
+
+    // Use transaction to ensure stock deduction and order creation are atomic
+    const order = await prisma.$transaction(async (tx) => {
+      // Create the order
+      const newOrder = await tx.order.create({
+        data: {
+          userId,
+          email, 
+          total,
+          items: {
+            create: cartItems.map((item) => ({
+              userId,
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price,
+            })),
+          },
         },
-      },
-      include: {
-        items: true,
-      },
+        include: {
+          items: true,
+        },
+      });
+
+      console.log(`   ✅ Order created: #${newOrder.id.slice(0, 8)}`);
+
+      // ✅ DEDUCT STOCK FROM INVENTORY (FIFO)
+      for (const item of cartItems) {
+        let remainingToFulfill = item.quantity;
+        
+        console.log(`\n   📦 Fulfilling: ${item.product.name} x ${item.quantity}`);
+
+        // Get inventory items for this product (FIFO: oldest first)
+        const inventoryItems = await tx.inventoryItem.findMany({
+          where: {
+            productId: item.productId,
+            quantity: { gt: 0 },
+          },
+          include: { location: true },
+          orderBy: { createdAt: 'asc' }, // FIFO
+        });
+
+        if (inventoryItems.length === 0) {
+          throw new Error(`No inventory available for ${item.product.name}`);
+        }
+
+        // Check if we have enough total stock
+        const totalAvailable = inventoryItems.reduce((sum, inv) => sum + inv.quantity, 0);
+        if (totalAvailable < remainingToFulfill) {
+          throw new Error(
+            `Insufficient stock for ${item.product.name}. Available: ${totalAvailable}, Needed: ${remainingToFulfill}`
+          );
+        }
+
+        // Deduct from inventory locations (FIFO)
+        for (const inventoryItem of inventoryItems) {
+          if (remainingToFulfill <= 0) break;
+
+          const toDeduct = Math.min(inventoryItem.quantity, remainingToFulfill);
+
+          // Update inventory item
+          await tx.inventoryItem.update({
+            where: { id: inventoryItem.id },
+            data: { quantity: inventoryItem.quantity - toDeduct },
+          });
+
+          // Create STOCK_OUT transaction
+          await tx.inventoryTransaction.create({
+            data: {
+              productId: item.productId,
+              locationId: inventoryItem.locationId,
+              kind: 'STOCK_OUT',
+              quantity: toDeduct,
+              unitPrice: item.product.price,
+              note: `Order fulfillment #${newOrder.id.slice(0, 8)} for ${email}`,
+              createdBy: userId,
+            },
+          });
+
+          console.log(`      ✅ Deducted ${toDeduct} from ${inventoryItem.location.name}`);
+
+          remainingToFulfill -= toDeduct;
+        }
+
+        // Update product stockOnHand
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stockOnHand: { decrement: item.quantity },
+            stockAllocated: { increment: item.quantity },
+          },
+        });
+
+        console.log(`      📊 Product stockOnHand decreased by ${item.quantity}`);
+      }
+
+      console.log(`\n   🎉 Order fulfilled successfully!\n`);
+
+      return newOrder;
     });
 
-    // Optional: Clear only selected items from the cart
+    // Clear only selected items from the cart
     await prisma.cartItem.deleteMany({
       where: {
         userId,
@@ -59,9 +142,12 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
     });
 
     revalidatePath("/orders");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/transactions");
+    
     return order;
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("❌ Error creating order:", error);
     throw error;
   }
 }

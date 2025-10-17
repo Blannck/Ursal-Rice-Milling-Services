@@ -42,6 +42,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [checkingOut, setCheckingOut] = useState(false);
 
   function toggleSelect(id: string) {
     setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -314,6 +315,27 @@ export default function CartTable({ cartItems }: CartTableProps) {
                         </div>
                       </div>
                     </div>
+
+                    {/* Simple Checkout Button */}
+                    <Button
+                      onClick={async () => {
+                        try {
+                          setCheckingOut(true);
+                          const { createOrderFromCart } = await import("@/actions/order.action");
+                          await createOrderFromCart(selectedCartItemIds);
+                          toast.success("Order placed successfully! Inventory updated.");
+                          router.push("/orders");
+                        } catch (error: any) {
+                          toast.error(error.message || "Failed to place order");
+                        } finally {
+                          setCheckingOut(false);
+                        }
+                      }}
+                      disabled={checkingOut}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white mb-2"
+                    >
+                      {checkingOut ? "Processing..." : "Place Order (Simple Checkout)"}
+                    </Button>
 
                     <PayPalCheckout
                       total={selectedSummary.totalAmount}

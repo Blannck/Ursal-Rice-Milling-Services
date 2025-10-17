@@ -15,6 +15,9 @@ import {
   LogOut,
   FileText,
   Truck,
+  Warehouse,
+  History,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
@@ -194,6 +197,46 @@ export default function AdminSidebar({ user, app }: Props) {
             label="Purchase Orders"
             icon={FileText}
             active={pathname.startsWith("/admin/purchase-orders")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/orders"
+            label="Fulfill Orders"
+            icon={Package}
+            active={pathname.startsWith("/admin/orders")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/inventory"
+            label="Inventory"
+            icon={Warehouse}
+            active={pathname.startsWith("/admin/inventory")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/transactions"
+            label="Transaction History"
+            icon={History}
+            active={pathname.startsWith("/admin/transactions")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/alerts"
+            label="Reorder Alerts"
+            icon={AlertTriangle}
+            active={pathname.startsWith("/admin/alerts")}
             collapsed={collapsed}
           />
         </div>

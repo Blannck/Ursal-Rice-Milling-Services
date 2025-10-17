@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Calendar, Package, ShoppingBag } from "lucide-react";
+import { Download, Calendar, Package, ShoppingBag, FileText } from "lucide-react";
 import Spinner from "@/components/Spinner";
 
 export default async function OrdersPage() {
@@ -179,7 +179,7 @@ export default async function OrdersPage() {
                                 </div>
                               </div>
 
-                              <div className="flex-shrink-0">
+                              <div className="flex flex-col gap-2 flex-shrink-0">
                                 {product.downloadUrl ? (
                                   <Button
                                     asChild
@@ -203,6 +203,25 @@ export default async function OrdersPage() {
                                   >
                                     <Download className="h-4 w-4 mr-2" />
                                     Unavailable
+                                  </Button>
+                                )}
+                                
+                                {/* View Invoice Button - Show once per order */}
+                                {index === 0 && (
+                                  <Button
+                                    asChild
+                                    variant="outline"
+                                    className="border-green-600 text-green-700 hover:bg-green-50"
+                                  >
+                                    <a
+                                      href={`/orders/${order.id}/invoice`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-2"
+                                    >
+                                      <FileText className="h-4 w-4" />
+                                      View Invoice
+                                    </a>
                                   </Button>
                                 )}
                               </div>

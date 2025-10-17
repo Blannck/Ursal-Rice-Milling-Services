@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Edit } from "lucide-react";
+import { Plus, Eye, Edit, Package } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -176,6 +176,12 @@ export default function PurchaseOrdersPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Link href="/admin/purchase-orders/receive">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Package className="h-4 w-4 mr-2" />
+                Receive Shipment
+              </Button>
+            </Link>
             <Link href="/admin/purchase-orders/create">
               <Button className="bg-custom-orange hover:bg-custom-orange/80 text-white">
                 <Plus className="h-4 w-4 mr-2" />

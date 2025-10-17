@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Edit, FileText, Calendar } from "lucide-react";
+import { ArrowLeft, Edit, FileText, Calendar, Package } from "lucide-react";
 
 interface PurchaseOrder {
   id: string;
@@ -74,6 +74,8 @@ export default function PurchaseOrderDetailPage() {
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [reminding, setReminding] = useState<Record<string, boolean>>({});
+  const [locations, setLocations] = useState<any[]>([]);
+  const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const statusOptions = [
     { value: "Pending", label: "Pending", color: "secondary" },
     { value: "Ordered", label: "Ordered", color: "default" },
@@ -145,6 +147,31 @@ const remindBackorder = async (backorderId: string) => {
 
 useEffect(() => {
   if (id) fetchBackorders();
+}, [id]);
+
+const fetchLocations = async () => {
+  try {
+    const res = await fetch("/api/admin/storage-locations");
+    const data = await res.json();
+    if (data.success && data.locations) {
+      const activeLocations = data.locations.filter((loc: any) => loc.isActive);
+      setLocations(activeLocations);
+      
+      // Set first warehouse as default
+      const firstWarehouse = activeLocations.find((loc: any) => loc.type === "WAREHOUSE");
+      if (firstWarehouse) {
+        setSelectedLocationId(firstWarehouse.id);
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch locations", e);
+  }
+};
+
+useEffect(() => {
+  if (id) {
+    fetchLocations();
+  }
 }, [id]);
 
 
@@ -268,6 +295,10 @@ const handleUploadAttachment = async () => {
 
 const handleReceive = async (itemId: string, qty: number) => {
   if (!qty || qty <= 0) return alert("Enter a valid quantity");
+  
+  if (!selectedLocationId) {
+    return alert("Please select a warehouse location first");
+  }
 
   try {
     const res = await fetch(`/api/admin/purchase-orders/${id}/receive`, {
@@ -278,6 +309,7 @@ const handleReceive = async (itemId: string, qty: number) => {
           {
             purchaseOrderItemId: itemId,
             receivedNow: qty,
+            locationId: selectedLocationId, // ✅ Send selected location
           },
         ],
         note: "Receiving",
@@ -379,11 +411,18 @@ const handleSubmitReturn = async () => {
 
           <div className="flex items-center gap-3">
             <Badge
-              variant={getStatusBadgeVariant(purchaseOrder.status)}
+              variant={getStatusBadgeVariant(purchaseOrder.status) as any}
               className="text-sm px-3 py-1"
             >
               {purchaseOrder.status}
             </Badge>
+            {(purchaseOrder.status === "Pending" || purchaseOrder.status === "Ordered" || purchaseOrder.status === "Partial") && (
+              <Link href="/admin/purchase-orders/receive">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Package className="h-4 w-4 mr-2" /> Receive Shipment
+                </Button>
+              </Link>
+            )}
             <Link href={`/admin/purchase-orders/${purchaseOrder.id}/edit`}>
               <Button variant="outline">
                 <Edit className="h-4 w-4 mr-2" /> Edit
@@ -550,6 +589,35 @@ const handleSubmitReturn = async () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1">
+                    {/* Location Selector */}
+                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Receive to Location
+                      </label>
+                      <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+                        <SelectTrigger className="w-full bg-white border-amber-300 text-gray-900">
+                          <SelectValue placeholder="Select warehouse location" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {locations.map((loc) => (
+                            <SelectItem key={loc.id} value={loc.id}>
+                              <div className="flex items-center gap-2">
+                                <span>{loc.name}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  loc.type === 'WAREHOUSE' ? 'bg-blue-100 text-blue-700' :
+                                  loc.type === 'ZONE' ? 'bg-green-100 text-green-700' :
+                                  loc.type === 'BIN' ? 'bg-purple-100 text-purple-700' :
+                                  'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {loc.type}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     {purchaseOrder.items.map((item) => (
                       <div key={item.id} className="flex flex-col space-y-1">
                         <span className="font-semibold text-gray-800">
@@ -777,56 +845,65 @@ const handleSubmitReturn = async () => {
               </CardContent>
             </Card>
 
-            {/* Purchase Return */}
-            <Card className="bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
-  <CardHeader className="pb-2">
-    <CardTitle className="text-amber-900 text-lg">
-      Purchase Return
-    </CardTitle>
-  </CardHeader>
-  <CardContent className="space-y-3">
-    <Input
-      placeholder="Reason for return"
-      className="bg-white border border-gray-300"
-      value={returnReason}
-      onChange={(e) => setReturnReason(e.target.value)}
-    />
+            {/* Purchase Return - Only show if PO has received items */}
+            {purchaseOrder.items.some(item => (item.receivedQty ?? 0) > 0) && (
+              <Card className="bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-amber-900 text-lg">
+                    Purchase Return
+                  </CardTitle>
+                  <CardDescription className="text-amber-700">
+                    Return items to supplier (only items that have been received)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Input
+                    placeholder="Reason for return"
+                    className="bg-white border border-gray-300"
+                    value={returnReason}
+                    onChange={(e) => setReturnReason(e.target.value)}
+                  />
 
-    {purchaseOrder.items.map((item) => {
-      const maxReturnable = Math.max(
-        0,
-        (item.receivedQty ?? 0) - (item.returnedQty ?? 0)
-      );
-      return (
-        <div key={item.id}>
-          <p className="text-sm font-medium text-gray-700 mb-1">
-            {item.product.name} — Return up to {maxReturnable}
-          </p>
-          <Input
-            type="number"
-            min="0"
-            max={maxReturnable}
-            className="w-24 bg-white border border-gray-300"
-            value={returnQty[item.id] ?? ""}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              setReturnQty((prev) => ({
-                ...prev,
-                [item.id]: isNaN(val) ? 0 : val,
-              }));
-            }}
-          />
-        </div>
-      );
-    })}
-    <Button
-      className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg"
-      onClick={handleSubmitReturn}
-    >
-      Submit Return
-    </Button>
-  </CardContent>
-</Card>
+                  {purchaseOrder.items.map((item) => {
+                    const maxReturnable = Math.max(
+                      0,
+                      (item.receivedQty ?? 0) - (item.returnedQty ?? 0)
+                    );
+                    
+                    // Only show items that can be returned
+                    if (maxReturnable === 0) return null;
+                    
+                    return (
+                      <div key={item.id}>
+                        <p className="text-sm font-medium text-gray-700 mb-1">
+                          {item.product.name} — Return up to {maxReturnable}
+                        </p>
+                        <Input
+                          type="number"
+                          min="0"
+                          max={maxReturnable}
+                          className="w-24 bg-white border border-gray-300"
+                          value={returnQty[item.id] ?? ""}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setReturnQty((prev) => ({
+                              ...prev,
+                              [item.id]: isNaN(val) ? 0 : val,
+                            }));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                  <Button
+                    className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                    onClick={handleSubmitReturn}
+                  >
+                    Submit Return
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
           </div>
         </div>

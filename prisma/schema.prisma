@@ -45,6 +45,7 @@ model Product {
   OrderItem          OrderItem[]
   purchaseOrderItems PurchaseOrderItem[]
   InventoryTxn       InventoryTransaction[]
+  inventoryItems     InventoryItem[]
 }
 
 model Order {
@@ -192,8 +193,49 @@ model InventoryTransaction {
   quantity            Int
   unitPrice           Float?
   note                String?
+  location            StorageLocation? @relation(fields: [locationId], references: [id])
+  locationId          String?          @db.ObjectId
+  createdBy           String?
   createdAt           DateTime @default(now())
 
   @@index([productId])
   @@index([purchaseOrderId])
+  @@index([locationId])
+  @@index([kind])
+}
+
+model StorageLocation {
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name        String                 @unique
+  code        String                 @unique
+  type        String // WAREHOUSE | SHELF | BIN | ZONE
+  description String?
+  capacity    Int?
+  parentId    String?                @db.ObjectId
+  parent      StorageLocation?       @relation("LocationHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children    StorageLocation[]      @relation("LocationHierarchy")
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  
+  inventoryItems InventoryItem[]
+  transactions   InventoryTransaction[]
+
+  @@index([type])
+  @@index([parentId])
+}
+
+model InventoryItem {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  product    Product         @relation(fields: [productId], references: [id])
+  productId  String          @db.ObjectId
+  location   StorageLocation @relation(fields: [locationId], references: [id])
+  locationId String          @db.ObjectId
+  quantity   Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([productId, locationId])
+  @@index([productId])
+  @@index([locationId])
 }
