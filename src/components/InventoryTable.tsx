@@ -301,20 +301,20 @@ export default function InventoryTable({ products }: InventoryTableProps) {
         {filteredProducts && filteredProducts.length > 0 ? (
           viewMode === "table" ? (
             // Table View
-            <Card className="">
+            <Card className=" border border-transparent rounded-sm ">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="text-black">
-                      <TableHead className="font-semibold text-black">Product</TableHead>
-                      <TableHead className="font-semibold  text-black ">Category</TableHead>
-                      <TableHead className="font-semibold   text-black">Price</TableHead>
-                      <TableHead className="font-semibold text-black">Status</TableHead>
-                      <TableHead className="font-semibold    text-black">Created</TableHead>
-                      <TableHead className="font-semibold  text-black ">
+                    <TableRow className="t">
+                      <TableHead className="font-semibold">Product</TableHead>
+                      <TableHead className="font-semibold  ">Category</TableHead>
+                      <TableHead className="font-semibold ">Price</TableHead>
+                      <TableHead className="font-semibold ">Status</TableHead>
+                      <TableHead className="font-semibold">Created</TableHead>
+                      <TableHead className="font-semibold">
                         Download Url
                       </TableHead>
-                      <TableHead className="font-semibold   text-black text-right">
+                      <TableHead className="font-semibold   text-right">
                         Actions
                       </TableHead>
                     </TableRow>
@@ -332,7 +332,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               <img
                                 src={
                                   product.imageUrl ||
-                                  "/rice1.png"
+                                  "https://images.unsplash.com/photo-1643622357625-c013987d90e7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2670"
                                 }
                                 alt={product.name}
                                 className="w-full h-full object-cover"

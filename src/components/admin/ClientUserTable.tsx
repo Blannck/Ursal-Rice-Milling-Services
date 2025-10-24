@@ -165,7 +165,7 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
+      <div className="overflow-hidden rounded-xl border-transparent bg-custom-white text-black shadow-sm">
         <Table>
           <TableHeader className="text-black">
             <TableRow>
@@ -199,7 +199,7 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
                   onClick={() => router.push(`/admin/users/${u.id}`)}
                 >
                   <TableCell>
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-semibold uppercase">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-custom-green text-white text-sm font-semibold uppercase">
                       {letter}
                     </div>
                   </TableCell>

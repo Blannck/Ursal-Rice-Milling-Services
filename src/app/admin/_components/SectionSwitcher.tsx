@@ -18,10 +18,10 @@ export default function SectionSwitcher({
       <div className="flex items-baseline gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Manage {title}</h1>
         {typeof count === "number" && (
-          <span className="text-sm text-muted-foreground">({count} total)</span>
+          <span className="text-sm text-white">({count} total)</span>
         )}
       </div>
-      <p className="text-muted-foreground mt-2">
+      <p className="text-white mt-2">
         {onSuppliers 
           ? "View and manage all suppliers in your system"
           : "View and manage all registered users"}

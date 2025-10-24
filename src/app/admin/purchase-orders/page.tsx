@@ -131,9 +131,9 @@ export default function PurchaseOrdersPage() {
   const getStatusBadgeVariant = (status: string, hasBackorders?: boolean) => {
   if (hasBackorders) return "secondary";
   switch (status) {
-    case "Pending": return "secondary";
-    case "Ordered": return "default";
-    case "Received": return "default";
+    case "Pending": return "tertiary";
+    case "Ordered": return "tertiary";
+    case "Received": return "fourth";
     case "Cancelled": return "destructive";
     default: return "secondary";
   }
@@ -152,7 +152,7 @@ export default function PurchaseOrdersPage() {
             <h1 className="text-3xl font-semibold text-white">
               Purchase Orders
             </h1>
-            <p className="text-white/70">
+            <p className="text-white">
               Total: {purchaseOrders.length}
               {error && (
                 <span className="text-red-400 ml-4">Error: {error}</span>
@@ -177,7 +177,7 @@ export default function PurchaseOrdersPage() {
               </SelectContent>
             </Select>
             <Link href="/admin/purchase-orders/receive">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-custom-orange hover:bg-custom-orange/50 text-white">
                 <Package className="h-4 w-4 mr-2" />
                 Receive Shipment
               </Button>
@@ -224,20 +224,20 @@ export default function PurchaseOrdersPage() {
 
         {/* Table */}
         <TooltipProvider delayDuration={100}>
-          <div className="overflow-hidden rounded-xl border bg-custom-white text-black shadow-sm">
+          <div className="overflow-hidden rounded-xl border-transparent bg-custom-white text-black shadow-sm">
             <Table>
               <TableHeader>
-                <TableRow className="bg-custom-white">
-                  <TableHead className="text-black">ID</TableHead>
-                  <TableHead className="text-black">Supplier</TableHead>
-                  <TableHead className="text-black">Order Date</TableHead>
-                  <TableHead className="text-black">Items</TableHead>
-                  <TableHead className="text-black">Total</TableHead>
-                  <TableHead className="text-black">Status</TableHead>
-                  <TableHead className="text-black">Received</TableHead>
-                  <TableHead className="text-black">Backorders</TableHead>
-                  <TableHead className="text-black">Returns</TableHead>
-                  <TableHead className="text-black text-right">
+                <TableRow >
+                  <TableHead className="text-white">ID</TableHead>
+                  <TableHead className="text-white">Supplier</TableHead>
+                  <TableHead className="text-white">Order Date</TableHead>
+                  <TableHead className="text-white">Items</TableHead>
+                  <TableHead className="text-white">Total</TableHead>
+                  <TableHead className="text-white">Status</TableHead>
+                  <TableHead className="text-white">Received</TableHead>
+                  <TableHead className="text-white">Backorders</TableHead>
+                  <TableHead className="text-white">Returns</TableHead>
+                  <TableHead className="text-white text-right">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -256,7 +256,7 @@ export default function PurchaseOrdersPage() {
                         <Tooltip>
                           <TooltipTrigger
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs border border-gray-700 text-gray-300 hover:bg-gray-800"
+                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs border bg-custom-green text-white hover:bg-custom-green/80"
                           >
                             ID
                           </TooltipTrigger>
@@ -334,7 +334,7 @@ export default function PurchaseOrdersPage() {
                       <TableCell>
   {order.meta && order.meta.backorderQty > 0 ? (
     <div className="flex items-center gap-2">
-      <Badge variant="default">
+      <Badge variant="tertiary">
         {order.meta.backorderQty} Pending
       </Badge>
       {order.meta.backorderLinesCount > 0 && (
@@ -350,7 +350,7 @@ export default function PurchaseOrdersPage() {
 
 <TableCell>
   {order.meta && order.meta.returnQty > 0 ? (
-    <Badge variant="secondary">
+    <Badge variant="fourth">
       {order.meta.returnQty} Returned
     </Badge>
   ) : (
@@ -414,7 +414,7 @@ export default function PurchaseOrdersPage() {
               variant="outline"
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="bg-white/95 backdrop-blur-sm text-black hover:bg-gray-100/80 border border-gray-300"
+              className="bg-custom-orange backdrop-blur-sm text-white hover:bg-custom-orange/80 border border-transparent"
             >
               Prev
             </Button>
@@ -427,7 +427,7 @@ export default function PurchaseOrdersPage() {
                 setCurrentPage(Math.min(totalPages, currentPage + 1))
               }
               disabled={currentPage === totalPages}
-              className="bg-white/95 backdrop-blur-sm text-black hover:bg-gray-100/80 border border-gray-300"
+              className="bg-custom-orange backdrop-blur-sm text-white hover:bg-custom-orange/80 border border-transparent"
             >
               Next
             </Button>

@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { UserButton } from "@stackframe/stack";
-import ModeToggle from "./ModeTogggle";
+
 import AdminSideBar from "@/components/admin/AdminSideBar";
 
 type Props = {
@@ -31,12 +31,12 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
 
   // Otherwise keep the top navbar
   return (
-    <div className="hidden md:flex items-center bg-custom-green h-16 justify-between w-full mx-auto px-4">
+    <div className="hidden md:flex items-center bg-custom-green h-16 justify-between w-full mx-auto px-4 shadow-lg">
       {/* Logo */}
       <div className="flex items-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-bold tracking-wider whitespace-nowrap"
+          className="flex items-center gap-2 text-xl font-bold  font-tracking-wider whitespace-nowrap"
         >
           🌾
           <span>Ursal Rice Milling Services</span>
@@ -90,7 +90,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
                 <span className="hidden lg:inline">Sign In</span>
               </Link>
             </Button>
-            <ModeToggle />
+            
           </>
         )}
       </div>

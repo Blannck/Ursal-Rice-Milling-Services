@@ -263,7 +263,7 @@ export default function TransactionsClient({
             <History className="h-8 w-8" />
             Transaction History
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Complete audit trail of all inventory movements
           </p>
         </div>
@@ -426,7 +426,7 @@ export default function TransactionsClient({
 
       {/* Transactions Table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Transaction Records</CardTitle>
         </CardHeader>
         <CardContent>
@@ -440,8 +440,8 @@ export default function TransactionsClient({
             <div className="border rounded-lg overflow-hidden">
               <div className="max-h-[600px] overflow-y-auto">
                 <Table>
-                  <TableHeader className="sticky top-0 bg-background">
-                    <TableRow>
+                  <TableHeader className="sticky top-0 bg-custom-green ">
+                    <TableRow  >
                       <TableHead>Date & Time</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Product</TableHead>
@@ -516,18 +516,18 @@ export default function TransactionsClient({
                                 ₱{transaction.unitPrice.toFixed(2)}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-black">-</span>
                             )}
                           </TableCell>
                           <TableCell className="text-right">
                             {totalValue > 0 ? (
                               <span className="font-semibold">₱{totalValue.toFixed(2)}</span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-black">-</span>
                             )}
                           </TableCell>
                           <TableCell>
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm text-black">
                               {transaction.note || "-"}
                             </span>
                           </TableCell>

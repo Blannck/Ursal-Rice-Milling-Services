@@ -211,7 +211,7 @@ export default async function OrdersPage() {
                                   <Button
                                     asChild
                                     variant="outline"
-                                    className="border-green-600 text-green-700 hover:bg-green-50"
+                                    className="border-green-600 text-white hover:bg-custom-orange/50"
                                   >
                                     <a
                                       href={`/orders/${order.id}/invoice`}

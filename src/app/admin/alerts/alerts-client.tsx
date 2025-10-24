@@ -221,7 +221,7 @@ export default function AlertsClient({
             <AlertTriangle className="h-8 w-8 text-orange-500" />
             Reorder Level Alerts
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Monitor low stock items and manage reordering
           </p>
         </div>
@@ -231,52 +231,52 @@ export default function AlertsClient({
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Total Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalAlerts}</div>
-            <p className="text-xs text-muted-foreground mt-1">Products below reorder point</p>
+            <p className="text-xs  text-black mt-1">Products below reorder point</p>
           </CardContent>
         </Card>
 
         <Card className="border-red-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <AlertCircle className="h-4 w-4 text-red-600" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{stats.critical}</div>
-            <p className="text-xs text-muted-foreground mt-1">Out of stock</p>
+            <p className="text-xs  text-black mt-1">Out of stock</p>
           </CardContent>
         </Card>
 
         <Card className="border-orange-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-blackflex items-center gap-1">
               <AlertTriangle className="h-4 w-4 text-orange-600" />
               High Priority
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{stats.high}</div>
-            <p className="text-xs text-muted-foreground mt-1">Below 50% reorder point</p>
+            <p className="text-xs text-black mt-1">Below 50% reorder point</p>
           </CardContent>
         </Card>
 
         <Card className="border-yellow-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <Bell className="h-4 w-4 text-yellow-600" />
               Medium Priority
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{stats.medium}</div>
-            <p className="text-xs text-muted-foreground mt-1">At reorder point</p>
+            <p className="text-xs text-black mt-1">At reorder point</p>
           </CardContent>
         </Card>
 
@@ -308,7 +308,7 @@ export default function AlertsClient({
           {/* Filters */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 mb-5">
                 <Search className="h-5 w-5" />
                 Filter Alerts
               </CardTitle>
@@ -383,7 +383,7 @@ export default function AlertsClient({
 
           {/* Alerts Table */}
           <Card>
-            <CardHeader>
+            <CardHeader className="mb-5 ">
               <CardTitle>Low Stock Products</CardTitle>
             </CardHeader>
             <CardContent>
@@ -397,16 +397,16 @@ export default function AlertsClient({
                 <div className="border rounded-lg overflow-hidden">
                   <div className="max-h-[600px] overflow-y-auto">
                     <Table>
-                      <TableHeader className="sticky top-0 bg-background">
+                      <TableHeader className="sticky top-0 bg-custom-green">
                         <TableRow>
-                          <TableHead>Severity</TableHead>
-                          <TableHead>Product</TableHead>
-                          <TableHead className="text-center">Current Stock</TableHead>
-                          <TableHead className="text-center">Reorder Point</TableHead>
-                          <TableHead className="text-center">On Order</TableHead>
-                          <TableHead className="text-center">Suggested Qty</TableHead>
-                          <TableHead>Locations</TableHead>
-                          <TableHead>Action</TableHead>
+                          <TableHead className=" text-white">Severity</TableHead>
+                          <TableHead className=" text-white">Product</TableHead>
+                          <TableHead className=" text-white text-center">Current Stock</TableHead>
+                          <TableHead className="text-white text-center">Reorder Point</TableHead>
+                          <TableHead className="text-white text-center">On Order</TableHead>
+                          <TableHead className="text-white text-center">Suggested Qty</TableHead>
+                          <TableHead className=" text-white">Locations</TableHead>
+                          <TableHead className=" text-white">Action</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>

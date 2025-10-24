@@ -32,22 +32,22 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className=" mx-auto ">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         {/* Product Image */}
         <div className="order-1">
-          <Card className="overflow-hidden border-0 shadow-lg">
+         <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">
               {product.imageUrl ? (
-                <div className="aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
+                <div className="w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
                   <img
                     src={product.imageUrl}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    className="block w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               ) : (
-                <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
+                <div className="w-full aspect-[16/9] bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
                   <Download className="h-16 w-16 text-muted-foreground" />
                 </div>
               )}

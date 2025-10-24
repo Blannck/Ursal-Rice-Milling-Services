@@ -240,7 +240,7 @@ export function InventoryClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-muted-foreground">
+          <p className="text-white">
             Manage storage locations and product inventory
           </p>
         </div>
@@ -319,20 +319,20 @@ export function InventoryClient({
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="inventory" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="inventory">Inventory Items</TabsTrigger>
-          <TabsTrigger value="locations">Storage Locations</TabsTrigger>
+      <Tabs defaultValue="inventory" className="space-y-4 ">
+        <TabsList className="bg-custom-white">
+          <TabsTrigger className=" text-black" value="inventory">Inventory Items</TabsTrigger>
+          <TabsTrigger className=" text-black" value="locations">Storage Locations</TabsTrigger>
         </TabsList>
 
         {/* Inventory Items Tab */}
         <TabsContent value="inventory" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex mb-5 items-center justify-between">
                 <div>
                   <CardTitle>Product Inventory</CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black">
                     View and manage products across storage locations
                   </CardDescription>
                 </div>
@@ -391,7 +391,7 @@ export function InventoryClient({
                               </Badge>
                               <span className="text-sm">
                                 {item.location.name}
-                                <span className="text-muted-foreground ml-1">
+                                <span className= "text-black ml-1">
                                   ({item.location.code})
                                 </span>
                               </span>
@@ -410,7 +410,7 @@ export function InventoryClient({
                               <Badge variant="secondary">Normal</Badge>
                             )}
                           </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
+                          <TableCell className="text-sm text-black">
                             {new Date(item.updatedAt).toLocaleDateString()}
                           </TableCell>
                         </TableRow>
@@ -473,7 +473,7 @@ export function InventoryClient({
                       <TableRow key={location.id}>
                         <TableCell className="font-medium">{location.name}</TableCell>
                         <TableCell>
-                          <Badge variant="outline">{location.code}</Badge>
+                          <Badge variant="secondary">{location.code}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge
@@ -493,7 +493,7 @@ export function InventoryClient({
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{location._count?.children || 0}</Badge>
+                          <Badge variant="secondary">{location._count?.children || 0}</Badge>
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>

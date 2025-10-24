@@ -237,7 +237,7 @@ export  default async function HomePage() {
 
                   {/* Product Info */}
                   <div className="p-6">
-                    <h3 className="font-bold text-xl  mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    <h3 className="font-bold text-xl  mb-3 group-hover:text-custom-orange transition-colors line-clamp-2">
                       {product.name}
                     </h3>
                     <p className=" mb-4 line-clamp-2">{product.description}</p>

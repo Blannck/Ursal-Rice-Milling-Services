@@ -113,7 +113,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 p-6" >
       <div className="relative max-w-sm w-full">
         <Input
           placeholder="Search cart..."

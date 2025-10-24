@@ -292,8 +292,8 @@ if (data?.ok || data?.success) {
                         ) : (
                           suppliers.map((supplier) => (
                             <SelectItem key={supplier.id} value={supplier.id} className="text-black hover:bg-gray-100">
-                              <div className="flex flex-col">
-                                <span className="font-medium">{supplier.name}</span>
+                              <div className="text-sm">
+                                <span className="font-medium">{supplier.name} </span>
                                 <span className="text-sm text-gray-500">{supplier.email || "No email"}</span>
                               </div>
                             </SelectItem>
@@ -474,13 +474,13 @@ if (data?.ok || data?.success) {
               <div className="space-y-6">
                 <Button
                   type="submit"
-                  className="w-full bg-green-600 hover:bg-green-700 mb-2"
+                  className="w-full bg-custom-orange hover:bg-custom-orange/80 mb-2"
                   disabled={submitting || !selectedSupplierId || orderItems.length === 0}
                 >
                   {submitting ? "Creating..." : "Create Purchase Order"}
                 </Button>
                 <Link href="/admin/purchase-orders">
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button type="button" variant="destructive" className="w-full">
                     Cancel
                   </Button>
                 </Link>

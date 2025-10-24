@@ -215,7 +215,7 @@ export default function OrdersClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Order Fulfillment</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Process orders and remove stock from inventory locations
           </p>
         </div>
@@ -280,7 +280,7 @@ export default function OrdersClient({
         {/* Orders List */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center mb-5 gap-2">
               <ShoppingBag className="h-5 w-5" />
               Orders Awaiting Fulfillment
             </CardTitle>
@@ -296,7 +296,7 @@ export default function OrdersClient({
                 {orders.map((order) => (
                   <Card
                     key={order.id}
-                    className={`cursor-pointer transition-colors hover:bg-accent ${
+                    className={`cursor-pointer bg-white   ${
                       selectedOrder?.id === order.id ? "border-primary border-2" : ""
                     }`}
                     onClick={() => handleOrderSelect(order.id)}
@@ -307,11 +307,11 @@ export default function OrdersClient({
                           <div className="font-semibold text-sm">
                             Order #{order.id.slice(-8).toUpperCase()}
                           </div>
-                          <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <div className="text-xs text-black flex items-center gap-1 mt-1">
                             <Calendar className="h-3 w-3" />
                             {new Date(order.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <div className="text-xs text-black flex items-center gap-1 mt-1">
                             <User className="h-3 w-3" />
                             {order.email}
                           </div>
