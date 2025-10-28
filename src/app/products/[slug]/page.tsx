@@ -45,7 +45,7 @@ async function Page({ params }: { params: { slug: string } }) {
     : product;
 
   return (
-    <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
+    <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
       <div className="lg:col-span-full">
         <ProductCard product={safeProduct} />
       </div>

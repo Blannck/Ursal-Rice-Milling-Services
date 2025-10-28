@@ -334,7 +334,7 @@ export default function TransactionsClient({
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex mb-5 items-center gap-2">
             <Filter className="h-5 w-5" />
             Filters
           </CardTitle>
@@ -414,7 +414,7 @@ export default function TransactionsClient({
           </div>
 
           <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-black">
               Showing {filteredTransactions.length} of {transactions.length} transactions
             </p>
             <Button onClick={clearFilters} variant="ghost" size="sm">
@@ -426,7 +426,7 @@ export default function TransactionsClient({
 
       {/* Transactions Table */}
       <Card>
-        <CardHeader className="mb-5">
+        <CardHeader className="  mb-5">
           <CardTitle>Transaction Records</CardTitle>
         </CardHeader>
         <CardContent>

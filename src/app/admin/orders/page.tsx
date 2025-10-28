@@ -42,5 +42,10 @@ export default async function AdminOrdersPage() {
     },
   });
 
-  return <OrdersClient orders={orders} locations={locations} />;
+  return (
+    
+    <OrdersClient orders={orders} locations={locations} />
+    
+    
+  )
 }

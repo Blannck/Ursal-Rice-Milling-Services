@@ -28,9 +28,19 @@ export default async function UsersPage() {
   } catch {}
 
   return (
-    <div className="space-y-6 pt-8">
+ 
+    <div className="mx-auto px-4 py-4 ">
+    <div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+    <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
+    <div className="lg:col-span-full">
+       
       <SectionSwitcher count={users.length} />
       <ClientUserTable users={users} />
     </div>
+    </div>
+    </div>
+    </div>
+    
+    
   );
 }

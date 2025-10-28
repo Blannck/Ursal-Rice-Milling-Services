@@ -144,10 +144,12 @@ export default function PurchaseOrdersPage() {
     items.reduce((sum, it) => sum + it.orderedQty * it.price, 0);
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+  <div className="mx-auto px-4 py-4 ">
+      <div className="border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+      <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
+      <div className="lg:col-span-full">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className=" mb-5">
           <div>
             <h1 className="text-3xl font-semibold text-white">
               Purchase Orders
@@ -159,7 +161,19 @@ export default function PurchaseOrdersPage() {
               )}
             </p>
           </div>
-          <div className="flex items-center gap-4">
+           </div>
+         
+
+        {/* Search */}
+        <div className="mb-6 flex gap-10">
+          <Input
+            placeholder="Search purchase orders by supplier name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-md bg-white/95 backdrop-blur-sm text-black placeholder:text-gray-500 border border-gray-300 focus:border-gray-500 focus:ring-0"
+          />
+       
+         <div className="flex items-center gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[180px] bg-custom-green backdrop-blur-sm text-white">
                 <SelectValue placeholder="Filter by status" />
@@ -190,16 +204,7 @@ export default function PurchaseOrdersPage() {
             </Link>
           </div>
         </div>
-
-        {/* Search */}
-        <div className="mb-6">
-          <Input
-            placeholder="Search purchase orders by supplier name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-md bg-white/95 backdrop-blur-sm text-black placeholder:text-gray-500 border border-gray-300 focus:border-gray-500 focus:ring-0"
-          />
-        </div>
+        
 
         {/* Loading State */}
         {loading && (
@@ -256,7 +261,7 @@ export default function PurchaseOrdersPage() {
                         <Tooltip>
                           <TooltipTrigger
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs border bg-custom-green text-white hover:bg-custom-green/80"
+                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs border-transparent bg-custom-green text-white hover:bg-custom-green/80"
                           >
                             ID
                           </TooltipTrigger>
@@ -434,6 +439,8 @@ export default function PurchaseOrdersPage() {
           </div>
         )}
       </div>
+    </div>
+    </div>
     </div>
   );
 }

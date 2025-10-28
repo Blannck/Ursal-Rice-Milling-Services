@@ -26,17 +26,18 @@ export default function ProductCard({ product }: ProductCardProps) {
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">Product data is not available.</p>
+        <p className="text-black">Product data is not available.</p>
       </div>
     );
   }
 
   return (
-    <div className=" mx-auto ">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Product Image */}
-        <div className="order-1">
-         <Card className="overflow-hidden border-0 shadow-lg">
+    <div className=" max-w-7xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  mt-10 lg:gap-12 ">
+        {/* Left Column: Image and Details Card */}
+        <div className="flex flex-col space-y-8">
+          {/* Product Image */}
+          <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">
               {product.imageUrl ? (
                 <div className="w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
@@ -48,15 +49,42 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
               ) : (
                 <div className="w-full aspect-[16/9] bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                  <Download className="h-16 w-16 text-muted-foreground" />
+                  <Download className="h-16 w-16 text-white" />
                 </div>
               )}
             </CardHeader>
           </Card>
+
+          {/* Product Details Card */}
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="font-semibold mb-4">Product Details</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-black">Category</span>
+                  <span className="font-medium">{product.category}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-black">Type</span>
+                  <span className="font-medium">Digital Download</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-black">Delivery</span>
+                  <span className="font-medium">Instant</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-black">Updated</span>
+                  <span className="font-medium">
+                    {product.updatedAt.toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Product Information */}
-        <div className="order-2 flex flex-col justify-center space-y-6">
+        {/* Right Column: Product Information */}
+        <div className="flex flex-col justify-start space-y-6">
           <div className="space-y-4">
             <Badge variant="secondary" className="w-fit text-sm">
               {product.category}
@@ -68,17 +96,17 @@ export default function ProductCard({ product }: ProductCardProps) {
               </h1>
 
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-primary">
+                <span className="text-4xl font-bold text-white">
                   ₱{product.price.toFixed(2)}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-white">
                   Digital Download
                 </span>
               </div>
             </div>
 
             {product.description && (
-              <p className="text-muted-foreground text-lg leading-relaxed">
+              <p className="text-white text-lg leading-relaxed">
                 {product.description}
               </p>
             )}
@@ -86,9 +114,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Purchase Section */}
           <div className="space-y-4 pt-4">
-              <AddToCartButton productId={product.id} />
+            <AddToCartButton productId={product.id} />
 
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-white">
               <div className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
                 <span>Instant Download</span>
@@ -97,33 +125,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span>Digital Product</span>
             </div>
           </div>
-
-          {/* Product Details */}
-          <Card className="mt-8">
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-4">Product Details</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Category</span>
-                  <span className="font-medium">{product.category}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Type</span>
-                  <span className="font-medium">Digital Download</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Delivery</span>
-                  <span className="font-medium">Instant</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Updated</span>
-                  <span className="font-medium">
-                    {product.updatedAt.toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

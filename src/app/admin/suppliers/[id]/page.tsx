@@ -27,13 +27,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
   if (!supplier) return notFound();
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 space-y-6">
+    <div className="mx-auto  w-full max-w-7xl px-4 py-8 space-y-6">
+       <div className="border-transparent bg-black bg-transparent/50 rounded-lg p-8">
       {/* header */}
       <div className="flex flex-wrap items-center gap-3">
-        <div>
+        <div className="mb-5">
           <h1 className="text-2xl font-semibold">{supplier.name}</h1>
-          <p className="text-sm text-muted-foreground">{supplier.email || "no email"} • {supplier.phone || "no phone"}</p>
-          <p className="text-sm text-muted-foreground">{supplier.address || "no address"}</p>
+          <p className="text-sm text-white">{supplier.email || "no email"} • {supplier.phone || "no phone"}</p>
+          <p className="text-sm text-white">{supplier.address || "no address"}</p>
         </div>
         <div className="ml-auto flex gap-2">
           <Link href="/admin/suppliers" className="text-sm underline">Back to suppliers</Link>
@@ -41,31 +42,31 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
       </div>
 
       {/* meta cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Status</div>
-          <div className="mt-1 text-lg">{supplier.isActive ? "Active" : "Inactive"}</div>
+      <div className="grid mb-5 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Status</div>
+          <div className="mt-1 text-black text-lg">{supplier.isActive ? "Active" : "Inactive"}</div>
         </div>
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Created</div>
-          <div className="mt-1 text-lg">{new Date(supplier.createdAt).toLocaleString()}</div>
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Created</div>
+          <div className="mt-1 text-black text-lg">{new Date(supplier.createdAt).toLocaleString()}</div>
         </div>
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Updated</div>
-          <div className="mt-1 text-lg">{new Date(supplier.updatedAt).toLocaleString()}</div>
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Updated</div>
+          <div className="mt-1 text-black text-lg">{new Date(supplier.updatedAt).toLocaleString()}</div>
         </div>
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Recent Products</div>
-          <div className="mt-1 text-lg">{items.length}</div>
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Recent Products</div>
+          <div className="mt-1 text-black text-lg">{items.length}</div>
         </div>
       </div>
 
       {/* recent items */}
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Recent Products</h2>
-        <div className="overflow-hidden rounded-xl border bg-black text-white">
+        <div className="overflow-hidden rounded-xl border-transparent bg-custom-white text-black">
           <table className="w-full text-sm">
-            <thead className="bg-gray-900">
+            <thead className="bg-custom-green text-white">
               <tr>
                 <th className="px-3 py-2 text-left">Name</th>
                 <th className="px-3 py-2 text-left">Category</th>
@@ -84,7 +85,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
               ))}
               {!items.length && (
                 <tr>
-                  <td className="px-3 py-8 text-center text-gray-400" colSpan={4}>
+                  <td className="px-3 py-8 text-center text-black" colSpan={4}>
                     No products yet for this supplier
                   </td>
                 </tr>
@@ -101,6 +102,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
           <p className="rounded-lg border bg-background/50 p-3">{supplier.note}</p>
         </section>
       )}
+    </div>
     </div>
   );
 }

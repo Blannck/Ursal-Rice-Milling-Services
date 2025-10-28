@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { stackServerApp } from "@/lib/stack";
 import { prisma } from "@/lib/prisma";
-
+import Link from "next/link";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -41,32 +41,38 @@ export default async function UserDetailsPage({ params }: { params: { id: string
 
   // render
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 space-y-6">
+    <div className="mx-auto  border-transparent bg-black bg-transparent/50 rounded-lg p-8 max-w-7xl w-11/12 px-4 py-8 space-y-6">
+     <div className="flex flex-wrap items-center gap-3">
       <div>
         <h1 className="text-2xl font-semibold">{user.displayName ?? user.primaryEmail ?? user.id}</h1>
-        <p className="text-sm text-muted-foreground">{user.primaryEmail} • ID {user.id}</p>
+        <p className="text-sm text-white">{user.primaryEmail} • ID {user.id}</p>
       </div>
+       <div className="ml-auto flex gap-2">
+          <Link href="/admin/users" className="text-sm underline">Back to users</Link>
+        </div>
+      </div>
+      
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Status</div>
-          <div className="mt-1 text-lg">{app?.blockedAt ? "Blocked" : app?.status ?? "ACTIVE"}</div>
+      <div className="grid gap-4  sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Status</div>
+          <div className="mt-1 text-black text-lg">{app?.blockedAt ? "Blocked" : app?.status ?? "ACTIVE"}</div>
         </div>
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Auth</div>
-          <div className="mt-1 text-lg">{user.authMethod ?? "–"}</div>
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Auth</div>
+          <div className="mt-1 text-black text-lg">{user.authMethod ?? "–"}</div>
         </div>
-        <div className="rounded-xl border p-4">
-          <div className="text-xs text-muted-foreground">Last Active</div>
-          <div className="mt-1 text-lg">{user.lastActiveAt ? new Date(user.lastActiveAt).toLocaleString() : "–"}</div>
+        <div className="rounded-xl bg-custom-white border-transparent p-4">
+          <div className="text-xs text-black">Last Active</div>
+          <div className="mt-1 text-black text-lg">{user.lastActiveAt ? new Date(user.lastActiveAt).toLocaleString() : "–"}</div>
         </div>
       </div>
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Orders</h2>
-        <div className="overflow-hidden rounded-xl border bg-black text-white">
+        <div className="overflow-hidden rounded-xl border-transparent bg-custom-white text-black">
           <table className="w-full text-sm">
-            <thead className="bg-gray-900">
+            <thead className="bg-custom-green border-transparent text-white">
               <tr>
                 <th className="px-3 py-2 text-left">Order ID</th>
                 <th className="px-3 py-2 text-left">Date</th>
@@ -88,7 +94,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
                 </tr>
               ))}
               {orders.length === 0 && (
-                <tr><td className="px-3 py-8 text-center text-gray-400" colSpan={5}>No orders yet</td></tr>
+                <tr><td className="px-3 py-8 text-center text-black" colSpan={5}>No orders yet</td></tr>
               )}
             </tbody>
           </table>

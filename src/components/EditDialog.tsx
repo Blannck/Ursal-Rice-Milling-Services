@@ -59,12 +59,12 @@ export default function EditDialog({ product }: EditDialogProps) {
       <AlertDialogTrigger asChild>
         <Button
           variant="secondary"
-          className="ml-auto flex items-center gap-2"
+          className="w-full h-10 flex items-center justify-center gap-2"
           asChild
         >
           <span>
             <EditIcon className="w-4 h-4" />
-            Edit Product
+            Edit
           </span>
         </Button>
       </AlertDialogTrigger>

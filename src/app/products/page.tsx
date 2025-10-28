@@ -12,7 +12,7 @@ async function page() {
 
   return (
     <>
-      <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
         <div className="lg:col-span-full">
           <Suspense fallback={<Spinner></Spinner>}>
             <CardList products={products} />

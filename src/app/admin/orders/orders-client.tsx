@@ -211,83 +211,84 @@ export default function OrdersClient({
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Order Fulfillment</h1>
-          <p className="text-white mt-1">
-            Process orders and remove stock from inventory locations
-          </p>
-        </div>
-      </div>
+    <div className="mx-auto container">
+      <div className="border-transparent bg-black bg-transparent/50 rounded-lg p-8">
+        <div className="space-y-10">
+          <div>
+            <h1 className="text-3xl font-bold">Order Fulfillment</h1>
+            <p className="text-white mt-1">
+              Process orders and remove stock from inventory locations
+            </p>
+          </div>
 
-      {message && (
-        <Card className={message.type === "success" ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              {message.type === "success" ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              )}
-              <span className={message.type === "success" ? "text-green-800" : "text-red-800"}>
-                {message.text}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          <div className="space-y-10">
+        {message && (
+          <Card className={message.type === "success" ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2">
+                {message.type === "success" ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-600" />
+                )}
+                <span className={message.type === "success" ? "text-green-800" : "text-red-800"}>
+                  {message.text}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Order Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        {/* Order Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className=" shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Total Orders
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="left-0">
             <div className="text-2xl font-bold">{orders.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Pending Fulfillment
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl  font-bold">
               {orders.filter((o) => o.status !== "fulfilled").length}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Total Value
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl left-0 font-bold ">
               ₱{orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Orders List */}
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center mb-5 gap-2">
+            <CardTitle className="flex mb-5 items-center gap-2">
               <ShoppingBag className="h-5 w-5" />
               Orders Awaiting Fulfillment
             </CardTitle>
           </CardHeader>
           <CardContent>
             {orders.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-black">
                 <Package className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p>No orders to fulfill</p>
               </div>
@@ -321,7 +322,7 @@ export default function OrdersClient({
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-black">
                           {order.items.length} item(s)
                         </span>
                         <span className="font-bold text-sm">₱{order.total.toFixed(2)}</span>
@@ -351,20 +352,20 @@ export default function OrdersClient({
         {/* Fulfillment Details */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 mb-5">
               <Package className="h-5 w-5" />
               Fulfillment Details
             </CardTitle>
           </CardHeader>
           <CardContent>
             {!selectedOrder ? (
-              <div className="text-center py-16 text-muted-foreground">
+              <div className="text-center py-16 text-black">
                 <Package className="h-16 w-16 mx-auto mb-4 opacity-50" />
                 <p>Select an order to begin fulfillment</p>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-accent p-4 rounded-lg">
+                <div className=" bg-white p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold">
                       Order #{selectedOrder.id.slice(-8).toUpperCase()}
@@ -373,7 +374,7 @@ export default function OrdersClient({
                       {selectedOrder.status}
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground space-y-1">
+                  <div className="text-sm text-black space-y-1">
                     <div className="flex items-center gap-1">
                       <User className="h-3 w-3" />
                       {selectedOrder.email}
@@ -412,7 +413,7 @@ export default function OrdersClient({
                                 <p className="font-medium text-sm">
                                   {item.product?.name || "Unknown Product"}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-black">
                                   {item.product?.category || "-"}
                                 </p>
                               </div>
@@ -460,7 +461,7 @@ export default function OrdersClient({
                                           <span
                                             className={`text-xs font-semibold ${
                                               canFulfillFromHere
-                                                ? "text-green-600"
+                                                ? "text-white"
                                                 : stock > 0
                                                 ? "text-orange-600"
                                                 : "text-red-600"
@@ -512,6 +513,9 @@ export default function OrdersClient({
             )}
           </CardContent>
         </Card>
+      </div>
+          </div>
+        </div>
       </div>
     </div>
   );

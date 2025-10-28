@@ -98,7 +98,7 @@ export default async function AdminOrderDetailPage({
             <h1 className="text-3xl font-bold">
               Order #{order.id.slice(0, 8).toUpperCase()}
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-black mt-1">
               View order details and warehouse fulfillment information
             </p>
           </div>
@@ -121,14 +121,14 @@ export default async function AdminOrderDetailPage({
             {/* Customer & Date Info */}
             <div className="grid grid-cols-2 gap-4 pb-4 border-b">
               <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
                   <User className="h-4 w-4" />
                   Customer Email
                 </p>
                 <p className="font-medium">{order.email}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
                   <Calendar className="h-4 w-4" />
                   Order Date
                 </p>
@@ -155,7 +155,7 @@ export default async function AdminOrderDetailPage({
                   >
                     <div className="flex-1">
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-black">
                         {item.product.category}
                       </p>
                     </div>
@@ -163,7 +163,7 @@ export default async function AdminOrderDetailPage({
                       <p className="font-semibold">
                         {item.quantity} × ₱{item.price.toFixed(2)}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-black">
                         = ₱{(item.quantity * item.price).toFixed(2)}
                       </p>
                     </div>
@@ -191,7 +191,7 @@ export default async function AdminOrderDetailPage({
           <CardContent>
             {stockOutTransactions.length > 0 ? (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-black">
                   This order was fulfilled using FIFO (First-In, First-Out) from the
                   following warehouse locations:
                 </p>
@@ -203,7 +203,7 @@ export default async function AdminOrderDetailPage({
                   return (
                     <div key={item.id} className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-muted-foreground" />
+                        <Package className="h-4 w-4 text-black" />
                         <p className="font-semibold text-sm">{item.product.name}</p>
                       </div>
                       <div className="ml-6 space-y-2">
@@ -226,13 +226,13 @@ export default async function AdminOrderDetailPage({
                               <p className="text-sm font-medium truncate">
                                 {txn.location?.name || "Unknown Location"}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-black">
                                 {index === 0 ? "Oldest stock (FIFO)" : "Next oldest"}
                               </p>
                             </div>
                             <div className="text-right shrink-0">
                               <p className="text-sm font-bold">{txn.quantity}</p>
-                              <p className="text-xs text-muted-foreground">units</p>
+                              <p className="text-xs text-black">units</p>
                             </div>
                           </div>
                         ))}
@@ -242,7 +242,7 @@ export default async function AdminOrderDetailPage({
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-black">
                 <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">No warehouse fulfillment data available</p>
               </div>
@@ -257,7 +257,7 @@ export default async function AdminOrderDetailPage({
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold mb-1">Customer Invoice</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-black">
                 View the customer-facing invoice (warehouse details hidden)
               </p>
             </div>

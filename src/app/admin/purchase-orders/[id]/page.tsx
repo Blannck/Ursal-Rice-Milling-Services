@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Edit, FileText, Calendar, Package } from "lucide-react";
+import { ArrowLeft, Edit, FileText, Calendar, Package, ArrowDown01, ArrowDownIcon } from "lucide-react";
 
 interface PurchaseOrder {
   id: string;
@@ -394,13 +394,13 @@ const handleSubmitReturn = async () => {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto border-transparent bg-black bg-transparent/50 rounded-lg p-8">
         {/* HEADER */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Link href="/admin/purchase-orders">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="outline" size="lg">
+                Back
               </Button>
             </Link>
             <div>
@@ -437,31 +437,31 @@ const handleSubmitReturn = async () => {
             {/* Supplier Information */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex mb-5  items-center gap-2">
                   <FileText className="h-5 w-5" /> Supplier Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-500">Name</label>
+                    <label className="text-sm text-black">Name</label>
                     <p className="text-lg font-semibold">
                       {purchaseOrder.supplier.name}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500">Email</label>
+                    <label className="text-sm text-black">Email</label>
                     <p>{purchaseOrder.supplier.email}</p>
                   </div>
                   {purchaseOrder.supplier.phone && (
                     <div>
-                      <label className="text-sm text-gray-500">Phone</label>
+                      <label className="text-sm text-black">Phone</label>
                       <p>{purchaseOrder.supplier.phone}</p>
                     </div>
                   )}
                   {purchaseOrder.supplier.address && (
                     <div>
-                      <label className="text-sm text-gray-500">Address</label>
+                      <label className="text-sm text-black">Address</label>
                       <p>{purchaseOrder.supplier.address}</p>
                     </div>
                   )}
@@ -471,9 +471,9 @@ const handleSubmitReturn = async () => {
 
             {/* Order Items */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Order Items</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-black ">
                   {purchaseOrder.items.length} items • Total Kilos: {totalQty}
                 </CardDescription>
               </CardHeader>
@@ -498,14 +498,14 @@ const handleSubmitReturn = async () => {
                               {item.product.name}
                             </div>
                             {item.product.description && (
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-black">
                                 {item.product.description}
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="secondary">
                             {item.product.category}
                           </Badge>
                         </TableCell>
@@ -543,18 +543,19 @@ const handleSubmitReturn = async () => {
             {/* Update Status + Receive Items */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="h-full">
-                <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+                <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-900 text-lg">
+                    <CardTitle className="text-black mb-7 text-lg">
                       Update Status
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 flex-1">
-                    <label className="text-sm text-gray-700 font-medium">
-                      Current Status
-                    </label>
+                  <CardContent className="space-y-3  flex-1">
+                   
                     <Select value={newStatus} onValueChange={setNewStatus}>
-                      <SelectTrigger className="w-full bg-amber-100 border-amber-200 text-amber-900">
+                      <SelectTrigger className="w-full bg-custom-green border-transparent  text-white">
+                        <div className="mx-auto">
+                      Select Status
+                        </div>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -572,7 +573,7 @@ const handleSubmitReturn = async () => {
                         disabled={
                           updating || newStatus === purchaseOrder.status
                         }
-                        className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+                        className="w-full bg-custom-orange hover:bg-custom-orange/50 text-white rounded-lg"
                       >
                         {updating ? "Updating..." : "Update Status"}
                       </Button>
@@ -582,20 +583,20 @@ const handleSubmitReturn = async () => {
               </div>
 
               <div className="h-full">
-                <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+                <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-amber-900 text-lg">
+                    <CardTitle className="text-black text-lg">
                       Receive Items
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1">
                     {/* Location Selector */}
-                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  
+                      <label className="text-sm font-medium text-black mb-2 block">
                         Receive to Location
                       </label>
                       <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
-                        <SelectTrigger className="w-full bg-white border-amber-300 text-gray-900">
+                        <SelectTrigger className="w-full bg-custom-green border-transparent text-white">
                           <SelectValue placeholder="Select warehouse location" />
                         </SelectTrigger>
                         <SelectContent>
@@ -616,14 +617,14 @@ const handleSubmitReturn = async () => {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                  
 
                     {purchaseOrder.items.map((item) => (
                       <div key={item.id} className="flex flex-col space-y-1">
                         <span className="font-semibold text-gray-800">
                           {item.product.name}
                         </span>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-black">
                           {item.receivedQty ?? 0} / {item.orderedQty ?? 0}{" "}
                           Received
                         </span>
@@ -632,7 +633,7 @@ const handleSubmitReturn = async () => {
   id={`qty-${item.id}`}
   type="number"
   min="0"
-  className="w-24 bg-white border border-gray-300 rounded-md"
+  className="w-24 bg-white border border-transparent rounded-md"
   placeholder="Qty"
 />
 
@@ -642,7 +643,7 @@ const handleSubmitReturn = async () => {
     const qty = Number(qtyInput?.value || 0);
     handleReceive(item.id, qty);
   }}
-  className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+  className="bg-custom-orange hover:bg-custom-orange/50 text-white rounded-lg"
 >
   Receive
 </Button>
@@ -658,17 +659,19 @@ const handleSubmitReturn = async () => {
             {/* Attachments + Back Orders */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Attachments */}
-              <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+              <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
   <CardHeader className="pb-2">
-    <CardTitle className="text-amber-900 text-lg">Attachments</CardTitle>
+    <CardTitle className="text-black text-lg">Attachments</CardTitle>
   </CardHeader>
   <CardContent className="space-y-4 flex-1">
     {/* Upload controls */}
     <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
       <div>
-        <label className="text-sm text-gray-700">Type</label>
+       <label className="text-sm text-gray-700">Type</label>
         <Select value={attType} onValueChange={setAttType}>
-          <SelectTrigger className="w-full bg-white border border-gray-300">
+          <SelectTrigger className="w-full bg-custom-green border border-transparent">
+           
+            
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -680,11 +683,11 @@ const handleSubmitReturn = async () => {
       </div>
 
       <div className="md:col-span-2">
-        <label className="text-sm text-gray-700">Image</label>
+        <label className="text-sm text-black">Image</label>
         <Input
           type="file"
           accept="image/*"
-          className="bg-white border border-gray-300"
+          className="bg-white text-black border border-transparent"
           onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
         />
       </div>
@@ -692,7 +695,7 @@ const handleSubmitReturn = async () => {
       <div>
         <label className="text-sm text-gray-700">Note</label>
         <Input
-          className="bg-white border border-gray-300"
+          className="bg-white border border-transparent"
           placeholder="Optional note"
           value={attNote}
           onChange={(e) => setAttNote(e.target.value)}
@@ -703,7 +706,7 @@ const handleSubmitReturn = async () => {
         <Button
           onClick={handleUploadAttachment}
           disabled={!fileToUpload || uploading}
-          className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+          className="bg-custom-orange hover:bg-custom-orange text-white rounded-lg"
         >
           {uploading ? "Uploading..." : "Upload"}
         </Button>
@@ -740,9 +743,9 @@ const handleSubmitReturn = async () => {
 
 
               {/* Back Orders */}
-              <Card className="h-full flex flex-col bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+              <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-900 text-lg">
+                  <CardTitle className="text-black text-lg">
                     Back Orders
                   </CardTitle>
                 </CardHeader>
@@ -806,7 +809,7 @@ const handleSubmitReturn = async () => {
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-lg">
                     <span className="font-semibold">Total Amount:</span>
-                    <span className="font-bold text-green-600">
+                    <span className="font-bold text-black">
                       ₱{total.toLocaleString()}
                     </span>
                   </div>
@@ -823,7 +826,7 @@ const handleSubmitReturn = async () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm text-gray-500">Order Date</label>
+                  <label className="text-sm text-black">Order Date</label>
                   <p className="font-medium">
                     {purchaseOrder.orderDate
                       ? new Date(purchaseOrder.orderDate).toLocaleDateString()
@@ -831,13 +834,13 @@ const handleSubmitReturn = async () => {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Created</label>
-                  <p className="text-sm text-gray-600">
+                  <label className="text-sm text-black">Created</label>
+                  <p className="text-sm text-black">
                     {new Date(purchaseOrder.createdAt).toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Last Updated</label>
+                  <label className="text-sm text-black">Last Updated</label>
                   <p className="text-sm text-gray-600">
                     {new Date(purchaseOrder.updatedAt).toLocaleString()}
                   </p>
@@ -847,19 +850,19 @@ const handleSubmitReturn = async () => {
 
             {/* Purchase Return - Only show if PO has received items */}
             {purchaseOrder.items.some(item => (item.receivedQty ?? 0) > 0) && (
-              <Card className="bg-[#FFF3E0] border border-amber-300 shadow-md rounded-2xl">
+              <Card className="bg-custom-white border-transparent shadow-md rounded-2xl">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-amber-900 text-lg">
+                  <CardTitle className="text-black text-lg">
                     Purchase Return
                   </CardTitle>
-                  <CardDescription className="text-amber-700">
+                  <CardDescription className="text-black">
                     Return items to supplier (only items that have been received)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Input
                     placeholder="Reason for return"
-                    className="bg-white border border-gray-300"
+                    className="bg-white border-transparent"
                     value={returnReason}
                     onChange={(e) => setReturnReason(e.target.value)}
                   />
@@ -875,14 +878,14 @@ const handleSubmitReturn = async () => {
                     
                     return (
                       <div key={item.id}>
-                        <p className="text-sm font-medium text-gray-700 mb-1">
+                        <p className="text-sm font-medium text-black mb-1">
                           {item.product.name} — Return up to {maxReturnable}
                         </p>
                         <Input
                           type="number"
                           min="0"
                           max={maxReturnable}
-                          className="w-24 bg-white border border-gray-300"
+                          className="w-24 mx-auto bg-white border border-gray-300"
                           value={returnQty[item.id] ?? ""}
                           onChange={(e) => {
                             const val = Number(e.target.value);
@@ -896,7 +899,7 @@ const handleSubmitReturn = async () => {
                     );
                   })}
                   <Button
-                    className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                    className="w-full bg-custom-orange hover:bg-custom-orange/50 text-white rounded-lg"
                     onClick={handleSubmitReturn}
                   >
                     Submit Return

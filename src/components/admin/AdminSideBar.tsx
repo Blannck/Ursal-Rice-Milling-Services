@@ -45,7 +45,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150",
+        "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-500",
         active
           ? "bg-white/20 text-white"
           : "text-white/80 hover:bg-white/10 hover:text-white"
@@ -60,55 +60,34 @@ function NavItem({
 
 export default function AdminSidebar({ user, app }: Props) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-
-  // Load collapse preference
-  useEffect(() => {
-    const saved = localStorage.getItem("admin-sidebar-collapsed");
-    if (saved) setCollapsed(saved === "1");
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("admin-sidebar-collapsed", collapsed ? "1" : "0");
-  }, [collapsed]);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
 
   const name = user?.displayName || user?.primaryEmail || "Admin";
 
   return (
     <aside
       className={cn(
-        "fixed h-screen left-0 z-40 flex-1 bg-custom-green drop-shadow-md transition-shadow flex flex-col",
-        collapsed ? "w-16" : "w-64"
+        "fixed h-screen left-0 z-40 flex-1 bg-custom-green drop-shadow-md transition-all duration-100 ease-in-out flex flex-col group",
+        collapsed ? "w-16 hover:w-64" : "w-64"
       )}
+      onMouseEnter={() => setCollapsed(false)}
+      onMouseLeave={() => setCollapsed(true)}
     >
-      {/* Brand + Collapse Button */}
-      <div className="flex items-center justify-between px-3 py-4 border-b border-white/20">
+      {/* Brand */}
+      <div className="flex items-center px-3 py-4 border-b border-white/20">
         <Link
           href="/"
           className={cn(
-            "flex items-center gap-2 font-semibold whitespace-nowrap text-white transition-all",
-            collapsed ? "justify-center" : ""
+            "flex items-center gap-2 font-semibold whitespace-nowrap text-white   transition-all",
+            collapsed ? "justify-center w-full" : ""
           )}
           title="Ursal Rice Milling Services"
         >
           <span className="text-lg">🌾</span>
           {!collapsed && (
             <span className="text-sm">Ursal Rice Milling Services</span>
-          )}
+          )} 
         </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed((v) => !v)}
-          className="ml-auto text-white hover:bg-white/20"
-          title={collapsed ? "Expand" : "Collapse"}
-        >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
       </div>
 
       {/* Navigation */}

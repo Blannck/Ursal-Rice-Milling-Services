@@ -275,7 +275,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center gap-2  rounded-lg p-1">
+              <div className="flex border border-black items-center gap-2  rounded-lg p-1">
                 <Button
                   variant={viewMode === "table" ? "default" : "ghost"}
                   size="sm"
@@ -380,10 +380,10 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             <EditDialog product={product} />
                             <Button
                               variant={product.isHidden ? "default" : "outline"}
-                              size="sm"
+                              size="lg"
                               onClick={(e) => handleToggleVisibility(product.id, e)}
                               disabled={loadingStates[product.id]}
-                              className="h-8 px-3"
+                              className="h-8  px-3"
                             >
                               {loadingStates[product.id] ? (
                                 "..."
@@ -413,7 +413,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               {filteredProducts.map((product) => (
                 <Card
                   key={product.id}
-                  className="group cursor-pointer border-0 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 "
+                  className="group cursor-pointer border-0 shadow-sm  hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 "
                   onClick={() => handleProductClick(product)}
                 >
                   <CardContent className="p-0">
@@ -440,7 +440,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                       {/* Category Badge */}
                       <Badge
                         variant="secondary"
-                        className="absolute top-3 right-3 /90 text-gray-700 border-0"
+                        className="absolute top-3 right-3 /90 text-white border-0"
                       >
                         {product.category}
                       </Badge>
@@ -450,10 +450,10 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                     <div className="p-6">
                       <div className="space-y-3">
                         <div>
-                          <h3 className="font-semibold text-lg  group-hover:text-blue-600 transition-colors line-clamp-2">
+                          <h3 className="font-semibold text-lg  group-hover:text-custom-orange transition-colors line-clamp-2">
                             {product.name}
                           </h3>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-black mt-1">
                             ID: {product.id.slice(0, 8)}...
                           </p>
                         </div>
@@ -464,7 +464,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                           </div>
                         </div>
 
-                        <div className="flex items-center text-sm text-gray-500">
+                        <div className="flex items-center text-sm text-black">
                           <Calendar className="h-4 w-4 mr-1" />
                           {formatDate(product.createdAt)}
                         </div>
@@ -472,27 +472,29 @@ export default function InventoryTable({ products }: InventoryTableProps) {
 
                       {/* Action Buttons */}
                       <div
-                        className="mt-6 flex gap-2"
+                        className="mt-6 grid grid-cols-2 gap-2"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <EditDialog product={product} />
+                        <div className="w-full">
+                          <EditDialog product={product} />
+                        </div>
                         <Button
                           variant={product.isHidden ? "default" : "outline"}
-                          size="sm"
+                          size="lg"
                           onClick={(e) => handleToggleVisibility(product.id, e)}
                           disabled={loadingStates[product.id]}
-                          className="flex-1"
+                          className="w-full h-10 "
                         >
                           {loadingStates[product.id] ? (
                             "Loading..."
                           ) : product.isHidden ? (
                             <>
-                              <Eye className="h-4 w-4 mr-2" />
+                              <Eye className="h-4 w-4 mr-1" />
                               Show
                             </>
                           ) : (
                             <>
-                              <EyeOff className="h-4 w-4 mr-2" />
+                              <EyeOff className="h-4 w-4 mr-1" />
                               Hide
                             </>
                           )}
@@ -509,7 +511,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
           <Card className="border-0 shadow-sm ">
             <CardContent className="text-center py-16">
               <div className=" rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                <Package className="h-10 w-10 text-gray-400" />
+                <Package className="h-10 w-10 text-black" />
               </div>
               <h3 className="text-xl font-semibold  mb-2">No products found</h3>
               <p className="text-gray-500 mb-6">

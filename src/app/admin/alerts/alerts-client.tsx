@@ -282,13 +282,13 @@ export default function AlertsClient({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Value at Risk
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₱{stats.totalValueAtRisk.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Current stock value</p>
+            <p className="text-xs text-black mt-1">Current stock value</p>
           </CardContent>
         </Card>
       </div>
@@ -298,7 +298,7 @@ export default function AlertsClient({
           <CardContent className="text-center py-16">
             <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-green-500" />
             <h3 className="text-xl font-semibold mb-2">All Stock Levels Healthy!</h3>
-            <p className="text-muted-foreground">
+            <p className="text-black">
               No products are currently below their reorder points.
             </p>
           </CardContent>
@@ -371,7 +371,7 @@ export default function AlertsClient({
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-black">
                   Showing {filteredProducts.length} of {stats.totalAlerts} alerts
                 </p>
                 <Button onClick={clearFilters} variant="ghost" size="sm">
@@ -388,7 +388,7 @@ export default function AlertsClient({
             </CardHeader>
             <CardContent>
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-black">
                   <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">No alerts match your filters</p>
                   <p className="text-sm">Try adjusting your filters</p>
@@ -423,7 +423,7 @@ export default function AlertsClient({
                             <TableCell>
                               <div>
                                 <p className="font-medium">{product.name}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-black">
                                   {product.category}
                                 </p>
                               </div>
@@ -450,11 +450,11 @@ export default function AlertsClient({
                                   {product.stockOnOrder}
                                 </Badge>
                               ) : (
-                                <span className="text-muted-foreground">-</span>
+                                <span className="text-black">-</span>
                               )}
                             </TableCell>
                             <TableCell className="text-center">
-                              <span className="font-semibold text-green-600">
+                              <span className="font-semibold text-black">
                                 {product.suggestedReorderQty}
                               </span>
                             </TableCell>
@@ -465,11 +465,11 @@ export default function AlertsClient({
                                       {item.location.type}
                                     </Badge>
                                     <span>{item.location.name}</span>
-                                    <span className="text-muted-foreground">({item.quantity})</span>
+                                    <span className="text-black">({item.quantity})</span>
                                   </div>
                                 ))}
                                 {product.inventoryItems.length > 2 && (
-                                  <span className="text-xs text-muted-foreground">
+                                  <span className="text-xs text-black">
                                     +{product.inventoryItems.length - 2} more
                                   </span>
                                 )}

@@ -275,20 +275,20 @@ if (data?.ok || data?.success) {
             <div className="lg:col-span-2 space-y-6">
               {/* Supplier Selection */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Supplier Information</CardTitle>
-                  <CardDescription>Select the supplier for this purchase order</CardDescription>
+                <CardHeader className="mb-5">
+                  <CardTitle >Supplier Information</CardTitle>
+                  <CardDescription className="text-black ">Select the supplier for this purchase order</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <Label htmlFor="supplier">Supplier</Label>
                     <Select value={selectedSupplierId} onValueChange={setSelectedSupplierId}>
-                      <SelectTrigger className="bg-white text-black">
+                      <SelectTrigger className="bg-custom-green text-white">
                         <SelectValue placeholder="Select a supplier" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-200 max-h-60 overflow-y-auto">
                         {suppliers.length === 0 ? (
-                          <div className="p-2 text-gray-500 text-center">No suppliers found</div>
+                          <div className="p-2 text-black text-center">No suppliers found</div>
                         ) : (
                           suppliers.map((supplier) => (
                             <SelectItem key={supplier.id} value={supplier.id} className="text-black hover:bg-gray-100">
@@ -450,7 +450,7 @@ if (data?.ok || data?.success) {
             {/* Right Column - Order Summary */}
             <div className="space-y-6">
               <Card>
-                <CardHeader>
+                <CardHeader className="mb-5">
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -474,7 +474,7 @@ if (data?.ok || data?.success) {
               <div className="space-y-6">
                 <Button
                   type="submit"
-                  className="w-full bg-custom-orange hover:bg-custom-orange/80 mb-2"
+                  className="w-full bg-custom-orange hover:bg-custom-orange/50 mb-2"
                   disabled={submitting || !selectedSupplierId || orderItems.length === 0}
                 >
                   {submitting ? "Creating..." : "Create Purchase Order"}

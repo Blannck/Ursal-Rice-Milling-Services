@@ -268,14 +268,14 @@ export default function PurchaseOrderEditPage() {
   if (!order) {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg text-red-600">Purchase order not found</div>
+        <div className="text-lg text-black">Purchase order not found</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl  mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -303,15 +303,15 @@ export default function PurchaseOrderEditPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Supplier</CardTitle>
-                <CardDescription>Read only</CardDescription>
+                <CardDescription className="text-black">Read only</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-500">Name</Label>
+                  <Label className="text-sm text-black">Name</Label>
                   <div className="text-lg font-semibold">{order.supplier.name}</div>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-500">Email</Label>
+                  <Label className="text-sm text-black">Email</Label>
                   <div>{order.supplier.email || "—"}</div>
                 </div>
               </CardContent>
@@ -321,7 +321,7 @@ export default function PurchaseOrderEditPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Order Info</CardTitle>
-                <CardDescription>Update status or add context</CardDescription>
+                <CardDescription className="text-black">Update status or add context</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="max-w-xs">
@@ -352,7 +352,7 @@ export default function PurchaseOrderEditPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Items</CardTitle>
-                <CardDescription>Edit quantities, prices, or remove items</CardDescription>
+                <CardDescription className="text-black">Edit quantities, prices, or remove items</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -461,7 +461,7 @@ export default function PurchaseOrderEditPage() {
                       ))}
                       {items.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-6">
+                          <TableCell colSpan={6} className="text-center text-black py-6">
                             No items yet
                           </TableCell>
                         </TableRow>
