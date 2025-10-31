@@ -35,10 +35,10 @@ export function Combobox({ value, onChange }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover  open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="tertiary"
           role="combobox"
           aria-expanded={open}
           className="w-[200px]  justify-between"
@@ -47,12 +47,13 @@ export function Combobox({ value, onChange }: ComboboxProps) {
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search category..." className="h-9" />
-          <CommandList>
-            <CommandEmpty>No category found.</CommandEmpty>
-            <CommandGroup>
+      <PopoverContent className="w-[200px] p-0 bg-white">
+        <Command className="bg-white">
+          <CommandInput placeholder="Search category..." className="h-9 text-black ml-0" />
+         
+          <CommandList className="text-black bg-white">
+            <CommandEmpty className="text-black">No category found.</CommandEmpty>
+            <CommandGroup className="bg-white ">
               {productCategories.map((cat) => (
                 <CommandItem
                   key={cat.value}
@@ -61,18 +62,21 @@ export function Combobox({ value, onChange }: ComboboxProps) {
                     onChange(currentValue);
                     setOpen(false);
                   }}
+                  className="text-black"
                 >
                   {cat.label}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === cat.value ? "opacity-100" : "opacity-0"
+                      value === cat.value ? "opacity-100" : "opacity-0",
+                     
                     )}
                   />
                 </CommandItem>
               ))}
             </CommandGroup>
           </CommandList>
+        
         </Command>
       </PopoverContent>
     </Popover>

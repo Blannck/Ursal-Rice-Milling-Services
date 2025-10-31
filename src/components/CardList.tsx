@@ -216,7 +216,7 @@ export default function CardList({ products }: CardListProps) {
                   >
                     <div className="space-y-3">
                       <div>
-                        <h3 className="font-semibold text-lg  group-hover:text-blue-600 transition-colors line-clamp-2">
+                        <h3 className="font-semibold text-lg  group-hover:text-custom-orange transition-colors line-clamp-2">
                           {product.name}
                         </h3>
                         {product.description && (

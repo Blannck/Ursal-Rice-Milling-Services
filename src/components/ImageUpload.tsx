@@ -12,11 +12,11 @@ interface ImageUploadProps {
 function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
   if (value) {
     return (
-      <div className="relative size-40">
+      <div className="relative mx-auto size-40">
         <img
           src={value}
           alt="Upload"
-          className="rounded-md w-full h-full object-cover"
+          className="rounded-lg  w-full h-full  object-cover"
         />
         <button
           onClick={() => onChange("")}
@@ -30,9 +30,10 @@ function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
   }
 
   return (
-    <div className="w-25 flex items-center">
+    <div className="w-25  text-black flex mx-auto items-center">
       <UploadDropzone<OurFileRouter, "postImage">
         endpoint={endpoint}
+        className="bg-white text-black ut-label:text-black ut-button:bg-custom-orange ut-button:text-white"
         onClientUploadComplete={(res) => {
           // Do something with the response
           console.log("Files: ", res);

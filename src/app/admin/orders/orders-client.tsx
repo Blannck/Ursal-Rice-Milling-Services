@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -310,7 +311,7 @@ export default function OrdersClient({
                           </div>
                           <div className="text-xs text-black flex items-center gap-1 mt-1">
                             <Calendar className="h-3 w-3" />
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {formatDate(order.createdAt)}
                           </div>
                           <div className="text-xs text-black flex items-center gap-1 mt-1">
                             <User className="h-3 w-3" />
@@ -381,7 +382,7 @@ export default function OrdersClient({
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                      {formatDate(selectedOrder.createdAt)}
                     </div>
                   </div>
                 </div>

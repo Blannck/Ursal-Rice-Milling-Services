@@ -47,10 +47,12 @@ export default async function TransactionsPage() {
   });
 
   return (
+    < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
     <TransactionsClient
       transactions={transactions}
       products={products}
       locations={locations}
     />
+    </div>
   );
 }

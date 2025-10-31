@@ -121,10 +121,10 @@ export default function EditDialog({ product }: EditDialogProps) {
           </span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="text-black bg-custom-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Edit Product</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-black">
             Update the details of this product in your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -152,6 +152,7 @@ export default function EditDialog({ product }: EditDialogProps) {
 
           <Label htmlFor="description">Description</Label>
           <Textarea
+            className="bg-white"
             id="description"
             placeholder="Type product description here."
             rows={5}
@@ -226,7 +227,7 @@ export default function EditDialog({ product }: EditDialogProps) {
                 value={formData.reorderPoint}
                 onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-black mt-1">
                 Alert when stock falls below this level
               </p>
             </div>

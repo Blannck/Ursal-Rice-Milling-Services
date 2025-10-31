@@ -70,10 +70,10 @@ export default function CreateDialog() {
           <span>Add Product</span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="text-black bg-custom-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Add a Product</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-black">
             Fill out the form below to add a new product to your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -94,6 +94,7 @@ export default function CreateDialog() {
             <div>
               <Label htmlFor="category">Category</Label>
               <Combobox
+               
                 value={formData.category}
                 onChange={(val) => handleChange("category", val)}
               />
@@ -101,6 +102,7 @@ export default function CreateDialog() {
           </div>
           <Label htmlFor="description">Description</Label>
           <Textarea
+            className="bg-white"
             id="description"
             placeholder="Type your message here."
             rows={5}
@@ -142,15 +144,16 @@ export default function CreateDialog() {
                 value={formData.reorderPoint}
                 onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-black mt-1">
                 Alert when stock falls below this level
               </p>
             </div>
           </div>
 
           {/* Image Upload */}
-          <div className="py-5">
+          <div className="py-5 ">
             <ImageUpload
+             
               endpoint="postImage"
               value={formData.imageUrl}
               onChange={(url) => {

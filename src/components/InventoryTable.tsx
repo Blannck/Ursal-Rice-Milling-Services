@@ -339,7 +339,8 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm text-gray-500 truncate">
+                              <p className="text-sm text-black">{product.name}</p>
+                              <p className="text-sm text-black truncate">
                                 ID: {product.id.slice(0, 8)}...
                               </p>
                             </div>

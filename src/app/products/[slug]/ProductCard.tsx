@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/utils";
 import { ShoppingCart, Download } from "lucide-react";
 import AddToCartButton from "@/components/AddtoCartButton";
 import MiniPriceChart from "@/components/MiniPriceChart";
@@ -87,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <div className="flex justify-between">
                   <span className="text-black">Updated</span>
                   <span className="font-medium">
-                    {product.updatedAt.toLocaleDateString()}
+                    {formatDate(product.updatedAt)}
                   </span>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { formatDate } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
@@ -237,37 +238,12 @@ export function InventoryClient({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-white">
+          <p className="text-muted-foreground mt-1">
             Manage storage locations and product inventory
           </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={handleSyncFromPOs}
-            disabled={syncingInventory}
-            className="gap-2"
-          >
-            {syncingInventory ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-            Sync from POs
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push("/admin/inventory/adjustments")}
-            className="gap-2"
-          >
-            <Pencil className="h-4 w-4" />
-            Adjust Stock
-          </Button>
-          <AssignInventoryDialog products={initialProducts} locations={initialLocations} />
-          <CreateLocationDialog locations={initialLocations} />
         </div>
       </div>
 
@@ -319,12 +295,38 @@ export function InventoryClient({
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="inventory" className="space-y-4 ">
-        <TabsList className="bg-custom-white">
-          <TabsTrigger className=" text-black" value="inventory">Inventory Items</TabsTrigger>
-          <TabsTrigger className=" text-black" value="locations">Storage Locations</TabsTrigger>
-        </TabsList>
-
+      <Tabs defaultValue="inventory" className="space-y-4 w-full">
+        <div className="flex items-center justify-between mb-4">
+          <TabsList className="bg-custom-white">
+            <TabsTrigger className="text-black" value="inventory">Inventory Items</TabsTrigger>
+            <TabsTrigger className="text-black" value="locations">Storage Locations</TabsTrigger>
+          </TabsList>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              onClick={handleSyncFromPOs}
+              disabled={syncingInventory}
+              className="gap-2"
+            >
+              {syncingInventory ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              Sync from POs
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin/inventory/adjustments")}
+              className="gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Adjust Stock
+            </Button>
+            <AssignInventoryDialog products={initialProducts} locations={initialLocations} />
+            <CreateLocationDialog locations={initialLocations} />
+          </div>
+        </div>
         {/* Inventory Items Tab */}
         <TabsContent value="inventory" className="space-y-4">
           <Card>
@@ -332,7 +334,7 @@ export function InventoryClient({
               <div className="flex mb-5 items-center justify-between">
                 <div>
                   <CardTitle>Product Inventory</CardTitle>
-                  <CardDescription className="text-black">
+                  <CardDescription>
                     View and manage products across storage locations
                   </CardDescription>
                 </div>
@@ -391,7 +393,7 @@ export function InventoryClient({
                               </Badge>
                               <span className="text-sm">
                                 {item.location.name}
-                                <span className= "text-black ml-1">
+                                <span className="text-muted-foreground ml-1">
                                   ({item.location.code})
                                 </span>
                               </span>
@@ -411,7 +413,7 @@ export function InventoryClient({
                             )}
                           </TableCell>
                           <TableCell className="text-sm text-black">
-                            {new Date(item.updatedAt).toLocaleDateString()}
+                            {formatDate(item.updatedAt)}
                           </TableCell>
                         </TableRow>
                       );

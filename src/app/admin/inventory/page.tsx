@@ -57,6 +57,7 @@ export default async function InventoryManagementPage() {
 
   return (
     <div className="container mx-auto py-6">
+    < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
       <Suspense fallback={<div>Loading...</div>}>
         <InventoryClient
           initialLocations={data.locations}
@@ -64,6 +65,7 @@ export default async function InventoryManagementPage() {
           initialInventoryItems={data.inventoryItems}
         />
       </Suspense>
+    </div>
     </div>
   );
 }

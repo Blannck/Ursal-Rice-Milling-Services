@@ -2,6 +2,7 @@
 
 import React, { Suspense } from "react";
 import { getOrders } from "@/actions/order.action";
+import { formatDate } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,11 +89,7 @@ export default async function OrdersPage() {
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1.5 ">
                         <Calendar className="h-4 w-4" />
-                        {new Date(order.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {formatDate(order.createdAt)}
                       </div>
                       <Badge
                         variant="outline"

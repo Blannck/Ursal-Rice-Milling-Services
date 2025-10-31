@@ -152,32 +152,78 @@ export  default async function HomePage() {
   const popularProducts = mockProducts.slice(3, 6);
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative py-24">
+        <div className="relative">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('/rice-pattern.png')] opacity-5"></div>
+          
+          {/* Content */}
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center space-y-8">
+              
+              <h1 className="text-4xl md:text-6xl font-bold text-white">
+                Welcome to <span className="text-white">Ursal Rice Milling</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-white max-w-3xl mx-auto">
+                Your trusted partner for high-quality rice products and excellent service
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+              
+                <Button 
+                  variant="default"
+                  size="lg" 
+                  className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8"
+                >
+                  Shop Now
+                </Button>
+                
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="text-white border-white/20 hover:bg-white/10"
+                >
+                  Learn More
+                </Button>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-10 w-64 h-64 bg-custom-orange/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-10 w-64 h-64 bg-custom-orange/10 rounded-full blur-3xl"></div>
+        </div>
+      </section>
+
       {/* Stats Section */}
-      <section className="py-16  ">
+   
+
+      {/* Categories Section */}
+      <section className="py-16 bg-zinc-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-8 w-8 text-black" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Categories</h2>
+            <p className="text-gray-400 text-xl">Explore our wide range of rice products</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {productCategories.slice(0, 4).map((category) => (
+              <div
+                key={category.value}
+                className="bg-zinc-800/50 p-6 rounded-xl hover:bg-zinc-700/50 transition-colors cursor-pointer group"
+              >
+                <div className={`${category.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  <category.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{category.label}</h3>
+                <p className="text-gray-400">
+                  Premium quality {category.label.toLowerCase()} for your needs
+                </p>
               </div>
-              <h3 className="text-3xl font-bold  mb-2">500+</h3>
-              <p className="">Product Sales</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-black" />
-              </div>
-              <h3 className="text-3xl font-bold  mb-2">100+</h3>
-              <p className="">Happy Customers</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-custom-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-black" />
-              </div>
-              <h3 className="text-3xl font-bold  mb-2">4.9/5</h3>
-              <p className="">Average Rating</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -185,18 +231,18 @@ export  default async function HomePage() {
     
 
       {/* Featured Products Section */}
-      <section className="py-20 ">
+      <section className="py-20 bg-zinc-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div> 
-              <h2 className="text-3xl md:text-4xl font-bold  mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Featured Products
               </h2>
-              <p className="text-xl ">
+              <p className="text-xl text-gray-400">
                 Hand-picked premium products from our collection
               </p>
             </div>
-            <Button variant="outline" className="hidden md:flex">
+            <Button variant="outline" className="hidden md:flex text-white border-white hover:bg-white/10">
               View All Products
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -266,6 +312,74 @@ export  default async function HomePage() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-zinc-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Why Choose Us
+            </h2>
+            <p className="text-xl text-gray-400">
+              Discover the advantages of partnering with Ursal Rice Milling
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Star className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Premium Quality</h3>
+              <p className="text-gray-400">
+                We ensure the highest quality standards for all our rice products
+              </p>
+            </div>
+
+            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Best Prices</h3>
+              <p className="text-gray-400">
+                Competitive prices without compromising on quality
+              </p>
+            </div>
+
+            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">Customer Service</h3>
+              <p className="text-gray-400">
+                Dedicated support team to assist you with any queries
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-20 bg-custom-orange">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ready to Experience Our Premium Rice Products?
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+            Join our growing family of satisfied customers and discover the difference of quality rice products.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-black hover:bg-black/90 text-white">
+              Shop Now
+              <ShoppingCart className="ml-2 h-5 w-5" />
+            </Button>
+            <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+              Contact Us
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
           </div>
         </div>
       </section>

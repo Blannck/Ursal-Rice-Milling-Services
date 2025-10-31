@@ -46,5 +46,9 @@ export default async function ReorderAlertsPage() {
     },
   });
 
-  return <AlertsClient products={lowStockProducts} suppliers={suppliers} />;
+  return (
+  < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+  <AlertsClient products={lowStockProducts} suppliers={suppliers} />;
+</div>
+  )
 }
