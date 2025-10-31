@@ -56,6 +56,13 @@ export async function getProductById(id: string) {
   try {
     const product = await prisma.product.findUnique({
       where: { id },
+      include: {
+        priceHistory: {
+          orderBy: {
+            createdAt: 'asc'
+          }
+        }
+      }
     });
     return product;
   } catch (error) {
@@ -134,20 +141,57 @@ export async function createProduct(data: Prisma.ProductCreateInput) {
 
 
 // Update a product
-export async function editProduct(id: string, data: Prisma.ProductUpdateInput) {
+export async function editProduct(
+  id: string, 
+  data: Prisma.ProductUpdateInput & { priceChangeReason?: string }
+) {
   try {
     const currentUserId = await getUserId();
 
-    const updatedProduct = await prisma.product.update({
+    // Extract priceChangeReason from data (not part of Prisma schema)
+    const { priceChangeReason, ...productData } = data;
+
+    // Check if price is being changed
+    const oldProduct = await prisma.product.findUnique({
       where: { id },
-      data: {
-        ...data,
-        userId: currentUserId,
-      },
+      select: { price: true }
+    });
+
+    const newPrice = typeof productData.price === 'number' ? productData.price : oldProduct?.price;
+    const priceChanged = oldProduct && newPrice !== undefined && newPrice !== oldProduct.price;
+
+    // Use transaction to update product and create price history atomically
+    const result = await prisma.$transaction(async (tx) => {
+      // Update the product
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: {
+          ...productData,
+          userId: currentUserId,
+        },
+      });
+
+      // Create price history record if price changed
+      if (priceChanged && oldProduct) {
+        await tx.priceHistory.create({
+          data: {
+            productId: id,
+            oldPrice: oldProduct.price,
+            newPrice: newPrice as number,
+            changedBy: currentUserId || 'system',
+            reason: priceChangeReason || 'Price updated',
+          }
+        });
+      }
+
+      return updatedProduct;
     });
 
     revalidatePath("/products");
-    return updatedProduct;
+    revalidatePath("/admin/myproducts");
+    revalidatePath("/admin/price-history");
+    
+    return result;
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;

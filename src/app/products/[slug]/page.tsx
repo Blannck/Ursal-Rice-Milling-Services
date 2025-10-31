@@ -41,6 +41,7 @@ async function Page({ params }: { params: { slug: string } }) {
         imageUrl: product.imageUrl ?? undefined,
         downloadUrl: product.downloadUrl ?? undefined,
         description: product.description ?? undefined,
+        priceHistory: product.priceHistory || [],
       }
     : product;
 

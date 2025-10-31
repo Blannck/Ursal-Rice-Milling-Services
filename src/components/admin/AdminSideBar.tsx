@@ -18,6 +18,7 @@ import {
   Warehouse,
   History,
   AlertTriangle,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
@@ -216,6 +217,16 @@ export default function AdminSidebar({ user, app }: Props) {
             label="Reorder Alerts"
             icon={AlertTriangle}
             active={pathname.startsWith("/admin/alerts")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/price-history"
+            label="Price History"
+            icon={TrendingUp}
+            active={pathname.startsWith("/admin/price-history")}
             collapsed={collapsed}
           />
         </div>

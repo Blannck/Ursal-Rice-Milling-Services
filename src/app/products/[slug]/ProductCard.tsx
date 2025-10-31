@@ -1,9 +1,12 @@
+"use client";
+
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Download } from "lucide-react";
 import AddToCartButton from "@/components/AddtoCartButton";
+import MiniPriceChart from "@/components/MiniPriceChart";
 
 // Mock type based on your schema
 type Product = {
@@ -16,6 +19,15 @@ type Product = {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  priceHistory?: {
+    id: string;
+    productId: string;
+    oldPrice: number;
+    newPrice: number;
+    changedBy: string;
+    reason: string | null;
+    createdAt: Date;
+  }[];
 };
 
 interface ProductCardProps {
@@ -104,6 +116,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </span>
               </div>
             </div>
+
+            {/* Price History Chart */}
+            {product.priceHistory && product.priceHistory.length > 0 && (
+              <div className="mt-4">
+                <MiniPriceChart
+                  priceHistory={product.priceHistory}
+                  currentPrice={product.price}
+                />
+              </div>
+            )}
 
             {product.description && (
               <p className="text-white text-lg leading-relaxed">

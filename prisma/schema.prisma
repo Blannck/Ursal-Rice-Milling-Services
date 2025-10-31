@@ -46,6 +46,23 @@ model Product {
   purchaseOrderItems PurchaseOrderItem[]
   InventoryTxn       InventoryTransaction[]
   inventoryItems     InventoryItem[]
+  priceHistory       PriceHistory[]
+}
+
+model PriceHistory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String   @db.ObjectId
+  
+  oldPrice  Float
+  newPrice  Float
+  changedBy String   // User ID who changed the price
+  reason    String?  // Optional reason for price change
+  
+  createdAt DateTime @default(now())
+  
+  @@index([productId])
+  @@index([createdAt])
 }
 
 model Order {
