@@ -41,6 +41,8 @@ model Product {
   stockOnOrder       Int                    @default(0)
   stockAllocated     Int                    @default(0)
   reorderPoint       Int                    @default(0)
+  isMilledRice       Boolean                @default(false)
+  millingYieldRate   Float?                 // Percentage of unmilled rice that becomes milled rice
   CartItem           CartItem[]
   OrderItem          OrderItem[]
   purchaseOrderItems PurchaseOrderItem[]
@@ -203,7 +205,7 @@ model InventoryTransaction {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   product             Product  @relation(fields: [productId], references: [id])
   productId           String   @db.ObjectId
-  kind                String // STOCK_IN | STOCK_OUT | RETURN_IN | RETURN_OUT | ADJUSTMENT | PO_ON_ORDER
+  kind                String // STOCK_IN | STOCK_OUT | RETURN_IN | RETURN_OUT | ADJUSTMENT | PO_ON_ORDER | MILLING_IN | MILLING_OUT
   purchaseOrderId     String?  @db.ObjectId
   purchaseOrderItemId String?  @db.ObjectId
   purchaseReturnId    String?  @db.ObjectId

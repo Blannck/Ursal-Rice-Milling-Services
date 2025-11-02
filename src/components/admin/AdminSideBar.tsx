@@ -204,7 +204,7 @@ export default function AdminSidebar({ user, app }: Props) {
         <div className="px-2 mb-3">
           <NavItem
             href="/admin/transactions"
-            label="Transaction History"
+            label="Inventory History"
             icon={History}
             active={pathname.startsWith("/admin/transactions")}
             collapsed={collapsed}

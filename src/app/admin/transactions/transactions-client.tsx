@@ -261,7 +261,7 @@ export default function TransactionsClient({
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <History className="h-8 w-8" />
-            Transaction History
+            Inventory History
           </h1>
           <p className="text-white mt-1">
             Complete audit trail of all inventory movements
@@ -345,7 +345,7 @@ export default function TransactionsClient({
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search transactions..."
+                placeholder="Search records..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -415,7 +415,7 @@ export default function TransactionsClient({
 
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-black">
-              Showing {filteredTransactions.length} of {transactions.length} transactions
+              Showing {filteredTransactions.length} of {transactions.length} records
             </p>
             <Button onClick={clearFilters} variant="ghost" size="sm">
               Clear Filters
@@ -427,13 +427,13 @@ export default function TransactionsClient({
       {/* Transactions Table */}
       <Card>
         <CardHeader className="  mb-5">
-          <CardTitle>Transaction Records</CardTitle>
+          <CardTitle>Inventory Records</CardTitle>
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">No transactions found</p>
+              <p className="text-lg font-medium">No records found</p>
               <p className="text-sm">Try adjusting your filters</p>
             </div>
           ) : (
