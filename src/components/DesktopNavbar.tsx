@@ -32,19 +32,19 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
   // Otherwise keep the top navbar
   return (
    
-    <div className="hidden md:flex items-center  w-full bg-custom-green h-16 justify-between  mx-auto px-4 shadow-lg">
-      {/* Logo */}
-      <div className="flex items-center">
+    <div className="hidden md:flex items-center  w-4/12 rounded-full bg-custom-green h-16 justify-between  mx-auto px-4 shadow-lg">
+ 
+      {/* Navigation */}
+    
+
+      <div className="flex items-center mx-auto space-x-4">
         <Link
           href="/"
           className="flex items-center gap-2 text-xl font-bold  font-tracking-wider whitespace-nowrap"
         >
           🌾
-          <span>Ursal Rice Milling Services</span>
+          
         </Link>
-      </div>
-      {/* Navigation */}
-      <div className="flex items-center space-x-4">
         <Button variant="ghost" className="flex items-center gap-2" asChild>
           <Link href="/">
             <HomeIcon className="w-4 h-4" />

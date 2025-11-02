@@ -28,7 +28,7 @@ async function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 w-full  bg-transparent   z-50">
+    <nav className="sticky top-6 w-full  bg-transparent z-50">
       <DesktopNavbar user={safeUser} app={safeApp} isAdmin={!!isAdmin} />
       <MobileNavbar user={safeUser} app={safeApp} isAdmin={!!isAdmin} />
     </nav>

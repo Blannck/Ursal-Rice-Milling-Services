@@ -159,7 +159,7 @@ export  default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
           
-      <section className="relative bg-black/50 py-28 overflow-hidden">
+      <section className="relative bg-transparent py-28 overflow-hidden">
 
       
         {/* Content */}
