@@ -188,6 +188,7 @@ export function CreateLocationDialog({ locations = [] }: CreateLocationDialogPro
             <div className="grid gap-2">
               <Label htmlFor="description">Description (Optional)</Label>
               <Textarea
+                className="bg-white"
                 id="description"
                 placeholder="Additional notes..."
                 value={formData.description}

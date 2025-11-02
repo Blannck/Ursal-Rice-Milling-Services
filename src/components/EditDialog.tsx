@@ -111,8 +111,8 @@ export default function EditDialog({ product }: EditDialogProps) {
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button
-          variant="secondary"
-          className="w-full h-10 flex items-center justify-center gap-2"
+          variant="default"
+          className="w-full  h-10 flex items-center justify-center gap-2"
           asChild
         >
           <span>

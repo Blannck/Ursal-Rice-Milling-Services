@@ -241,7 +241,7 @@ export function InventoryClient({
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Manage storage locations and product inventory
           </p>
         </div>
@@ -252,44 +252,44 @@ export function InventoryClient({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Locations</CardTitle>
-            <Warehouse className="h-4 w-4 text-muted-foreground" />
+            <Warehouse className="h-4 w-4 text-black" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="ml">
             <div className="text-2xl font-bold">{totalLocations}</div>
-            <p className="text-xs text-muted-foreground">Active storage locations</p>
+            <p className="text-xs text-black">Active storage locations</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Products Stored</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-muted-foreground">Unique products in inventory</p>
+            <p className="text-xs text-black">Unique products in inventory</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Quantity</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <MapPin className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalQuantity.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Units across all locations</p>
+            <p className="text-xs text-black">Units across all locations</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <AlertTriangle className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{lowStockItems.length}</div>
-            <p className="text-xs text-muted-foreground">Items need reordering</p>
+            <p className="text-xs text-black">Items need reordering</p>
           </CardContent>
         </Card>
       </div>
@@ -334,7 +334,7 @@ export function InventoryClient({
               <div className="flex mb-5 items-center justify-between">
                 <div>
                   <CardTitle>Product Inventory</CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-black">
                     View and manage products across storage locations
                   </CardDescription>
                 </div>
@@ -367,7 +367,7 @@ export function InventoryClient({
                 <TableBody>
                   {filteredInventory.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center text-black">
                         No inventory items found
                       </TableCell>
                     </TableRow>
@@ -393,7 +393,7 @@ export function InventoryClient({
                               </Badge>
                               <span className="text-sm">
                                 {item.location.name}
-                                <span className="text-muted-foreground ml-1">
+                                <span className="text-black ml-1">
                                   ({item.location.code})
                                 </span>
                               </span>
@@ -466,7 +466,7 @@ export function InventoryClient({
                 <TableBody>
                   {filteredLocations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center text-black">
                         No locations found
                       </TableCell>
                     </TableRow>
@@ -485,7 +485,7 @@ export function InventoryClient({
                             {location.type}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm text-black">
                           {location.parent?.name || "-"}
                         </TableCell>
                         <TableCell>{location.capacity || "-"}</TableCell>

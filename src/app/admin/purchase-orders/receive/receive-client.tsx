@@ -208,7 +208,7 @@ export function ReceiveShipmentClient({
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Receive Shipment</h1>
-        <p className="text-muted-foreground">
+        <p className="text-white">
           Receive items from purchase orders into storage locations
         </p>
       </div>
@@ -241,9 +241,9 @@ export function ReceiveShipmentClient({
 
       {/* PO Selection */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Select Purchase Order</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-black">
             Choose a purchase order to receive items from
           </CardDescription>
         </CardHeader>
@@ -279,7 +279,7 @@ export function ReceiveShipmentClient({
                     <p className="font-medium">
                       {selectedPo.supplier.name}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-black">
                       Order Date: {new Date(selectedPo.orderDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -334,7 +334,7 @@ export function ReceiveShipmentClient({
                       <TableCell>
                         <div>
                           <p className="font-medium">{item.product?.name || "Unknown Product"}</p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-black">
                             {item.product?.category || "-"}
                           </p>
                         </div>
@@ -359,7 +359,7 @@ export function ReceiveShipmentClient({
                             className="w-24"
                           />
                         ) : (
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-black">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -392,7 +392,7 @@ export function ReceiveShipmentClient({
                             </SelectContent>
                           </Select>
                         ) : (
-                          <span className="text-muted-foreground">-</span>
+                          <span className="text-black">-</span>
                         )}
                       </TableCell>
                       <TableCell>

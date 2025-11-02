@@ -355,9 +355,9 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 <Label>Address</Label>
                 <Input value={editing.address || ""} onChange={(e) => setEditing({ ...editing, address: e.target.value })} />
               </div>
-              <div>
+              <div >
                 <Label>Note</Label>
-                <Textarea value={editing.note || ""} onChange={(e) => setEditing({ ...editing, note: e.target.value })} />
+                <Textarea className="bg-white" value={editing.note || ""} onChange={(e) => setEditing({ ...editing, note: e.target.value })} />
               </div>
               <div className="flex items-center gap-2 pt-1">
                 <Switch checked={!!editing.isActive} onCheckedChange={(v) => setEditing({ ...editing, isActive: v })} />
@@ -368,7 +368,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
               <div className="space-y-3 border-t pt-4">
                 <div>
                   <Label className="text-base font-medium">Associate Products</Label>
-                  <p className="text-sm text-muted-foreground">Select products to associate with this supplier</p>
+                  <p className="text-sm text-black">Select products to associate with this supplier</p>
                 </div>
                 
                 {/* Product Search */}
@@ -383,13 +383,13 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 </div>
 
                 {/* Product List */}
-                <div className="max-h-40 overflow-y-auto border rounded-md">
+                <div className="max-h-40 overflow-y-auto bg-white border rounded-md">
                   {loadingProducts ? (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
+                    <div className="p-4 text-center text-sm text-black">
                       Loading products...
                     </div>
                   ) : filteredProducts.length === 0 ? (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
+                    <div className="p-4 text-center text-sm text-black">
                       {productSearch ? "No products found" : "No products available"}
                     </div>
                   ) : (
@@ -397,15 +397,16 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                       const isSelected = selectedProducts.includes(product.id);
                       
                       return (
-                        <div key={product.id} className="flex items-center space-x-3 p-3 hover:bg-gray-600 border-b last:border-b-0">
+                        <div key={product.id} className="flex items-center space-x-3 p-3 hover:bg-custom-orange hover:text-white border-b last:border-b-0">
                           <Checkbox
+
                             id={`product-${product.id}`}
                             checked={isSelected}
                             onCheckedChange={() => toggleProduct(product.id)}
                           />
                           <div className="flex-1">
                             <div className="font-medium text-sm">{product.name}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-black ">
                               {product.category} • ₱{product.price.toFixed(2)}
                               {isSelected && editing?.id && (
                                 <span className="ml-2 text-green-600">
@@ -423,7 +424,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 {/* Selected Products Summary */}
                 {selectedProducts.length > 0 && (
                   <div className="text-sm">
-                    <div className="font-medium text-green-600 mb-2">
+                    <div className="font-medium text-black mb-2">
                       {selectedProducts.length} product{selectedProducts.length === 1 ? '' : 's'} selected
                     </div>
                     {editing?.id && (

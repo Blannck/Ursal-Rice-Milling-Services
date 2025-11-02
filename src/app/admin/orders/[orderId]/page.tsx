@@ -84,7 +84,8 @@ export default async function AdminOrderDetailPage({
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className=" mx-auto p-6 space-y-6">
+      <div className="border-transparent w-full h bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -98,7 +99,7 @@ export default async function AdminOrderDetailPage({
             <h1 className="text-3xl font-bold">
               Order #{order.id.slice(0, 8).toUpperCase()}
             </h1>
-            <p className="text-black mt-1">
+            <p className="text-white mt-1">
               View order details and warehouse fulfillment information
             </p>
           </div>
@@ -113,7 +114,7 @@ export default async function AdminOrderDetailPage({
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
+              <Package className="h-5 w-5 mb-5" />
               Order Information
             </CardTitle>
           </CardHeader>
@@ -151,7 +152,7 @@ export default async function AdminOrderDetailPage({
                 {order.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex items-center justify-between p-4 border bg-white rounded-lg"
                   >
                     <div className="flex-1">
                       <p className="font-medium">{item.product.name}</p>
@@ -210,7 +211,7 @@ export default async function AdminOrderDetailPage({
                         {txns.map((txn, index) => (
                           <div
                             key={txn.id}
-                            className="flex items-start justify-between gap-2 p-3 bg-accent rounded-lg"
+                            className="flex items-start justify-between gap-2 p-3 bg-white rounded-lg"
                           >
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
@@ -252,7 +253,7 @@ export default async function AdminOrderDetailPage({
       </div>
 
       {/* Customer Invoice Link */}
-      <Card>
+      <Card className="mt-6">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div>
@@ -270,6 +271,7 @@ export default async function AdminOrderDetailPage({
           </div>
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }

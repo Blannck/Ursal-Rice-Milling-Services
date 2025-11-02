@@ -248,7 +248,7 @@ export default function AdjustmentsClient({
             <RefreshCw className="h-8 w-8" />
             Inventory Adjustments
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Manually adjust stock quantities with audit trail
           </p>
         </div>
@@ -274,7 +274,7 @@ export default function AdjustmentsClient({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Adjustment Form */}
         <Card>
-          <CardHeader>
+          <CardHeader className="mb-5">
             <CardTitle>Adjustment Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -293,7 +293,7 @@ export default function AdjustmentsClient({
                       <SelectItem key={product.id} value={product.id}>
                         <div className="flex items-center justify-between gap-4 w-full">
                           <span>{product.name}</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="secondary" className="text-xs">
                             Stock: {actualStock}
                           </Badge>
                         </div>

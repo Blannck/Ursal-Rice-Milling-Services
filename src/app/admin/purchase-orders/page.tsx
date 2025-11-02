@@ -61,10 +61,10 @@ export default function PurchaseOrdersPage() {
 
   const statusOptions = [
     { value: "all", label: "All Status" },
-    { value: "Pending", label: "Pending" },
-    { value: "Ordered", label: "Ordered" },
+    { value: "Pending", label: "Pending", variant: "tertiary" },
+    { value: "Ordered", label: "Ordered" , variant: "fifth"},
     { value: "Received", label: "Received" },
-    { value: "Cancelled", label: "Cancelled" },
+    { value: "Cancelled", label: "Cancelled" , variant: "destructive"},
   ];
 
   // Fetch purchase orders
@@ -132,7 +132,7 @@ export default function PurchaseOrdersPage() {
   if (hasBackorders) return "secondary";
   switch (status) {
     case "Pending": return "tertiary";
-    case "Ordered": return "tertiary";
+    case "Ordered": return "fifth";
     case "Received": return "fourth";
     case "Cancelled": return "destructive";
     default: return "secondary";
@@ -252,7 +252,7 @@ export default function PurchaseOrdersPage() {
                   purchaseOrders.map((order) => (
                     <TableRow
                       key={order.id}
-                      className="cursor-pointer hover:bg-gray-900/60"
+                      className="cursor-pointer hover:bg-custom-orange hover:text-white"
                       onClick={() =>
                         (window.location.href = `/admin/purchase-orders/${order.id}`)
                       }
@@ -291,7 +291,7 @@ export default function PurchaseOrdersPage() {
                           <div className="font-medium">
                             {order.supplier.name}
                           </div>
-                          <div className="text-sm text-gray-400">
+                          <div className="text-sm text-black">
                             {order.supplier.email || "—"}
                           </div>
                         </div>

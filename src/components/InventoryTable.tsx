@@ -384,7 +384,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                               size="lg"
                               onClick={(e) => handleToggleVisibility(product.id, e)}
                               disabled={loadingStates[product.id]}
-                              className="h-8  px-3"
+                              className="h-10  px-3"
                             >
                               {loadingStates[product.id] ? (
                                 "..."
@@ -481,7 +481,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         </div>
                         <Button
                           variant={product.isHidden ? "default" : "outline"}
-                          size="lg"
+                          size="sm"
                           onClick={(e) => handleToggleVisibility(product.id, e)}
                           disabled={loadingStates[product.id]}
                           className="w-full h-10 "

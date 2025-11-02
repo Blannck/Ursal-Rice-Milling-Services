@@ -44,16 +44,16 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Rice Products Price History</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-white mt-2">
           Track and analyze price changes across all products
         </p>
       </div>
 
       {/* Product Selection */}
       <Card className="mb-6">
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Select Product</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-black">
             Choose a product to view its price history
           </CardDescription>
         </CardHeader>
@@ -67,7 +67,7 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
                 {/* Products with history */}
                 {productsWithHistory.length > 0 && (
                   <>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+                    <div className="px-2 py-1.5 text-sm font-semibold text-black">
                       With Price History ({productsWithHistory.length})
                     </div>
                     {productsWithHistory.map((product) => (
@@ -86,13 +86,13 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
                 {/* Products without history */}
                 {productsWithoutHistory.length > 0 && (
                   <>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground border-t mt-2 pt-2">
+                    <div className="px-2 py-1.5 text-sm font-semibold text-black border-t mt-2 pt-2">
                       No Price History ({productsWithoutHistory.length})
                     </div>
                     {productsWithoutHistory.map((product) => (
                       <SelectItem key={product.id} value={product.id}>
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-muted-foreground">{product.name}</span>
+                          <span className="text-black">{product.name}</span>
                           <Badge variant="outline" className="ml-2">
                             No history
                           </Badge>
@@ -121,7 +121,7 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
       {!selectedProduct ? (
         <Card>
           <CardContent className="flex items-center justify-center h-64">
-            <p className="text-muted-foreground">No products found. Please add products first.</p>
+            <p className="text-black">No products found. Please add products first.</p>
           </CardContent>
         </Card>
       ) : selectedProduct.priceHistory.length === 0 ? (
@@ -132,15 +132,15 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center h-64 space-y-4">
             <div className="text-center">
-              <p className="text-muted-foreground mb-2">
+              <p className="text-black mb-2">
                 This product has not had any price changes yet.
               </p>
               <div className="mt-4 p-4 bg-muted rounded-lg">
                 <p className="text-sm font-semibold">Current Price</p>
                 <p className="text-3xl font-bold text-primary">₱{selectedProduct.price.toFixed(2)}</p>
-                <p className="text-xs text-muted-foreground mt-1">Category: {selectedProduct.category}</p>
+                <p className="text-xs text-black mt-1">Category: {selectedProduct.category}</p>
               </div>
-              <p className="text-sm text-muted-foreground mt-4">
+              <p className="text-sm text-black mt-4">
                 Edit this product's price in <strong>Manage Products</strong> to start tracking price history.
               </p>
             </div>

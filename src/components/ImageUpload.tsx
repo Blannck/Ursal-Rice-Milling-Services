@@ -33,7 +33,7 @@ function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
     <div className="w-25  text-black flex mx-auto items-center">
       <UploadDropzone<OurFileRouter, "postImage">
         endpoint={endpoint}
-        className="bg-white text-black ut-label:text-black ut-button:bg-custom-orange ut-button:text-white"
+        className="bg-white text-black w-full ut-label:text-black  mx-auto ut-button:bg-custom-orange ut-button:text-white"
         onClientUploadComplete={(res) => {
           // Do something with the response
           console.log("Files: ", res);
