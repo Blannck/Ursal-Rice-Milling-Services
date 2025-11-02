@@ -93,7 +93,7 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
                       <SelectItem key={product.id} value={product.id}>
                         <div className="flex items-center justify-between w-full">
                           <span className="text-black">{product.name}</span>
-                          <Badge variant="outline" className="ml-2">
+                          <Badge variant="secondary" className="ml-2">
                             No history
                           </Badge>
                         </div>

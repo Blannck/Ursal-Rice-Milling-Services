@@ -13,6 +13,8 @@ const config: Config = {
 			'custom-white': '#FFF0D5',
 			'custom-orange': '#E3963F',
 			'custom-green': '#718341',
+			'custom-brown': '#8C7A5B',
+			'custom-gray': '#B7B7A4',
 			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

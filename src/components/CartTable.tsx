@@ -113,7 +113,8 @@ export default function CartTable({ cartItems }: CartTableProps) {
   };
 
   return (
-    <div className="w-full space-y-6 p-6" >
+    <div className="w-full space-y-6  p-6" >
+     
       <div className="relative max-w-sm w-full">
         <Input
           placeholder="Search cart..."
@@ -273,9 +274,9 @@ export default function CartTable({ cartItems }: CartTableProps) {
           <div className="sticky top-6 space-y-4">
             {/* Order Summary Card */}
             <Card
-              className={`transition-all duration-300 ${
+              className={`transition-all w-96 duration-300 ${
                 selectedSummary.hasSelected
-                  ? "ring-2 ring-blue-500 shadow-lg"
+                  ? " shadow-lg"
                   : ""
               }`}
             >
@@ -332,12 +333,13 @@ export default function CartTable({ cartItems }: CartTableProps) {
                         }
                       }}
                       disabled={checkingOut}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white mb-2"
+                      className="w-full bg-custom-orange hover:bg-custom-orange/80 text-white mb-2"
                     >
-                      {checkingOut ? "Processing..." : "Place Order (Simple Checkout)"}
+                      {checkingOut ? "Processing..." : "Place Order"}
                     </Button>
 
                     <PayPalCheckout
+
                       total={selectedSummary.totalAmount}
                       selectedCartItemIds={selectedCartItemIds}
                     />
@@ -359,35 +361,11 @@ export default function CartTable({ cartItems }: CartTableProps) {
             </Card>
 
             {/* Quick Actions Card */}
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={toggleSelectAll}
-                  disabled={filteredItems.length === 0}
-                >
-                  {allFilteredSelected ? "Deselect All" : "Select All Items"}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => setSelected({})}
-                  disabled={!someFilteredSelected}
-                >
-                  Clear Selection
-                </Button>
-              </CardContent>
-            </Card>
+           
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    
   );
 }

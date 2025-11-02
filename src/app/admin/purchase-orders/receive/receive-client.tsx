@@ -273,7 +273,7 @@ export function ReceiveShipmentClient({
             </div>
 
             {selectedPo && (
-              <div className="rounded-lg border p-4 space-y-2">
+              <div className="rounded-lg border bg-white p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">
@@ -294,9 +294,9 @@ export function ReceiveShipmentClient({
       {/* Items to Receive */}
       {selectedPo && (
         <Card>
-          <CardHeader>
+          <CardHeader className="mb-5">
             <CardTitle>Items to Receive</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-black ">
               Select items and assign them to storage locations
             </CardDescription>
           </CardHeader>
@@ -399,9 +399,16 @@ export function ReceiveShipmentClient({
                         <Badge
                           variant={
                             item.lineStatus === "Completed"
-                              ? "default"
-                              : item.lineStatus === "Partial"
                               ? "secondary"
+                              : item.lineStatus === "Partial"
+                              ? "tertiary"
+                             
+                              : item.lineStatus === "Backordered"
+                              ? "fifth"
+                              : item.lineStatus === "Pending"
+                              ? "tertiary"
+                               : item.lineStatus === "Received"
+                              ? "default"
                               : "outline"
                           }
                         >

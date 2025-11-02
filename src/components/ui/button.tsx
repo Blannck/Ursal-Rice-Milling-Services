@@ -20,7 +20,7 @@ const buttonVariants = cva(
 
         tertiary:
           "bg-custom-green text-white shadow-sm hover:bg-custom-green/50 ",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-custom-gray/50 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

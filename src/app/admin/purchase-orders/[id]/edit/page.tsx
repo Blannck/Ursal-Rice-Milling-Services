@@ -275,7 +275,7 @@ export default function PurchaseOrderEditPage() {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl  mx-auto space-y-6">
+      <div className="border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -284,7 +284,7 @@ export default function PurchaseOrderEditPage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <div>
+            <div className="mb-5">
               <h1 className="text-3xl font-bold">Edit Purchase Order</h1>
               <p className="text-white-600">Order ID: {order.id}</p>
             </div>
@@ -301,7 +301,7 @@ export default function PurchaseOrderEditPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Supplier (read only) */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Supplier</CardTitle>
                 <CardDescription className="text-black">Read only</CardDescription>
               </CardHeader>
@@ -319,7 +319,7 @@ export default function PurchaseOrderEditPage() {
 
             {/* Status & Note */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Order Info</CardTitle>
                 <CardDescription className="text-black">Update status or add context</CardDescription>
               </CardHeader>
@@ -343,6 +343,7 @@ export default function PurchaseOrderEditPage() {
                     placeholder="Notes about this purchase order"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
+                    className="bg-white"
                   />
                 </div>
               </CardContent>
@@ -350,7 +351,7 @@ export default function PurchaseOrderEditPage() {
 
             {/* Items */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Items</CardTitle>
                 <CardDescription className="text-black">Edit quantities, prices, or remove items</CardDescription>
               </CardHeader>
@@ -420,7 +421,7 @@ export default function PurchaseOrderEditPage() {
                         <TableRow key={it.productId}>
                           <TableCell className="font-medium">{it.product.name}</TableCell>
                           <TableCell>
-                            <Badge variant="outline">{it.product.category}</Badge>
+                            <Badge variant="secondary">{it.product.category}</Badge>
                           </TableCell>
                           <TableCell className="w-24">
                             <Input
@@ -430,21 +431,18 @@ export default function PurchaseOrderEditPage() {
   onChange={(e) => updateItemQty(it.productId, parseInt(e.target.value) || 1)}
 />
 
-<Input
+
+
+
+                          </TableCell>
+                          <TableCell className="font-medium">
+ <Input
   type="number"
   step="0.01"
   value={Number(it.price) || 0}
   onChange={(e) => updateItemPrice(it.productId, parseFloat(e.target.value) || 0)}
+  className="w-24"
 />
-
-                          </TableCell>
-                          <TableCell className="font-medium">
-  {(() => {
-    const q = Number(it.quantity) || 0;
-    const p = Number(it.price) || 0;
-    const lineTotal = q * p;
-    return `₱${lineTotal.toLocaleString()}`;
-  })()}
 </TableCell>
 
                           <TableCell>
@@ -476,7 +474,7 @@ export default function PurchaseOrderEditPage() {
           {/* Right - summary and actions */}
           <div className="space-y-6">
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -491,7 +489,7 @@ export default function PurchaseOrderEditPage() {
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg">
                     <span className="font-semibold">Total Amount</span>
-                    <span className="font-bold text-green-600">
+                    <span className="font-bold text-black">
                       ₱{totalAmount.toLocaleString()}
                     </span>
                   </div>
@@ -501,14 +499,14 @@ export default function PurchaseOrderEditPage() {
 
             <div className="space-y-6">
               <Button
-                className="w-full bg-green-600 hover:bg-green-700 mb-3"
+                className="w-full bg-custom-orange hover:bg-custom-orange/80 mb-3"
                 onClick={onSave}
                 disabled={saving || items.length === 0}
               >
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
               <Link href={`/admin/purchase-orders/${order.id}`}>
-                <Button variant="outline" className="w-full">
+                <Button variant="destructive" className="w-full">
                   Cancel
                 </Button>
               </Link>

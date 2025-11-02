@@ -17,7 +17,7 @@ async function Cart() {
             {/* Header */}
             <div className="mb-8 mt-7">
               <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
-              <p className="text-muted-foreground">
+              <p className="text-white">
                 Review your selected items and proceed to checkout when ready.
               </p>
             </div>

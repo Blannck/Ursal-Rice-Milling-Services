@@ -252,7 +252,7 @@ export default function PurchaseOrdersPage() {
                   purchaseOrders.map((order) => (
                     <TableRow
                       key={order.id}
-                      className="cursor-pointer hover:bg-custom-orange hover:text-white"
+                      className="cursor-pointer hover:shadow-xl hover:text-white"
                       onClick={() =>
                         (window.location.href = `/admin/purchase-orders/${order.id}`)
                       }
@@ -311,7 +311,7 @@ export default function PurchaseOrdersPage() {
                             </div>
                           ))}
                           {order.items.length > 2 && (
-                            <div className="text-sm text-gray-400">
+                            <div className="text-sm text-black">
                               +{order.items.length - 2} more items
                             </div>
                           )}
@@ -343,13 +343,13 @@ export default function PurchaseOrdersPage() {
         {order.meta.backorderQty} Pending
       </Badge>
       {order.meta.backorderLinesCount > 0 && (
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-black">
           {order.meta.backorderLinesCount} Line{order.meta.backorderLinesCount > 1 ? "s" : ""}
         </span>
       )}
     </div>
   ) : (
-    <span className="text-sm text-gray-500">None</span>
+    <span className="text-sm text-black">None</span>
   )}
 </TableCell>
 
@@ -359,7 +359,7 @@ export default function PurchaseOrdersPage() {
       {order.meta.returnQty} Returned
     </Badge>
   ) : (
-    <span className="text-sm text-gray-500">None</span>
+    <span className="text-sm text-black">None</span>
   )}
 </TableCell>
 
@@ -396,10 +396,10 @@ export default function PurchaseOrdersPage() {
                   <TableRow>
                     <TableCell
                       colSpan={7}
-                      className="py-8 text-center text-gray-400"
+                      className="py-8 text-center text-black"
                     >
                       No purchase orders found
-                      <div className="mt-2 text-sm text-gray-500">
+                      <div className="mt-2 text-sm text-black">
                         {searchTerm || statusFilter !== "all"
                           ? "Try adjusting your search or filter criteria"
                           : "Create your first purchase order to get started"}

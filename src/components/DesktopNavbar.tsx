@@ -32,7 +32,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
   // Otherwise keep the top navbar
   return (
    
-    <div className="hidden md:flex items-center w-full bg-custom-green h-16 justify-between  mx-auto px-4 shadow-lg">
+    <div className="hidden md:flex items-center  w-full bg-custom-green h-16 justify-between  mx-auto px-4 shadow-lg">
       {/* Logo */}
       <div className="flex items-center">
         <Link

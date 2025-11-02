@@ -85,13 +85,13 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
                       return (
                         <div className="bg-white dark:bg-gray-800 p-4 border rounded shadow-lg">
                           <p className="font-semibold">{data.fullDate}</p>
-                          <p className="text-sm text-muted-foreground">{data.reason}</p>
+                          <p className="text-sm text-black">{data.reason}</p>
                           <p className="mt-2">
                             <span className="font-semibold">Price: </span>
                             <span className="text-green-600 dark:text-green-400">₱{data.price.toFixed(2)}</span>
                           </p>
                           {data.oldPrice !== data.price && (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-black">
                               Previous: ₱{data.oldPrice.toFixed(2)}
                             </p>
                           )}
@@ -140,7 +140,7 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
                           <td className={`py-2 font-semibold ${change > 0 ? 'text-red-500' : 'text-green-500'}`}>
                             {change > 0 ? '+' : ''}₱{change.toFixed(2)} ({changePercent}%)
                           </td>
-                          <td className="py-2 text-muted-foreground">{entry.reason || '-'}</td>
+                          <td className="py-2 text-black">{entry.reason || '-'}</td>
                         </tr>
                       );
                     })}

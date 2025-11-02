@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+
+
+
 import {
   Search,
   Star,
@@ -21,6 +24,7 @@ import {
 import { getProducts } from "@/actions/product.aciton";
 import CardList from "./CardList";
 import Link from "next/link";
+import { link } from "fs";
 
 // Mock data matching your product schema
 const mockProducts = [
@@ -154,98 +158,63 @@ export  default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-24">
-        <div className="relative">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-[url('/rice-pattern.png')] opacity-5"></div>
           
-          {/* Content */}
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center space-y-8">
-              
-              <h1 className="text-4xl md:text-6xl font-bold text-white">
-                Welcome to <span className="text-white">Ursal Rice Milling</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-white max-w-3xl mx-auto">
-                Your trusted partner for high-quality rice products and excellent service
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-              
-                <Button 
+      <section className="relative bg-black/50 py-28 overflow-hidden">
+
+      
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="space-y-8">
+            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+              Premium Rice Milling & Processing Solutions
+            </h1>
+
+            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+              At <span className="text-white font-semibold">Ursal Rice Milling Services</span>, 
+              we combine modern technology with traditional expertise to deliver 
+              high-quality, locally milled rice trusted by farmers, retailers, and communities.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link href="/products">
+                <Button
                   variant="default"
-                  size="lg" 
+                  size="lg"
                   className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8"
                 >
                   Shop Now
                 </Button>
-                
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-white border-white/20 hover:bg-white/10"
-                >
-                  Learn More
-                </Button>
-               
-              </div>
+              </Link>
+              
             </div>
-          </div>
-        </div>
 
-        {/* Decorative Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-10 w-64 h-64 bg-custom-orange/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-10 w-64 h-64 bg-custom-orange/10 rounded-full blur-3xl"></div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-   
-
-      {/* Categories Section */}
-      <section className="py-16 bg-zinc-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Categories</h2>
-            <p className="text-gray-400 text-xl">Explore our wide range of rice products</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {productCategories.slice(0, 4).map((category) => (
-              <div
-                key={category.value}
-                className="bg-zinc-800/50 p-6 rounded-xl hover:bg-zinc-700/50 transition-colors cursor-pointer group"
-              >
-                <div className={`${category.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <category.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{category.label}</h3>
-                <p className="text-gray-400">
-                  Premium quality {category.label.toLowerCase()} for your needs
-                </p>
-              </div>
-            ))}
+            {/* Added Mini Feature Bar */}
+         
           </div>
         </div>
       </section>
+
 
     
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-zinc-900">
+      <section className="py-20 bg-custom-green">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div> 
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Featured Products
               </h2>
-              <p className="text-xl text-gray-400">
+              <p className="text-xl text-white">
                 Hand-picked premium products from our collection
               </p>
             </div>
+            <Link href="/products">
             <Button variant="outline" className="hidden md:flex text-white border-white hover:bg-white/10">
               View All Products
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -317,44 +286,44 @@ export  default async function HomePage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-zinc-800">
+      <section className="py-20 bg-custom-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Why Choose Us
+            <h2 className="text-3xl md:text-4xl font-bold text-custom-green mb-4">
+              Why Choose Us?
             </h2>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-custom-green">
               Discover the advantages of partnering with Ursal Rice Milling
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Star className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Premium Quality</h3>
-              <p className="text-gray-400">
+              <h3 className="text-xl font-semibold text-custom-green mb-4">Premium Quality</h3>
+              <p className="text-black">
                 We ensure the highest quality standards for all our rice products
               </p>
             </div>
 
-            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <TrendingUp className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Best Prices</h3>
-              <p className="text-gray-400">
+              <h3 className="text-xl font-semibold text-custom-green mb-4">Best Prices</h3>
+              <p className="text-black">
                 Competitive prices without compromising on quality
               </p>
             </div>
 
-            <div className="bg-zinc-700/50 p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-orange w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Customer Service</h3>
-              <p className="text-gray-400">
+              <h3 className="text-xl font-semibold text-custom-green mb-4">Customer Service</h3>
+              <p className="text-black">
                 Dedicated support team to assist you with any queries
               </p>
             </div>
@@ -363,7 +332,7 @@ export  default async function HomePage() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 bg-custom-orange">
+      <section className="py-20 bg-black/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Experience Our Premium Rice Products?
@@ -372,14 +341,13 @@ export  default async function HomePage() {
             Join our growing family of satisfied customers and discover the difference of quality rice products.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-black hover:bg-black/90 text-white">
+            <Link href="/products">
+            <Button size="lg" variant="default">
               Shop Now
               <ShoppingCart className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-              Contact Us
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            </Link>
+          
           </div>
         </div>
       </section>

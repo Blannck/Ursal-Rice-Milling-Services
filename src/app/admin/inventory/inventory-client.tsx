@@ -310,15 +310,15 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
           </CardContent>
         </Card>
       </div>
-
+      
       <Tabs defaultValue="unmilled" className="space-y-4 w-full">
-        <div className="flex items-center justify-between mb-4">
-          <TabsList className="bg-custom-white">
+        <div className="flex items-center justify-between mr-2 mb-4">
+          <TabsList className="bg-custom-white  ">
             <TabsTrigger className="text-black" value="unmilled">Unmilled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="milled">Milled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="locations">Storage Locations</TabsTrigger>
           </TabsList>
-          <div className="flex items-center gap-2">
+          <div className="flex  justify-end items-center gap-2 ">
             <Button variant="secondary" onClick={handleSyncFromPOs} disabled={syncingInventory} className="gap-2">
               {syncingInventory ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               Sync from POs
@@ -335,7 +335,9 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
             <AssignInventoryDialog products={initialProducts} locations={initialLocations} />
             <CreateLocationDialog locations={initialLocations} />
           </div>
+         
         </div>
+         
 
         <TabsContent value="unmilled" className="space-y-4">
           <Card>

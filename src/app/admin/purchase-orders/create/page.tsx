@@ -255,7 +255,7 @@ if (data?.ok || data?.success) {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
+      < div className="border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/admin/purchase-orders">
@@ -312,6 +312,7 @@ if (data?.ok || data?.success) {
                       id="note"
                       placeholder="Additional notes for this purchase order"
                       value={note}
+                      className="bg-white"
                       onChange={(e) => setNote(e.target.value)}
                     />
                   </div>
@@ -321,9 +322,9 @@ if (data?.ok || data?.success) {
               {/* Add Items */}
               {selectedSupplierId && (
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="mb-5">
                     <CardTitle>Add Items</CardTitle>
-                    <CardDescription>Select products to include in this purchase order</CardDescription>
+                    <CardDescription className="text-black">Select products to include in this purchase order</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -381,9 +382,9 @@ if (data?.ok || data?.success) {
               {/* Order Items */}
               {orderItems.length > 0 && (
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="mb-5">
                     <CardTitle>Order Items</CardTitle>
-                    <CardDescription>Review and modify the items in this order</CardDescription>
+                    <CardDescription className="text-black">Review and modify the items in this order</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -404,7 +405,7 @@ if (data?.ok || data?.success) {
                               {item.product.name}
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline">{item.product.category}</Badge>
+                              <Badge variant="secondary">{item.product.category}</Badge>
                             </TableCell>
                             <TableCell>
                               <Input

@@ -193,6 +193,7 @@ export function AssignInventoryDialog({
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
+                className="bg-white"
               />
             </div>
           </div>
