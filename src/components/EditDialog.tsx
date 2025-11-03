@@ -185,7 +185,7 @@ export default function EditDialog({ product }: EditDialogProps) {
 
           {/* NEW: Show mini price chart if product has price history */}
           {fullProduct?.priceHistory && fullProduct.priceHistory.length > 0 && (
-            <div className="my-4">
+            <div className="my-4 ">
               <MiniPriceChart
                 priceHistory={fullProduct.priceHistory}
                 currentPrice={product.price}
@@ -234,7 +234,8 @@ export default function EditDialog({ product }: EditDialogProps) {
           </div>
 
           {/* Image Upload */}
-          <div className="py-5">
+          <div className="py-5 font-semibold">
+            Product Image
             <ImageUpload
               endpoint="postImage"
               value={formData.imageUrl}

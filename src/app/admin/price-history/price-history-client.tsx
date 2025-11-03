@@ -128,14 +128,14 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
         <Card>
           <CardHeader>
             <CardTitle>{selectedProduct.name}</CardTitle>
-            <CardDescription>No price history available</CardDescription>
+            <CardDescription className="text-black">No price history available</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center h-64 space-y-4">
             <div className="text-center">
               <p className="text-black mb-2">
                 This product has not had any price changes yet.
               </p>
-              <div className="mt-4 p-4 bg-muted rounded-lg">
+              <div className="mt-4 p-4 bg-white rounded-lg">
                 <p className="text-sm font-semibold">Current Price</p>
                 <p className="text-3xl font-bold text-primary">₱{selectedProduct.price.toFixed(2)}</p>
                 <p className="text-xs text-black mt-1">Category: {selectedProduct.category}</p>

@@ -47,9 +47,9 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className='mb-5'>
         <CardTitle>Price History: {productName}</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-black">
           Track price changes over time
           {priceHistory.length > 0 && (
             <span className={`ml-2 font-semibold ${isIncrease ? 'text-red-500' : 'text-green-500'}`}>
@@ -60,7 +60,7 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
-          <div className="flex items-center justify-center h-64 text-muted-foreground">
+          <div className="flex items-center justify-center h-64 text-black">
             No price history available for this product
           </div>
         ) : (
@@ -83,12 +83,12 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-white dark:bg-gray-800 p-4 border rounded shadow-lg">
-                          <p className="font-semibold">{data.fullDate}</p>
+                        <div className="bg-white  p-4 border rounded shadow-lg">
+                          <p className="font-semibold ">{data.fullDate}</p>
                           <p className="text-sm text-black">{data.reason}</p>
                           <p className="mt-2">
                             <span className="font-semibold">Price: </span>
-                            <span className="text-green-600 dark:text-green-400">₱{data.price.toFixed(2)}</span>
+                            <span className="text-black ">₱{data.price.toFixed(2)}</span>
                           </p>
                           {data.oldPrice !== data.price && (
                             <p className="text-sm text-black">

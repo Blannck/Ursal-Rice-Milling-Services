@@ -99,7 +99,7 @@ export default function CreateDialog() {
             <div>
               <Label htmlFor="category">Category</Label>
               <Combobox
-               
+
                 value={formData.category}
                 onChange={(val) => handleChange("category", val)}
               />
@@ -184,9 +184,10 @@ export default function CreateDialog() {
               </div>
             )}
           </div>
-
+        
           {/* Image Upload */}
-          <div className="py-5 ">
+          <div className="py-5 font-semibold  ">
+              Product Image
             <ImageUpload
              
               endpoint="postImage"

@@ -51,7 +51,7 @@ export function Combobox({ value, onChange }: ComboboxProps) {
         <Command className="bg-white">
           <CommandInput placeholder="Search category..." className="h-9 text-black ml-0" />
          
-          <CommandList className="text-black bg-white">
+          <CommandList className="text-black  bg-white">
             <CommandEmpty className="text-black">No category found.</CommandEmpty>
             <CommandGroup className="bg-white ">
               {productCategories.map((cat) => (

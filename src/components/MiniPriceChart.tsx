@@ -59,7 +59,7 @@ export default function MiniPriceChart({ priceHistory, currentPrice, showStats =
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 bg-white border p-3 rounded-md shadow-sm">
       {/* Mini sparkline chart */}
       <div className="h-12 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -85,12 +85,12 @@ export default function MiniPriceChart({ priceHistory, currentPrice, showStats =
               {isIncrease && '+'}
               {priceChangePercent}%
             </span>
-            <span className="text-muted-foreground">
+            <span className="text-black">
               from initial price
             </span>
           </div>
           {lastChangeDate && (
-            <span className="text-muted-foreground">
+            <span className="text-black">
               Last changed: {lastChangeDate}
             </span>
           )}
@@ -99,7 +99,7 @@ export default function MiniPriceChart({ priceHistory, currentPrice, showStats =
 
       {/* Price range info */}
       {showStats && chartData.length > 1 && (
-        <div className="flex justify-between text-xs text-muted-foreground pt-1 border-t">
+        <div className="flex justify-between text-xs text-black pt-1 border-t">
           <span>
             Low: ₱{Math.min(...chartData.map(d => d.price)).toFixed(2)}
           </span>

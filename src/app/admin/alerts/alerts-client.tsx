@@ -396,7 +396,7 @@ export default function AlertsClient({
               ) : (
                 <div className="border rounded-lg overflow-hidden">
                   <div className="max-h-[600px] overflow-y-auto">
-                    <Table>
+                    <Table >
                       <TableHeader className="sticky top-0 bg-custom-green">
                         <TableRow>
                           <TableHead className=" text-white">Severity</TableHead>

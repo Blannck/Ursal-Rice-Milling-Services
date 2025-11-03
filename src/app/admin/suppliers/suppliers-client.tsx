@@ -406,7 +406,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                           />
                           <div className="flex-1">
                             <div className="font-medium text-sm">{product.name}</div>
-                            <div className="text-xs text-black ">
+                            <div className="text-xs  ">
                               {product.category} • ₱{product.price.toFixed(2)}
                               {isSelected && editing?.id && (
                                 <span className="ml-2 text-green-600">
