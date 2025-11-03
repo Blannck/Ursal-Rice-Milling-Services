@@ -516,10 +516,17 @@ const handleSubmitReturn = async () => {
                           {item.receivedQty}
                         </TableCell>
                         <TableCell className="text-right">
-                          ₱{item.price.toLocaleString()}
+                         ₱{item.price.toLocaleString("en-PH", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+
                         </TableCell>
                         <TableCell className="font-medium text-right">
-                          ₱{(item.orderedQty * item.price).toLocaleString()}
+                          ₱{(item.orderedQty * item.price).toLocaleString("en-PH", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -810,7 +817,10 @@ const handleSubmitReturn = async () => {
                   <div className="flex justify-between text-lg">
                     <span className="font-semibold">Total Amount:</span>
                     <span className="font-bold text-black">
-                      ₱{total.toLocaleString()}
+                      ₱{total.toLocaleString("en-PH", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 </div>

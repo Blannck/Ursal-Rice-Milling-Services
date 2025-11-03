@@ -277,7 +277,7 @@ export default function TransactionsClient({
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-black">
               Total Transactions
             </CardTitle>
           </CardHeader>
@@ -287,7 +287,7 @@ export default function TransactionsClient({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <ArrowUpCircle className="h-4 w-4 text-green-600" />
               Stock-In
             </CardTitle>
@@ -298,7 +298,7 @@ export default function TransactionsClient({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <ArrowDownCircle className="h-4 w-4 text-red-600" />
               Stock-Out
             </CardTitle>
@@ -309,7 +309,7 @@ export default function TransactionsClient({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <RefreshCw className="h-4 w-4 text-blue-600" />
               Adjustments
             </CardTitle>
@@ -320,7 +320,7 @@ export default function TransactionsClient({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               Last 7 Days
             </CardTitle>
@@ -431,7 +431,7 @@ export default function TransactionsClient({
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-center py-12 text-black">
               <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium">No records found</p>
               <p className="text-sm">Try adjusting your filters</p>
@@ -465,7 +465,7 @@ export default function TransactionsClient({
                               <div className="font-medium">
                                 {new Date(transaction.createdAt).toLocaleDateString()}
                               </div>
-                              <div className="text-muted-foreground text-xs">
+                              <div className="text-black text-xs">
                                 {new Date(transaction.createdAt).toLocaleTimeString()}
                               </div>
                             </div>
@@ -483,7 +483,7 @@ export default function TransactionsClient({
                               <p className="font-medium">
                                 {transaction.product?.name || "Unknown Product"}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-black">
                                 {transaction.product?.category || "-"}
                               </p>
                             </div>
@@ -507,7 +507,7 @@ export default function TransactionsClient({
                                 <span className="text-sm">{transaction.location.name}</span>
                               </div>
                             ) : (
-                              <span className="text-muted-foreground text-sm">-</span>
+                              <span className="text-black text-sm">-</span>
                             )}
                           </TableCell>
                           <TableCell className="text-right">

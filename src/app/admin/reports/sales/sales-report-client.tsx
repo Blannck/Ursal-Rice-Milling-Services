@@ -283,7 +283,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       </div>
 
       {/* Filters */}
-      <Card className="w-fit h-fit">
+      <Card className="w-fit h-fit ">
         <CardContent className="pt-6">
           <div className="flex gap-4 items-center">
             <Calendar className="w-4 h-4 text-black" />
@@ -406,10 +406,10 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border rounded-lg p-4 bg-custom-gray ">
+            <div className="border rounded-lg p-4  ">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
-                  🌾 Milled Rice
+                  Milled Rice
                 </h3>
                 <Badge variant="default">
                   {((stats.milledRevenue / stats.grossSales) * 100).toFixed(1)}%
@@ -420,10 +420,10 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
               </p>
             </div>
             
-            <div className="border rounded-lg p-4 bg-custom-gray">
+            <div className="border rounded-lg p-4 ">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
-                  🌱 Unmilled Rice
+                  Unmilled Rice
                 </h3>
                 <Badge variant="default">
                   {((stats.unmilledRevenue / stats.grossSales) * 100).toFixed(1)}%
@@ -466,7 +466,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
                 stats.topProducts.map((product, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      <Badge variant={index < 3 ? "default" : "outline"}>#{index + 1}</Badge>
+                      <Badge variant={index < 3 ? "default" : "default"}>#{index + 1}</Badge>
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>

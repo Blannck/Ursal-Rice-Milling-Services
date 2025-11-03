@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+import { Button } from "@/components/ui/button";
 
 export default async function UserDetailsPage({ params }: { params: { id: string } }) {
   // admin guard
@@ -43,12 +44,13 @@ export default async function UserDetailsPage({ params }: { params: { id: string
   return (
     <div className="mx-auto  border-transparent bg-black bg-transparent/50 rounded-lg p-8 max-w-7xl w-11/12 px-4 py-8 space-y-6">
      <div className="flex flex-wrap items-center gap-3">
+  
       <div>
         <h1 className="text-2xl font-semibold">{user.displayName ?? user.primaryEmail ?? user.id}</h1>
         <p className="text-sm text-white">{user.primaryEmail} • ID {user.id}</p>
       </div>
        <div className="ml-auto flex gap-2">
-          <Link href="/admin/users" className="text-sm underline">Back to users</Link>
+         
         </div>
       </div>
       
@@ -100,6 +102,14 @@ export default async function UserDetailsPage({ params }: { params: { id: string
           </table>
         </div>
       </section>
+       <div className="flex items-center gap-4 mt-5">
+                          <Link href="/admin/users">
+                            <Button variant="outline" size="lg">
+                              Back
+                            </Button>
+                          </Link>
+                         
+                    </div>
     </div>
   );
 }

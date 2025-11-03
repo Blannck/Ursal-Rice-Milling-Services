@@ -256,7 +256,7 @@ export default function AlertsClient({
 
         <Card className="border-orange-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blackflex items-center gap-1">
+            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
               <AlertTriangle className="h-4 w-4 text-orange-600" />
               High Priority
             </CardTitle>

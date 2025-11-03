@@ -35,7 +35,7 @@ export default async function PriceHistoryPage() {
 
   return (
      < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
-  <PriceHistoryClient products={serializedProducts} />;
+  <PriceHistoryClient products={serializedProducts} />
   </div>
 )
 }

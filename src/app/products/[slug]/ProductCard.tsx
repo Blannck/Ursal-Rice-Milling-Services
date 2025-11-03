@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/utils";
 import { ShoppingCart, Download } from "lucide-react";
 import AddToCartButton from "@/components/AddtoCartButton";
 import MiniPriceChart from "@/components/MiniPriceChart";
+import Link from "next/link";
 
 // Mock type based on your schema
 type Product = {
@@ -149,8 +150,10 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span>Digital Product</span>
             </div>
           </div>
+          
         </div>
-      </div>
+       
+    </div>
     </div>
   );
 }

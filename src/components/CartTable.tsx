@@ -113,7 +113,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
   };
 
   return (
-    <div className="w-full space-y-6  p-6" >
+    <div className="w-full space-y-6 " >
      
       <div className="relative max-w-sm w-full">
         <Input
@@ -125,10 +125,10 @@ export default function CartTable({ cartItems }: CartTableProps) {
         <Search className="absolute h-4 w-4 left-3 top-1/2 transform -translate-y-1/2" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 ">
         {/* Main Cart Table */}
-        <div className="lg:col-span-3">
-          <Card>
+        <div className="lg:col-span-3 ">
+          <Card className="min-h-96">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="p-0">
+            <CardContent className="p-0 "> 
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -274,7 +274,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
           <div className="sticky top-6 space-y-4">
             {/* Order Summary Card */}
             <Card
-              className={`transition-all w-96 duration-300 ${
+              className={`transition-all w-96 duration-300 min-h-96 ${
                 selectedSummary.hasSelected
                   ? " shadow-lg"
                   : ""
@@ -287,7 +287,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 ">
                 {selectedSummary.hasSelected ? (
                   <>
                     <div className="space-y-3">

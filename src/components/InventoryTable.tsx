@@ -167,9 +167,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   <p className="text-sm font-medium ">Total Products</p>
                   <p className="text-3xl font-bold ">{totalProducts}</p>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <Package className="h-6 w-6 text-blue-600" />
-                </div>
+              
               </div>
             </CardContent>
           </Card>
@@ -181,9 +179,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   <p className="text-sm font-medium ">Visible</p>
                   <p className="text-3xl font-bold text-green-600">{visibleProducts}</p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-full">
-                  <Eye className="h-6 w-6 text-green-600" />
-                </div>
+               
               </div>
             </CardContent>
           </Card>
@@ -195,9 +191,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   <p className="text-sm font-medium ">Hidden</p>
                   <p className="text-3xl font-bold text-orange-600">{hiddenProducts}</p>
                 </div>
-                <div className="bg-orange-100 p-3 rounded-full">
-                  <EyeOff className="h-6 w-6 text-orange-600" />
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -208,12 +202,14 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                 <div>
                   <p className="text-sm font-medium ">Total Value</p>
                   <p className="text-3xl font-bold ">
-                    ₱{totalValue.toLocaleString()}
+                   ₱{totalValue.toLocaleString("en-PH", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+
                   </p>
                 </div>
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <DollarSign className="h-6 w-6 text-purple-600" />
-                </div>
+               
               </div>
             </CardContent>
           </Card>

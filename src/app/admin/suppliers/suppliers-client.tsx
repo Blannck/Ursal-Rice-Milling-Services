@@ -242,7 +242,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
               <TableHead >Email</TableHead>
               <TableHead >Phone</TableHead>
               <TableHead >Status</TableHead>
-              <TableHead >Actions</TableHead>
+              <TableHead className="text-right  ">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -258,18 +258,18 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                   <TableCell>{s.email || "—"}</TableCell>
                   <TableCell>{s.phone || "—"}</TableCell>
                   <TableCell>{statusBadge}</TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="items-end justify-end flex">
+                    <div className="flex gap-2">
                       {/* Dropdown Menu with ... */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            className="w-24"
-                            variant="secondary"
+                            className="w-24 "
+                            variant="ghost"
                             size="icon"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            Edit 
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

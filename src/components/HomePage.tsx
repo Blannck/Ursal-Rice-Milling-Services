@@ -20,6 +20,8 @@ import {
   Users,
   Award,
   ShoppingCart,
+  LeafIcon,
+  HandshakeIcon,
 } from "lucide-react";
 import { getProducts } from "@/actions/product.aciton";
 import CardList from "./CardList";
@@ -160,14 +162,11 @@ export  default async function HomePage() {
       {/* Hero Section */}
           
      <section className="relative bg-transparent py-32 overflow-hidden">
-  {/* Background Gradient / Overlay */}
  
-
-  {/* Floating Elements (optional for polish) */}
   <div className="absolute -top-10 -right-10 w-96 h-96 bg-custom-orange/10 blur-3xl rounded-full"></div>
   <div className="absolute bottom-0 left-0 w-72 h-72 bg-olive-500/10 blur-3xl rounded-full"></div>
 
-  {/* Content */}
+ 
   <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10">
     <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
       Premium Rice Milling & Processing Solutions
@@ -180,7 +179,7 @@ export  default async function HomePage() {
       high-quality, locally milled rice trusted by farmers, retailers, and communities.
     </p>
 
-    {/* CTA Buttons */}
+   
     <div className="flex flex-col sm:flex-row justify-center gap-4">
       <Link href="/products">
         <Button
@@ -196,7 +195,7 @@ export  default async function HomePage() {
     </div>
 
     {/* Trust Indicators */}
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 text-white/80">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 text-white">
       <div>
         <h3 className="text-3xl font-bold ">15+</h3>
         <p className="text-sm uppercase tracking-wide">Years of Experience</p>
@@ -212,15 +211,61 @@ export  default async function HomePage() {
     </div>
 
     
+
+    
   </div>
 </section>
 
+<section className="py-20 bg-custom-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-6xl font-bold text-custom-green mb-4">
+              Why Choose Us?
+            </h2>
+            <p className="text-xl text-custom-green">
+              Discover the advantages of partnering with Ursal Rice Milling
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green  w-40 h-40 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Star className="h-16 w-16 text-white" />
+              </div>
+              <h3 className="text-4xl font-semibold text-custom-green mb-4">Premium Quality</h3>
+              <p className="text-black text-lg">
+                We ensure the highest quality standards for all our rice products
+              </p>
+            </div>
+
+            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green  w-40 h-40  rounded-full flex items-center justify-center mx-auto mb-6">
+                <HandshakeIcon className="h-16 w-16 text-white" />
+              </div>
+              <h3 className="text-4xl font-semibold text-custom-green mb-4">Locally Sourced</h3>
+              <p className="text-black text-lg">
+                Supporting local farmers while delivering rice that's fresh and sustainable
+              </p>
+            </div>
+
+            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-custom-green  w-40 h-40 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LeafIcon className="h-16 w-16 text-white" />
+              </div>
+              <h3 className="text-4xl font-semibold text-custom-green mb-4">Consistent Purity</h3>
+              <p className="text-black text-lg">
+                Every grain is milled to perfection, ensuring purity and freshness
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
     
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-custom-brown">
+      <section className="py-20 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div> 
@@ -308,53 +353,10 @@ export  default async function HomePage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-custom-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-custom-green mb-4">
-              Why Choose Us?
-            </h2>
-            <p className="text-xl text-custom-green">
-              Discover the advantages of partnering with Ursal Rice Milling
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Star className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-custom-green mb-4">Premium Quality</h3>
-              <p className="text-black">
-                We ensure the highest quality standards for all our rice products
-              </p>
-            </div>
-
-            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-custom-green mb-4">Best Prices</h3>
-              <p className="text-black">
-                Competitive prices without compromising on quality
-              </p>
-            </div>
-
-            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
-              <div className="bg-custom-green e w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-custom-green mb-4">Customer Service</h3>
-              <p className="text-black">
-                Dedicated support team to assist you with any queries
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Call to Action Section */}
-      <section className="py-20">
+      <section className="py-20 bg-custom-brown">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Experience Our Premium Rice Products?

@@ -298,7 +298,7 @@ export default function OrdersClient({
                 {orders.map((order) => (
                   <Card
                     key={order.id}
-                    className={`cursor-pointer bg-white   ${
+                    className={`cursor-pointer bg-white border border-black   ${
                       selectedOrder?.id === order.id ? "border-primary border-2" : ""
                     }`}
                     onClick={() => handleOrderSelect(order.id)}
@@ -366,7 +366,7 @@ export default function OrdersClient({
               </div>
             ) : (
               <div className="space-y-4">
-                <div className=" bg-white p-4 rounded-lg">
+                <div className=" bg-white border border-black p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold">
                       Order #{selectedOrder.id.slice(-8).toUpperCase()}

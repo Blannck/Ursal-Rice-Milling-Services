@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/lib/stack";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function SupplierDetailPage({ params }: { params: { id: string } }) {
   // admin guard
@@ -28,17 +29,19 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
 
   return (
     <div className="mx-auto  w-full max-w-7xl px-4 py-8 space-y-6">
+        
        <div className="border-transparent bg-black bg-transparent/50 rounded-lg p-8">
+   
       {/* header */}
       <div className="flex flex-wrap items-center gap-3">
+            
+     
         <div className="mb-5">
           <h1 className="text-2xl font-semibold">{supplier.name}</h1>
           <p className="text-sm text-white">{supplier.email || "no email"} • {supplier.phone || "no phone"}</p>
           <p className="text-sm text-white">{supplier.address || "no address"}</p>
         </div>
-        <div className="ml-auto flex gap-2">
-          <Link href="/admin/suppliers" className="text-sm underline">Back to suppliers</Link>
-        </div>
+        
       </div>
 
       {/* meta cards */}
@@ -102,6 +105,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
           <p className="rounded-lg border bg-background/50 p-3">{supplier.note}</p>
         </section>
       )}
+        <div className="flex items-center gap-4 mt-5">
+                    <Link href="/admin/suppliers">
+                      <Button variant="outline" size="lg">
+                        Back
+                      </Button>
+                    </Link>
+                   
+              </div>
     </div>
     </div>
   );

@@ -349,7 +349,7 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
                     <Input
                       placeholder="Search products or locations..."
                       className="pl-8 w-[300px]"
@@ -395,11 +395,11 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
 
         <TabsContent value="locations" className="space-y-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="mb-5">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Storage Locations</CardTitle>
-                  <CardDescription>Manage warehouses, zones, shelves, and bins</CardDescription>
+                  <CardDescription className="text-black ">Manage warehouses, zones, shelves, and bins</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">

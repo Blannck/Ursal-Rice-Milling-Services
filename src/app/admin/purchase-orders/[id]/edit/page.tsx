@@ -328,7 +328,8 @@ export default function PurchaseOrderEditPage() {
                   <Label>Status</Label>
                   <Select value={status} onValueChange={(v) => setStatus(v as PurchaseOrder["status"])}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                    
+                      <SelectValue placeholder="Select Status" />
                     </SelectTrigger>
                     <SelectContent>
                       {STATUS_OPTIONS.map((s) => (
@@ -490,7 +491,10 @@ export default function PurchaseOrderEditPage() {
                   <div className="flex justify-between text-lg">
                     <span className="font-semibold">Total Amount</span>
                     <span className="font-bold text-black">
-                      ₱{totalAmount.toLocaleString()}
+                      ₱{totalAmount.toLocaleString("en-PH", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 </div>

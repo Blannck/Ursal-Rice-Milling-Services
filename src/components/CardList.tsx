@@ -83,7 +83,7 @@ export default function CardList({ products }: CardListProps) {
         </div>
 
         {/* Filters and Controls */}
-        <div className=" rounded-2xl shadow-sm  p-6 mb-8">
+        <div className=" rounded-2xl shadow-sm  mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-4 flex-1">

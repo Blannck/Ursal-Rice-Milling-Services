@@ -59,9 +59,9 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Select value={selectedProductId} onValueChange={setSelectedProductId}>
-              <SelectTrigger className="w-full max-w-md">
-                <SelectValue placeholder="Select a product" />
+            <Select  value={selectedProductId} onValueChange={setSelectedProductId}>
+              <SelectTrigger className="w-full t max-w-md">
+                <SelectValue className=" " placeholder="Select a product" />
               </SelectTrigger>
               <SelectContent>
                 {/* Products with history */}
@@ -86,7 +86,7 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
                 {/* Products without history */}
                 {productsWithoutHistory.length > 0 && (
                   <>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-black border-t mt-2 pt-2">
+                    <div className="px-2 py-1.5 text-sm  tfont-semibold text-black border-t mt-2 pt-2">
                       No Price History ({productsWithoutHistory.length})
                     </div>
                     {productsWithoutHistory.map((product) => (
@@ -135,9 +135,9 @@ export default function PriceHistoryClient({ products }: PriceHistoryClientProps
               <p className="text-black mb-2">
                 This product has not had any price changes yet.
               </p>
-              <div className="mt-4 p-4 bg-white rounded-lg">
+              <div className="mt-4 p-4 bg-white border border-black rounded-lg">
                 <p className="text-sm font-semibold">Current Price</p>
-                <p className="text-3xl font-bold text-primary">₱{selectedProduct.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold ">₱{selectedProduct.price.toFixed(2)}</p>
                 <p className="text-xs text-black mt-1">Category: {selectedProduct.category}</p>
               </div>
               <p className="text-sm text-black mt-4">
