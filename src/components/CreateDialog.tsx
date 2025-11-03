@@ -30,8 +30,7 @@ export default function CreateDialog() {
     category: "",
     userId: "",
     imageUrl: "",
-    isMilledRice: false,
-    millingYieldRate: 0,
+    isMilledRice: true // Always create milled rice products
   });
 
   const handleChange = (field: string, value: string | number | boolean) => {
@@ -54,8 +53,7 @@ export default function CreateDialog() {
         category: "",
         userId: "",
         imageUrl: "",
-        isMilledRice: false,
-        millingYieldRate: 65, // Default milling yield rate is typically around 65%
+        isMilledRice: true
       });
 
     } catch (error) {
@@ -155,36 +153,6 @@ export default function CreateDialog() {
             </div>
           </div>
 
-          {/* Rice Milling Options */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="isMilledRice">Product Type</Label>
-              <Select value={formData.isMilledRice ? "milled" : "unmilled"} onValueChange={(v) => handleChange("isMilledRice", v === "milled")}>
-                <SelectTrigger id="isMilledRice">
-                  <SelectValue placeholder="Select rice type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unmilled">Unmilled Rice</SelectItem>
-                  <SelectItem value="milled">Milled Rice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {formData.isMilledRice && (
-              <div>
-                <Label htmlFor="millingYieldRate">Milling Yield Rate (%)</Label>
-                <Input
-                  id="millingYieldRate"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="Enter yield rate"
-                  value={formData.millingYieldRate}
-                  onChange={(e) => handleChange("millingYieldRate", Number(e.target.value))}
-                />
-              </div>
-            )}
-          </div>
-        
           {/* Image Upload */}
           <div className="py-5 font-semibold  ">
               Product Image

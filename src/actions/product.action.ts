@@ -10,6 +10,9 @@ import { stackServerApp } from "@/lib/stack";
 export async function getProducts() {
   try {
     const products = await prisma.product.findMany({
+      where: {
+        isMilledRice: true // Only fetch milled rice products
+      },
       orderBy: {
         createdAt: "desc",
       },
