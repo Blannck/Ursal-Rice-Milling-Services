@@ -305,16 +305,16 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="t">
+                    <TableRow className="">
                       <TableHead className="font-semibold">Product</TableHead>
                       <TableHead className="font-semibold  ">Category</TableHead>
                       <TableHead className="font-semibold ">Price</TableHead>
                       <TableHead className="font-semibold ">Status</TableHead>
                       <TableHead className="font-semibold">Created</TableHead>
-                      <TableHead className="font-semibold">
+                      <TableHead className="font-semibold ">
                         Download Url
                       </TableHead>
-                      <TableHead className="font-semibold   text-right">
+                      <TableHead className="font-semibold text-center ">
                         Actions
                       </TableHead>
                     </TableRow>
@@ -351,9 +351,10 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             {product.category}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-semibold ">
-                          ₱{product.price.toLocaleString()}
+                        <TableCell className="font-semibold">
+                        ₱{product.price.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
+
                         <TableCell>
                           <Badge variant={product.isHidden ? "destructive" : "default"}>
                             {product.isHidden ? "Hidden" : "Visible"}
@@ -367,7 +368,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         </TableCell>
                         <TableCell className="text-right">
                           <div
-                            className="flex items-center justify-end gap-2"
+                            className="flex items-center gap-2"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <Button
@@ -378,7 +379,9 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <EditDialog product={product} />
+                            <div className="w-24">
+                            <EditDialog  product={product} />
+                            </div>
                             <Button
                               variant={product.isHidden ? "default" : "outline"}
                               size="lg"

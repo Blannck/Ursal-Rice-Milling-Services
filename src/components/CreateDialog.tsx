@@ -73,7 +73,7 @@ export default function CreateDialog() {
           <span>Add Product</span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="text-black bg-custom-white">
+      <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle>Add a Product</AlertDialogTitle>
           <AlertDialogDescription className="text-black">

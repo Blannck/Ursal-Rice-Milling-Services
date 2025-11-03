@@ -94,6 +94,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               </div>
             </CardContent>
           </Card>
+          {product.priceHistory && product.priceHistory.length > 0 && (
+              <div className="mt-4">
+                <MiniPriceChart
+                  priceHistory={product.priceHistory}
+                  currentPrice={product.price}
+                />
+              </div>
+            )}
         </div>
 
         {/* Right Column: Product Information */}
@@ -119,14 +127,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Price History Chart */}
-            {product.priceHistory && product.priceHistory.length > 0 && (
-              <div className="mt-4">
-                <MiniPriceChart
-                  priceHistory={product.priceHistory}
-                  currentPrice={product.price}
-                />
-              </div>
-            )}
+            
 
             {product.description && (
               <p className="text-white text-lg leading-relaxed">

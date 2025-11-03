@@ -254,7 +254,7 @@ export default function InventoryReportClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Inventory Report</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Overview of stock levels, values, and categories
           </p>
         </div>
@@ -268,7 +268,7 @@ export default function InventoryReportClient({
       <Card>
         <CardContent className="pt-6">
           <div className="flex gap-4 items-center flex-wrap">
-            <Filter className="w-4 h-4 text-muted-foreground" />
+            <Filter className="w-4 h-4 text-black" />
             <div className="flex-1 min-w-[180px]">
               <Select value={riceTypeFilter} onValueChange={setRiceTypeFilter}>
                 <SelectTrigger className="w-full">
@@ -320,37 +320,37 @@ export default function InventoryReportClient({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">Active SKUs</p>
+            <p className="text-xs text-black">Active SKUs</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Stock</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {stats.totalStockUnits.toLocaleString()} kg
             </div>
-            <p className="text-xs text-muted-foreground">Total quantity</p>
+            <p className="text-xs text-black">Total quantity</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Stock Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ₱{stats.totalStockValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground">Inventory value</p>
+            <p className="text-xs text-black">Inventory value</p>
           </CardContent>
         </Card>
 
@@ -361,35 +361,35 @@ export default function InventoryReportClient({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-500">{stats.lowStockCount}</div>
-            <p className="text-xs text-muted-foreground">Needs attention</p>
+            <p className="text-xs text-black">Needs attention</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Storage Locations</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <MapPin className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeLocations}</div>
-            <p className="text-xs text-muted-foreground">Active locations</p>
+            <p className="text-xs text-black">Active locations</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Rice Type Breakdown (Milled vs Unmilled) */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Rice Type Breakdown</CardTitle>
-          <p className="text-sm text-muted-foreground">Milled vs Unmilled Rice Inventory</p>
+          <p className="text-sm text-black">Milled vs Unmilled Rice Inventory</p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {stats.riceTypeBreakdown.map((riceType) => (
-              <div key={riceType.type} className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-transparent">
+              <div key={riceType.type} className="border rounded-lg p-4 bg-custom-gray ">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-lg flex items-center gap-2">
-                    {riceType.type === "Milled Rice" ? "🌾" : "🌱"} {riceType.type}
+                    {riceType.type === "Milled Rice" ? "" : ""} {riceType.type}
                   </h3>
                   <Badge variant="secondary" className="text-lg px-3 py-1">
                     {riceType.productCount} SKUs
@@ -397,11 +397,11 @@ export default function InventoryReportClient({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Quantity</p>
+                    <p className="text-sm text-black">Total Quantity</p>
                     <p className="text-2xl font-bold">{riceType.totalQuantity.toLocaleString()} kg</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Value</p>
+                    <p className="text-sm text-black">Total Value</p>
                     <p className="text-2xl font-bold">
                       ₱{riceType.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
@@ -415,9 +415,9 @@ export default function InventoryReportClient({
 
       {/* Category Breakdown */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Category Breakdown</CardTitle>
-          <p className="text-sm text-muted-foreground">Stock levels by product category</p>
+          <p className="text-sm text-black">Stock levels by product category</p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -429,11 +429,11 @@ export default function InventoryReportClient({
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Total Quantity</p>
+                    <p className="text-black">Total Quantity</p>
                     <p className="text-xl font-bold">{cat.totalQuantity.toLocaleString()} kg</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Total Value</p>
+                    <p className="text-black">Total Value</p>
                     <p className="text-xl font-bold">
                       ₱{cat.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
@@ -447,7 +447,7 @@ export default function InventoryReportClient({
 
       {/* Detailed Stock Table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Detailed Stock Levels</CardTitle>
         </CardHeader>
         <CardContent>
@@ -476,8 +476,8 @@ export default function InventoryReportClient({
                   <TableRow key={item.product.id}>
                     <TableCell className="font-medium">{item.product.name}</TableCell>
                     <TableCell>
-                      <Badge variant={item.product.isMilledRice ? "default" : "outline"}>
-                        {item.product.isMilledRice ? "🌾 Milled" : "🌱 Unmilled"}
+                      <Badge variant={item.product.isMilledRice ? "secondary" : "tertiary"}>
+                        {item.product.isMilledRice ? "Milled" : "Unmilled"}
                       </Badge>
                     </TableCell>
                     <TableCell>{item.product.category}</TableCell>
@@ -496,7 +496,7 @@ export default function InventoryReportClient({
                           item.status === "ok"
                             ? "default"
                             : item.status === "low"
-                            ? "secondary"
+                            ? "tertiary"
                             : "destructive"
                         }
                       >
@@ -507,7 +507,7 @@ export default function InventoryReportClient({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-black">
                         {item.locations.slice(0, 2).join(", ")}
                         {item.locations.length > 2 && ` +${item.locations.length - 2} more`}
                       </div>

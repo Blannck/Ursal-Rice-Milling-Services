@@ -121,7 +121,7 @@ export default function EditDialog({ product }: EditDialogProps) {
           </span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="text-black bg-custom-white">
+      <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle>Edit Product</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
@@ -144,6 +144,7 @@ export default function EditDialog({ product }: EditDialogProps) {
             <div>
               <Label htmlFor="category">Category</Label>
               <Combobox
+                
                 value={formData.category}
                 onChange={(val) => handleChange("category", val)}
               />

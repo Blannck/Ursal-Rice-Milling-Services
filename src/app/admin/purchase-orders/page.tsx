@@ -319,8 +319,12 @@ export default function PurchaseOrdersPage() {
                       </TableCell>
 
                       <TableCell className="font-medium">
-                        ₱{calculateTotal(order.items).toLocaleString()}
+                        ₱{calculateTotal(order.items).toLocaleString("en-PH", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </TableCell>
+
 
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(order.status, !!order.meta && order.meta.backorderQty > 0)}>
