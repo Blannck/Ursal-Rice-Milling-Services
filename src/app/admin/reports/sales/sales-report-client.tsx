@@ -272,7 +272,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Sales Report</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-white mt-1">
             Revenue analysis and performance metrics
           </p>
         </div>
@@ -283,10 +283,10 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="w-fit h-fit">
         <CardContent className="pt-6">
           <div className="flex gap-4 items-center">
-            <Calendar className="w-4 h-4 text-muted-foreground" />
+            <Calendar className="w-4 h-4 text-black" />
             <div className="flex-1">
               <Select value={dateRange} onValueChange={(value) => setDateRange(value as DateRange)}>
                 <SelectTrigger className="w-[200px]">
@@ -310,13 +310,13 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gross Sales</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ₱{stats.grossSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+            <p className="text-xs text-black flex items-center gap-1 mt-1">
               {stats.growthRate >= 0 ? (
                 <>
                   <ArrowUpRight className="h-3 w-3 text-green-500" />
@@ -336,13 +336,13 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Net Sales</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ₱{stats.netSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-black mt-1">
               Same as gross (no returns/discounts)
             </p>
           </CardContent>
@@ -351,11 +351,11 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <ShoppingCart className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-black mt-1">
               {stats.completedOrders} completed, {stats.fulfilledOrders} fulfilled
             </p>
           </CardContent>
@@ -364,13 +364,13 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Average Order</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ₱{stats.averageOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-black mt-1">
               Per order value
             </p>
           </CardContent>
@@ -379,7 +379,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
 
       {/* Revenue Trend Chart */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Revenue Trend (Last 30 Days)</CardTitle>
         </CardHeader>
         <CardContent>
@@ -400,13 +400,13 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
 
       {/* Rice Type Revenue Breakdown */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Revenue by Rice Type</CardTitle>
-          <p className="text-sm text-muted-foreground">Milled vs Unmilled Rice Sales</p>
+          <p className="text-sm text-black">Milled vs Unmilled Rice Sales</p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border rounded-lg p-4 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-950/20">
+            <div className="border rounded-lg p-4 bg-custom-gray ">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   🌾 Milled Rice
@@ -420,12 +420,12 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
               </p>
             </div>
             
-            <div className="border rounded-lg p-4 bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/20">
+            <div className="border rounded-lg p-4 bg-custom-gray">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   🌱 Unmilled Rice
                 </h3>
-                <Badge variant="secondary">
+                <Badge variant="default">
                   {((stats.unmilledRevenue / stats.grossSales) * 100).toFixed(1)}%
                 </Badge>
               </div>
@@ -439,7 +439,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
 
       {/* Top Products */}
       <Card>
-        <CardHeader>
+        <CardHeader className="mb-5">
           <CardTitle>Top Selling Products</CardTitle>
         </CardHeader>
         <CardContent>
@@ -458,7 +458,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
             <TableBody>
               {stats.topProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center text-black">
                     No sales data available
                   </TableCell>
                 </TableRow>
@@ -470,8 +470,8 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>
-                      <Badge variant={product.isMilledRice ? "default" : "outline"}>
-                        {product.isMilledRice ? "🌾 Milled" : "🌱 Unmilled"}
+                      <Badge variant={product.isMilledRice ? "secondary" : "tertiary"}>
+                        {product.isMilledRice ? " Milled" : " Unmilled"}
                       </Badge>
                     </TableCell>
                     <TableCell>{product.category}</TableCell>

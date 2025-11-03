@@ -159,46 +159,68 @@ export  default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
           
-      <section className="relative bg-transparent py-28 overflow-hidden">
+     <section className="relative bg-transparent py-32 overflow-hidden">
+  {/* Background Gradient / Overlay */}
+ 
+
+  {/* Floating Elements (optional for polish) */}
+  <div className="absolute -top-10 -right-10 w-96 h-96 bg-custom-orange/10 blur-3xl rounded-full"></div>
+  <div className="absolute bottom-0 left-0 w-72 h-72 bg-olive-500/10 blur-3xl rounded-full"></div>
+
+  {/* Content */}
+  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10">
+    <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+      Premium Rice Milling & Processing Solutions
+    </h1>
+
+    <p className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto">
+      At <span className="text-white font-semibold">Ursal Rice Milling Services</span>, 
+      we combine <span className="font-medium">modern technology</span> with 
+      <span className="font-medium"> traditional expertise</span> to deliver 
+      high-quality, locally milled rice trusted by farmers, retailers, and communities.
+    </p>
+
+    {/* CTA Buttons */}
+    <div className="flex flex-col sm:flex-row justify-center gap-4">
+      <Link href="/products">
+        <Button
+          variant="default"
+          size="lg"
+          className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8"
+        >
+          Shop Now
+        </Button>
+      </Link>
 
       
-        {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-              Premium Rice Milling & Processing Solutions
-            </h1>
+    </div>
 
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-              At <span className="text-white font-semibold">Ursal Rice Milling Services</span>, 
-              we combine modern technology with traditional expertise to deliver 
-              high-quality, locally milled rice trusted by farmers, retailers, and communities.
-            </p>
+    {/* Trust Indicators */}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 text-white/80">
+      <div>
+        <h3 className="text-3xl font-bold ">15+</h3>
+        <p className="text-sm uppercase tracking-wide">Years of Experience</p>
+      </div>
+      <div>
+        <h3 className="text-3xl font-bold ">1000+</h3>
+        <p className="text-sm uppercase tracking-wide">Satisfied Clients</p>
+      </div>
+      <div>
+        <h3 className="text-3xl font-bold ">99.9%</h3>
+        <p className="text-sm uppercase tracking-wide">Quality Assurance</p>
+      </div>
+    </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/products">
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8"
-                >
-                  Shop Now
-                </Button>
-              </Link>
-              
-            </div>
+    
+  </div>
+</section>
 
-            {/* Added Mini Feature Bar */}
-         
-          </div>
-        </div>
-      </section>
 
 
     
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-custom-green">
+      <section className="py-20 bg-custom-brown">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div> 
@@ -244,7 +266,7 @@ export  default async function HomePage() {
                     </Badge>
 
                     {/* Featured Badge */}
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-400  px-3 py-1 rounded-full text-sm font-semibold flex items-center">
+                    <div className="absolute top-4 right-4 bg-gradient-to-r text-white bg-custom-green px-3 py-1 rounded-full text-sm font-semibold flex items-center">
                       <Star className="h-3 w-3 mr-1 fill-current" />
                       Featured
                     </div>
@@ -332,7 +354,7 @@ export  default async function HomePage() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 bg-black/50">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Experience Our Premium Rice Products?
