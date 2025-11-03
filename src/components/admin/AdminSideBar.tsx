@@ -19,6 +19,8 @@ import {
   History,
   AlertTriangle,
   TrendingUp,
+  FileBarChart,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
@@ -196,7 +198,17 @@ export default function AdminSidebar({ user, app }: Props) {
             href="/admin/inventory"
             label="Inventory"
             icon={Warehouse}
-            active={pathname.startsWith("/admin/inventory")}
+            active={pathname.startsWith("/admin/inventory") && !pathname.includes("/report")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/inventory/report"
+            label="Inventory Report"
+            icon={FileBarChart}
+            active={pathname.startsWith("/admin/inventory/report")}
             collapsed={collapsed}
           />
         </div>
@@ -227,6 +239,16 @@ export default function AdminSidebar({ user, app }: Props) {
             label="Price History"
             icon={TrendingUp}
             active={pathname.startsWith("/admin/price-history")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/reports/sales"
+            label="Sales Report"
+            icon={BarChart3}
+            active={pathname.startsWith("/admin/reports/sales")}
             collapsed={collapsed}
           />
         </div>
