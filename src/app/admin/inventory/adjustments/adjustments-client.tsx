@@ -317,7 +317,7 @@ export default function AdjustmentsClient({
                 </SelectTrigger>
                 <SelectContent>
                   {availableLocations.length === 0 ? (
-                    <div className="p-2 text-sm text-muted-foreground">
+                    <div className="p-2 text-sm ">
                       No active locations found
                     </div>
                   ) : (
@@ -335,7 +335,7 @@ export default function AdjustmentsClient({
                               </Badge>
                               <span>{location.name}</span>
                             </div>
-                            <span className={`text-xs font-semibold ${qty === 0 ? 'text-muted-foreground' : ''}`}>
+                            <span className={`text-xs font-semibold ${qty === 0 ? '' : ''}`}>
                               Qty: {qty}
                             </span>
                           </div>
@@ -445,12 +445,12 @@ export default function AdjustmentsClient({
 
         {/* Preview Card */}
         <Card>
-          <CardHeader>
+          <CardHeader className="mb-5">
             <CardTitle>Adjustment Preview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {!selectedProductId || !selectedLocationId ? (
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-12 ">
                 <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Select a product and location to preview adjustment</p>
               </div>
@@ -458,19 +458,19 @@ export default function AdjustmentsClient({
               <>
                 {/* Product Info */}
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm ">
                     <Package className="h-4 w-4" />
                     <span>Product</span>
                   </div>
-                  <div className="bg-accent p-4 rounded-lg">
+                  <div className="bg-white border border-black text-black p-4 rounded-lg">
                     <p className="font-semibold text-lg">{selectedProduct?.name}</p>
-                    <p className="text-sm text-muted-foreground">{selectedProduct?.category}</p>
+                    <p className="text-sm ">{selectedProduct?.category}</p>
                     <div className="flex items-center gap-2 mt-2">
                       {(() => {
                         const actualStock = selectedProduct?.inventoryItems.reduce((sum, item) => sum + item.quantity, 0) || 0;
                         return (
                           <>
-                            <Badge variant="outline">Total Stock: {actualStock}</Badge>
+                            <Badge variant="secondary">Total Stock: {actualStock}</Badge>
                             {selectedProduct && actualStock <= selectedProduct.reorderPoint && (
                               <Badge className="bg-red-100 text-red-800">Low Stock</Badge>
                             )}
@@ -483,11 +483,11 @@ export default function AdjustmentsClient({
 
                 {/* Location Info */}
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm ">
                     <MapPin className="h-4 w-4" />
                     <span>Location</span>
                   </div>
-                  <div className="bg-accent p-4 rounded-lg">
+                  <div className="bg-white border border-black p-4 rounded-lg">
                     {(() => {
                       const location = availableLocations.find(l => l.id === selectedLocationId);
                       return location ? (
@@ -496,7 +496,7 @@ export default function AdjustmentsClient({
                             {location.type}
                           </Badge>
                           <span className="font-semibold">{location.name}</span>
-                          <span className="text-sm text-muted-foreground">({location.code})</span>
+                          <span className="text-sm ">({location.code})</span>
                         </div>
                       ) : null;
                     })()}
@@ -505,17 +505,17 @@ export default function AdjustmentsClient({
 
                 {/* Quantity Change */}
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm ">
                     {getAdjustmentIcon(adjustmentType)}
                     <span>Quantity Change</span>
                   </div>
-                  <div className="bg-accent p-4 rounded-lg">
+                  <div className="bg-white border border-black p-4 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Current Quantity:</span>
+                      <span className="text-sm ">Current Quantity:</span>
                       <span className="font-semibold text-lg">{currentQuantity}</span>
                     </div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Adjustment:</span>
+                      <span className="text-sm ">Adjustment:</span>
                       <span className={`font-semibold text-lg ${
                         adjustmentType === "ADD" ? "text-green-600" :
                         adjustmentType === "REMOVE" ? "text-red-600" :
@@ -546,11 +546,11 @@ export default function AdjustmentsClient({
                 {/* Reason Preview */}
                 {reason && (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm ">
                       <AlertCircle className="h-4 w-4" />
                       <span>Reason</span>
                     </div>
-                    <div className="bg-accent p-4 rounded-lg">
+                    <div className="bg-white border border-black p-4 rounded-lg">
                       <p className="text-sm">
                         {reason === "Other (specify below)" ? customReason : reason}
                       </p>

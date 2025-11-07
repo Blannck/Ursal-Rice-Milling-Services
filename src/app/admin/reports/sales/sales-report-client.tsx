@@ -384,7 +384,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={stats.dailyRevenue}>
+            <LineChart className="bg-white text-black border border-black" data={stats.dailyRevenue}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
@@ -404,9 +404,9 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
           <CardTitle>Revenue by Rice Type</CardTitle>
           <p className="text-sm text-black">Milled vs Unmilled Rice Sales</p>
         </CardHeader>
-        <CardContent>
+        <CardContent >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border rounded-lg p-4  ">
+            <div className="border bg-white rounded-lg p-4  ">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   Milled Rice
@@ -420,7 +420,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
               </p>
             </div>
             
-            <div className="border rounded-lg p-4 ">
+            <div className="border bg-white rounded-lg p-4 ">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   Unmilled Rice

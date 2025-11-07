@@ -386,7 +386,7 @@ export default function InventoryReportClient({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {stats.riceTypeBreakdown.map((riceType) => (
-              <div key={riceType.type} className="border rounded-lg p-4 bg-custom-white ">
+              <div key={riceType.type} className="border rounded-lg p-4 bg-white ">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-lg flex items-center gap-2">
                     {riceType.type === "Milled Rice" ? "" : ""} {riceType.type}
@@ -420,7 +420,7 @@ export default function InventoryReportClient({
           <p className="text-sm text-black">Stock levels by product category</p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-4 bg-white">
             {stats.categoryBreakdown.map((cat) => (
               <div key={cat.category} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">

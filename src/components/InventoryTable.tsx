@@ -413,7 +413,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               {filteredProducts.map((product) => (
                 <Card
                   key={product.id}
-                  className="group cursor-pointer border-0 shadow-sm  hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 "
+                  className="group cursor-pointer border-0 shadow-sm   hover:shadow-xl  transition-all duration-300 transform hover:-translate-y-1 "
                   onClick={() => handleProductClick(product)}
                 >
                   <CardContent className="p-0">
@@ -422,7 +422,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                       <img
                         src={
                           product.imageUrl ||
-                          "/rice1.png"
+                          "/rice1.jpg"
                         }
                         alt={product.name}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
@@ -450,7 +450,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                     <div className="p-6">
                       <div className="space-y-3">
                         <div>
-                          <h3 className="font-semibold text-lg  group-hover:text-custom-orange transition-colors line-clamp-2">
+                          <h3 className="font-semibold text-lg   transition-colors line-clamp-2">
                             {product.name}
                           </h3>
                           <p className="text-sm text-black mt-1">

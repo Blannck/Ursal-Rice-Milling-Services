@@ -135,7 +135,10 @@ export default function PurchaseOrdersPage() {
     case "Ordered": return "fifth";
     case "Received": return "fourth";
     case "Cancelled": return "destructive";
-    default: return "secondary";
+    case "Completed": return "fourth";
+    case "Partial": return "tertiary";
+    
+    default: return "tertiary";
   }
 };
 
@@ -252,7 +255,7 @@ export default function PurchaseOrdersPage() {
                   purchaseOrders.map((order) => (
                     <TableRow
                       key={order.id}
-                      className="cursor-pointer hover:shadow-xl hover:text-white"
+                      className="cursor-pointer hover:shadow-xl "
                       onClick={() =>
                         (window.location.href = `/admin/purchase-orders/${order.id}`)
                       }

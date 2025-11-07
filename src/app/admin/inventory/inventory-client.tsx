@@ -311,10 +311,10 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
         </Card>
       </div>
       
-      <Tabs defaultValue="unmilled" className="space-y-4 w-full">
+      <Tabs defaultValue="unmilled" className="space-y-4  w-full">
         <div className="flex items-center justify-between mr-2 mb-4">
           <TabsList className="bg-custom-white  ">
-            <TabsTrigger className="text-black" value="unmilled">Unmilled Items</TabsTrigger>
+            <TabsTrigger className="text-black " value="unmilled">Unmilled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="milled">Milled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="locations">Storage Locations</TabsTrigger>
           </TabsList>

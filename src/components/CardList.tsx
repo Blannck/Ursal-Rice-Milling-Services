@@ -167,7 +167,7 @@ export default function CardList({ products }: CardListProps) {
             {filteredProducts.map((product) => (
               <Card
                 key={product.id}
-                className={`group cursor-pointer bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1  ${
+                className={`group cursor-pointer min-h-80 bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl    ${
                   viewMode === "list" ? "flex flex-row overflow-hidden" : ""
                 }`}
                 onClick={() => handleProductClick(product)}
@@ -216,7 +216,7 @@ export default function CardList({ products }: CardListProps) {
                   >
                     <div className="space-y-3">
                       <div>
-                        <h3 className="font-semibold text-lg  group-hover:text-custom-orange transition-colors line-clamp-2">
+                        <h3 className="font-semibold text-lg  group-hover:text-black transition-colors line-clamp-2">
                           {product.name}
                         </h3>
                         {product.description && (

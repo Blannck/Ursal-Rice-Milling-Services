@@ -1,5 +1,5 @@
-"use client";
-
+/*
+"use client"
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,35 +22,58 @@ type Props = {
 };
 
 export default function DesktopNavbar({ user, app, isAdmin }: Props) {
-  // 🟩 ✅ Step 1: Put this at the very top
-  if (isAdmin) {
-    // Stop everything else — no effects, no navbar DOM, no style leakage
-    return <AdminSideBar user={user} app={app} />;
-  }
-
-  // 🟦 Step 2: Normal user navbar logic below this point
   const [showNavbar, setShowNavbar] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {
+    // guard for SSR
+    if (typeof document === "undefined") return;
+
     const hero = document.querySelector("#hero-section");
 
+    // If no hero on this page, show navbar
     if (!hero) {
       setShowNavbar(true);
       return;
     }
 
+    // Manual immediate check (so we don't rely only on async observer callback)
+    const checkVisibility = () => {
+      const rect = hero.getBoundingClientRect();
+      // Threshold = 0.3 (30%) — consider hero visible if its top is within 70% of viewport height
+      const threshold = 0.3;
+      const isVisible =
+        rect.top < window.innerHeight * (1 - threshold) && rect.bottom > 0;
+      setShowNavbar(Boolean(isVisible));
+    };
+
+    // run immediate check
+    checkVisibility();
+
+    // create observer for future changes
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
+        // Respect the entry but keep manual check as a fallback
         setShowNavbar(entry.isIntersecting);
       },
-      { threshold: 0.3 }
+      { threshold: [0, 0.3, 0.5, 1] }
     );
 
     observer.observe(hero);
-    return () => observer.disconnect();
-  }, [pathname]);
+
+    // also listen to resize (viewport size changes) to re-check visibility
+    window.addEventListener("resize", checkVisibility);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", checkVisibility);
+    };
+  }, [pathname]); // re-run when route changes
+
+  if (isAdmin) {
+    return <AdminSideBar user={user} app={app} />;
+  }
 
   return (
     <div className="relative z-50 w-full bg-[inherit]">
@@ -59,7 +82,7 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
       <div className="group relative flex justify-center">
         <div
           className={`
-            transition-all duration-500 ease-in-out mt-2
+            transition-all duration-500 ease-in-out mt-6
             flex items-center w-fit rounded-full bg-custom-green h-12 justify-between px-4 shadow-lg
             ${showNavbar ? "opacity-100 scale-100" : "opacity-0 scale-95"}
             group-hover:opacity-100 group-hover:scale-100

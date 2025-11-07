@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-fixed bg-cover  bg-center min-h-screen bg-[url('/login.jpeg')]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-fixed bg-cover bg-center min-h-screen bg-[url('/login.jpeg')]`}
       >
         <div className="bg-black/50 w-screen min-h-screen">
         <div className="fixed inset-0 bg-black/30 -z-10" />

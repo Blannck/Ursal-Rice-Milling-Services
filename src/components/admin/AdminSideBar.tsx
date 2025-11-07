@@ -107,7 +107,7 @@ export default function AdminSidebar({ user, app }: Props) {
         </div>
         <div className="px-2 mb-3">
           <NavItem
-            href="/products"
+            href="/admin/products"
             label="Products"
             icon={Package}
             active={pathname.startsWith("/products")}
@@ -116,7 +116,7 @@ export default function AdminSidebar({ user, app }: Props) {
         </div>
         <div className="px-2 mb-3">
           <NavItem
-            href="/cart"
+            href="/admin/cart"
             label="Cart"
             icon={ShoppingCart}
             active={pathname.startsWith("/cart")}
@@ -125,7 +125,7 @@ export default function AdminSidebar({ user, app }: Props) {
         </div>
         <div className="px-2 mb-3">
           <NavItem
-            href="/orders"
+            href="/admin/customer-orders"
             label="Orders"
             icon={ClipboardList}
             active={pathname.startsWith("/orders")}

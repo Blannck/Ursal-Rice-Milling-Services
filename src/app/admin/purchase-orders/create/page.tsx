@@ -294,7 +294,7 @@ if (data?.ok || data?.success) {
                             <SelectItem key={supplier.id} value={supplier.id} className="text-black hover:bg-gray-100">
                               <div className="text-sm">
                                 <span className="font-medium">{supplier.name} </span>
-                                <span className="text-sm text-gray-500">{supplier.email || "No email"}</span>
+                                <span className="text-sm ml-2 ">{supplier.email || "No email"}</span>
                               </div>
                             </SelectItem>
                           ))
@@ -336,10 +336,10 @@ if (data?.ok || data?.success) {
                           </SelectTrigger>
                           <SelectContent>
                             {products.map((product) => (
-                              <SelectItem key={product.id} value={product.id}>
-                                <div className="flex flex-col">
+                              <SelectItem  className="" key={product.id} value={product.id}>
+                                <div className="flex flex-col text-left">
                                   <span>{product.name}</span>
-                                  <span className="text-sm text-gray-500">
+                                  <span className="text-sm ">
                                     {product.category} - ₱{product.price}
                                   </span>
                                 </div>

@@ -22,6 +22,7 @@ import {
   ShoppingCart,
   LeafIcon,
   HandshakeIcon,
+  Grid,
 } from "lucide-react";
 import { getProducts } from "@/actions/product.aciton";
 import CardList from "./CardList";
@@ -161,18 +162,17 @@ export  default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
           
-     <section className="relative bg-transparent py-32 overflow-hidden">
- 
-  <div className="absolute -top-10 -right-10 w-96 h-96 bg-custom-orange/10 blur-3xl rounded-full"></div>
-  <div className="absolute bottom-0 left-0 w-72 h-72 bg-olive-500/10 blur-3xl rounded-full"></div>
+     <section id="hero-section"  className="relative bg-transparent  items-center  py-36 overflow-hidden grid grid-cols-2 gap-4">
+    
+  
 
  
-  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10">
-    <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+  <div className="relative max-w-7xl ml-32  px-4 sm:px-6 lg:px-8 col-span-1 text-center ">
+    <h1 className="text-4xl md:text-6xl font-bold text-white mb-10 text-left leading-tight">
       Premium Rice Milling & Processing Solutions
     </h1>
 
-    <p className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto">
+    <p className="text-lg md:text-2xl text-white text-left max-w-3xl mb-10 mx-auto">
       At <span className="text-white font-semibold">Ursal Rice Milling Services</span>, 
       we combine <span className="font-medium">modern technology</span> with 
       <span className="font-medium"> traditional expertise</span> to deliver 
@@ -180,7 +180,7 @@ export  default async function HomePage() {
     </p>
 
    
-    <div className="flex flex-col sm:flex-row justify-center gap-4">
+    <div className="flex flex-col sm:flex-row justify-start  mb-20 gap-4">
       <Link href="/products">
         <Button
           variant="default"
@@ -190,15 +190,14 @@ export  default async function HomePage() {
           Shop Now
         </Button>
       </Link>
-
-      
+    
+    
     </div>
-
-    {/* Trust Indicators */}
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 text-white">
-      <div>
+      {/* Trust Indicators */}
+       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-white">
+      <div >
         <h3 className="text-3xl font-bold ">15+</h3>
-        <p className="text-sm uppercase tracking-wide">Years of Experience</p>
+        <p className="text-sm  uppercase tracking-wide">Years of Experience</p>
       </div>
       <div>
         <h3 className="text-3xl font-bold ">1000+</h3>
@@ -213,8 +212,22 @@ export  default async function HomePage() {
     
 
     
+
+    
   </div>
+  <div className="relative col-span-1 flex flex-col items-center  justify-center">
+    <img
+      src="/happy.png"
+      alt="Rice Milling"
+      className="w-full h-auto max-w-md border-transparent rounded-full mb-10 shadow-lg object-cover"
+    />
+    
+  
+  </div>
+
+  
 </section>
+
 
 <section className="py-20 bg-custom-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -228,7 +241,7 @@ export  default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
+            <div className="bg-transparent p-8 rounded-xl text-center hover:transform hover:scale-105 transition-all duration-300">
               <div className="bg-custom-green  w-40 h-40 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Star className="h-16 w-16 text-white" />
               </div>
@@ -284,18 +297,18 @@ export  default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8">
             {products.map((product) => (
 
               <Link href={`/products/${product.id}`}>  <Card
                 key={product.id}
-                className="group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2  overflow-hidden"
+                className="group cursor-pointer  border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform   overflow-hidden"
               >
                 <CardContent className="p-0">
                   {/* Product Image */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
-                      src={product.imageUrl ?? ""}
+                      src={product.imageUrl ?? "/rice1.jpg"}
                       alt={product.name}
                       className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
@@ -318,8 +331,8 @@ export  default async function HomePage() {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-6">
-                    <h3 className="font-bold text-xl  mb-3 group-hover:text-custom-orange transition-colors line-clamp-2">
+                  <div className="p-6 group-hover:text-custom-orange transition-colors duration-300">
+                    <h3 className="font-bold text-xl  mb-3  transition-colors line-clamp-2">
                       {product.name}
                     </h3>
                     <p className=" mb-4 line-clamp-2">{product.description}</p>

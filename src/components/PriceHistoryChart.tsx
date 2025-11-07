@@ -46,7 +46,7 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
   const isIncrease = priceChange > 0;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full ">
       <CardHeader className='mb-5'>
         <CardTitle>Price History: {productName}</CardTitle>
         <CardDescription className="text-black">
@@ -66,9 +66,10 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
         ) : (
           <>
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData}>
+              <LineChart className='bg-white border border-black ' data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
+                  className='text-black'
                   dataKey="date" 
                   angle={-45}
                   textAnchor="end"
