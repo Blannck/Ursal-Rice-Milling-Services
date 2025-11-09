@@ -56,6 +56,35 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
         },
       });
 
+      // Update finances - find or create finance record
+      let finance = await tx.finance.findFirst();
+      if (!finance) {
+        finance = await tx.finance.create({
+          data: {
+            totalPayables: 0,
+            accountBalance: 0
+          }
+        });
+      }
+
+      // Create a finance transaction and update balance
+      await tx.financeTransaction.create({
+        data: {
+          financeId: finance.id,
+          type: 'SALE',
+          amount: total,
+          description: `Order #${newOrder.id.slice(-8)} from ${email}`,
+          orderId: newOrder.id
+        }
+      });
+
+      await tx.finance.update({
+        where: { id: finance.id },
+        data: {
+          accountBalance: { increment: total }
+        }
+      });
+
       console.log(`   ✅ Order created: #${newOrder.id.slice(0, 8)}`);
 
       // ✅ DEDUCT STOCK FROM INVENTORY (FIFO)

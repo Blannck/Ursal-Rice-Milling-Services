@@ -21,6 +21,7 @@ import {
   TrendingUp,
   FileBarChart,
   BarChart3,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
@@ -249,6 +250,16 @@ export default function AdminSidebar({ user, app }: Props) {
             label="Sales Report"
             icon={BarChart3}
             active={pathname.startsWith("/admin/reports/sales")}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/finance"
+            label="Finance"
+            icon={Wallet}
+            active={pathname.startsWith("/admin/finance")}
             collapsed={collapsed}
           />
         </div>

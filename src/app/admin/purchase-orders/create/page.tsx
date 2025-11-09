@@ -65,6 +65,9 @@ export default function CreatePurchaseOrderPage() {
   const [selectedSupplierId, setSelectedSupplierId] = useState("");
   const [note, setNote] = useState("");
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [paymentType, setPaymentType] = useState<"ONE_TIME" | "MONTHLY">("ONE_TIME");
+  const [monthlyTerms, setMonthlyTerms] = useState<number>(3);
+  const [dueDate, setDueDate] = useState("");
   
   // Add item state
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -230,6 +233,9 @@ export default function CreatePurchaseOrderPage() {
         body: JSON.stringify({
           supplierId: selectedSupplierId,
           note,
+          paymentType,
+          monthlyTerms: paymentType === "MONTHLY" ? monthlyTerms : null,
+          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
           items: orderItems.map(item => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -315,6 +321,71 @@ if (data?.ok || data?.success) {
                       className="bg-white"
                       onChange={(e) => setNote(e.target.value)}
                     />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Payment Terms */}
+              <Card>
+                <CardHeader className="mb-5">
+                  <CardTitle>Payment Terms</CardTitle>
+                  <CardDescription className="text-black">Choose payment schedule for this purchase order</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="paymentType">Payment Type</Label>
+                    <Select value={paymentType} onValueChange={(value: "ONE_TIME" | "MONTHLY") => setPaymentType(value)}>
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select payment type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200">
+                        <SelectItem value="ONE_TIME" className="text-black hover:bg-gray-100">
+                          One-Time Payment
+                        </SelectItem>
+                        <SelectItem value="MONTHLY" className="text-black hover:bg-gray-100">
+                          Monthly Installment
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {paymentType === "MONTHLY" && (
+                    <div>
+                      <Label htmlFor="monthlyTerms">Monthly Terms</Label>
+                      <Select value={monthlyTerms.toString()} onValueChange={(value) => setMonthlyTerms(parseInt(value))}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select terms" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200">
+                          <SelectItem value="3" className="text-black hover:bg-gray-100">
+                            3 Months
+                          </SelectItem>
+                          <SelectItem value="6" className="text-black hover:bg-gray-100">
+                            6 Months
+                          </SelectItem>
+                          <SelectItem value="12" className="text-black hover:bg-gray-100">
+                            12 Months
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="dueDate">Due Date</Label>
+                    <Input
+                      id="dueDate"
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      className="bg-white"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {paymentType === "MONTHLY" 
+                        ? `First installment due date (${monthlyTerms} monthly payments)` 
+                        : "Final payment due date"}
+                    </p>
                   </div>
                 </CardContent>
               </Card>

@@ -42,6 +42,9 @@ interface PurchaseOrder {
   orderDate: string | null;
   status: string;
   note?: string;
+  paymentType?: string;
+  monthlyTerms?: number | null;
+  dueDate?: string | null;
   createdAt: string;
   updatedAt: string;
   items: Array<{
@@ -56,6 +59,13 @@ interface PurchaseOrder {
     receivedQty: number;
     returnedQty: number;
     price: number;
+  }>;
+  payments?: Array<{
+    id: string;
+    type: string;
+    amount: number;
+    description?: string | null;
+    createdAt: string;
   }>;
 }
 
@@ -469,6 +479,58 @@ const handleSubmitReturn = async () => {
               </CardContent>
             </Card>
 
+            {/* Payment Terms */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex mb-5 items-center gap-2">
+                  <Calendar className="h-5 w-5" /> Payment Terms
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-black">Payment Type</label>
+                    <p className="text-lg font-semibold">
+                      {purchaseOrder.paymentType === "MONTHLY" ? "Monthly Installment" : "One-Time Payment"}
+                    </p>
+                  </div>
+                  {purchaseOrder.paymentType === "MONTHLY" && purchaseOrder.monthlyTerms && (
+                    <div>
+                      <label className="text-sm text-black">Terms</label>
+                      <p className="text-lg font-semibold">
+                        {purchaseOrder.monthlyTerms} Months
+                      </p>
+                    </div>
+                  )}
+                  {purchaseOrder.dueDate && (
+                    <div>
+                      <label className="text-sm text-black">
+                        {purchaseOrder.paymentType === "MONTHLY" ? "First Payment Due" : "Payment Due Date"}
+                      </label>
+                      <p className="text-lg font-semibold">
+                        {new Date(purchaseOrder.dueDate).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  )}
+                  {purchaseOrder.paymentType === "MONTHLY" && purchaseOrder.monthlyTerms && (
+                    <div>
+                      <label className="text-sm text-black">Monthly Payment Amount</label>
+                      <p className="text-lg font-semibold text-blue-600">
+                        ₱{(total / purchaseOrder.monthlyTerms).toLocaleString("en-PH", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Order Items */}
             <Card>
               <CardHeader className="mb-5">
@@ -543,6 +605,29 @@ const handleSubmitReturn = async () => {
                 </CardHeader>
                 <CardContent>
                   <p className="whitespace-pre-wrap">{purchaseOrder.note}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Payment History */}
+            {(purchaseOrder.payments && purchaseOrder.payments.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payment History</CardTitle>
+                  <CardDescription className="text-black">Payments applied to this purchase order</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {purchaseOrder.payments.map((p) => (
+                      <div key={p.id} className="flex justify-between items-center border-b pb-2">
+                        <div>
+                          <div className="font-medium">₱{p.amount.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                          <div className="text-sm text-gray-600">{p.description}</div>
+                        </div>
+                        <div className="text-sm text-gray-500">{new Date(p.createdAt).toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}

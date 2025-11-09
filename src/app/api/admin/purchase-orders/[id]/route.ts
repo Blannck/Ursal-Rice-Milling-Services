@@ -28,11 +28,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
-    // Return consistent format for both success and purchaseOrder
+    // Fetch PAYMENT transactions for this PO
+    const payments = await prisma.financeTransaction.findMany({
+      where: { purchaseOrderId: params.id, type: "PAYMENT" },
+      orderBy: { createdAt: "desc" },
+    });
+
     return NextResponse.json({ 
       success: true, 
       ok: true,
-      purchaseOrder 
+      purchaseOrder: { ...purchaseOrder, payments }
     });
   } catch (error) {
     console.error("Error fetching purchase order:", error);

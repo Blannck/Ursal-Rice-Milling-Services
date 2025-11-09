@@ -144,9 +144,9 @@ return res;
 export async function POST(request: Request) {
   try {
     await assertAdmin();
-    const { supplierId, note, items } = await request.json();
+    const { supplierId, note, items, paymentType, monthlyTerms, dueDate } = await request.json();
 
-    console.log("Creating purchase order with:", { supplierId, note, itemsCount: items?.length });
+    console.log("Creating purchase order with:", { supplierId, note, itemsCount: items?.length, paymentType, monthlyTerms, dueDate });
 
     if (!supplierId || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -201,7 +201,42 @@ export async function POST(request: Request) {
           supplierId,
           status: "Pending",
           note: note || null,
+          paymentType: paymentType || "ONE_TIME",
+          monthlyTerms: paymentType === "MONTHLY" ? monthlyTerms : null,
+          dueDate: dueDate ? new Date(dueDate) : null,
         },
+      });
+
+      // Calculate total amount
+      const totalAmount = items.reduce((sum, it) => sum + (Number(it.quantity) * Number(it.price)), 0);
+
+      // Find or create finance record
+      let finance = await tx.finance.findFirst();
+      if (!finance) {
+        finance = await tx.finance.create({
+          data: {
+            totalPayables: 0,
+            accountBalance: 0
+          }
+        });
+      }
+
+      // Create finance transaction and update payables
+      await tx.financeTransaction.create({
+        data: {
+          financeId: finance.id,
+          type: 'PAYABLE',
+          amount: totalAmount,
+          description: `Purchase Order #${order.id.slice(-8)}`,
+          purchaseOrderId: order.id
+        }
+      });
+
+      await tx.finance.update({
+        where: { id: finance.id },
+        data: {
+          totalPayables: { increment: totalAmount }
+        }
       });
 
       console.log("Created order:", order.id);

@@ -130,6 +130,9 @@ model PurchaseOrder {
   status     String              @default("Pending")
   items      PurchaseOrderItem[]
   note       String?
+  paymentType String             @default("ONE_TIME") // ONE_TIME | MONTHLY
+  monthlyTerms Int?              // 3, 6, or 12 months
+  dueDate     DateTime?          // Due date for payment
   createdAt  DateTime            @default(now())
   updatedAt  DateTime            @updatedAt
 
@@ -257,4 +260,28 @@ model InventoryItem {
   @@unique([productId, locationId])
   @@index([productId])
   @@index([locationId])
+}
+
+model Finance {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  totalPayables Float           @default(0)
+  accountBalance Float          @default(0)
+  transactions  FinanceTransaction[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model FinanceTransaction {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  finance       Finance   @relation(fields: [financeId], references: [id])
+  financeId     String    @db.ObjectId
+  type          String    // PAYABLE | PAYMENT | SALE
+  amount        Float
+  description   String?
+  orderId       String?   @db.ObjectId
+  purchaseOrderId String? @db.ObjectId
+  createdAt     DateTime  @default(now())
+
+  @@index([financeId])
+  @@index([type])
 }
