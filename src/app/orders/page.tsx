@@ -9,8 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Download, Calendar, Package, ShoppingBag, FileText } from "lucide-react";
 import Spinner from "@/components/Spinner";
+import { requireActiveUser } from "@/lib/guard";
+import { redirect } from "next/navigation";
 
 export default async function OrdersPage() {
+  // Check if user is deactivated or blocked
+  const check = await requireActiveUser();
+  if ('redirect' in check && check.redirect) {
+    redirect(check.redirect);
+  }
+  
   const { success, orders, isAdmin } = await getOrders();
 
   if (!success) {

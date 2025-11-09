@@ -2,11 +2,22 @@ import { getCartItems } from "@/actions/cart.action";
 import { getProducts } from "@/actions/product.aciton";
 import CartTable from "@/components/CartTable";
 import { stackServerApp } from "@/lib/stack";
+import { requireActiveUser } from "@/lib/guard";
 import { SignUp } from "@stackframe/stack";
+import { redirect } from "next/navigation";
 import React from "react";
 
 async function Cart() {
   const user = await stackServerApp.getUser();
+  
+  // Check if user is deactivated or blocked
+  if (user) {
+    const check = await requireActiveUser();
+    if ('redirect' in check && check.redirect) {
+      redirect(check.redirect);
+    }
+  }
+  
   const cartItems = await getCartItems();
 
   return (

@@ -22,9 +22,15 @@ export default async function UsersPage() {
   }));
 
   try {
-    const appRows = await prisma.appUser.findMany({ where: { id: { in: users.map(u => u.id) } } });
-    const map = Object.fromEntries(appRows.map(r => [r.id, r] as const));
-    users = users.map(u => ({ ...u, status: map[u.id]?.status ?? "ACTIVE", blockedAt: map[u.id]?.blockedAt ?? null }));
+    // Fetch AppUser records by email instead of Stack UUID (can't use UUID as MongoDB ObjectId)
+    const emails = users.map(u => u.primaryEmail).filter((e): e is string => !!e);
+    const appRows = await prisma.appUser.findMany({ where: { email: { in: emails } } });
+    const map = Object.fromEntries(appRows.map(r => [r.email, r] as const));
+    users = users.map(u => ({ 
+      ...u, 
+      status: (u.primaryEmail && map[u.primaryEmail]?.status) ?? "ACTIVE", 
+      blockedAt: (u.primaryEmail && map[u.primaryEmail]?.blockedAt) ?? null 
+    }));
   } catch {}
 
   return (

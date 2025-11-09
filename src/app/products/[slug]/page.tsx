@@ -2,7 +2,8 @@ import React from "react";
 import { stackServerApp } from "@/lib/stack";
 import { getProductById } from "@/actions/product.aciton";
 import ProductCard from "./ProductCard";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { requireActiveUser } from "@/lib/guard";
 
 export async function generateMetadata({
   params,
@@ -20,6 +21,15 @@ export async function generateMetadata({
 
 async function Page({ params }: { params: { slug: string } }) {
   const user = await stackServerApp.getUser();
+  
+  // Check if user is deactivated or blocked
+  if (user) {
+    const check = await requireActiveUser();
+    if ('redirect' in check && check.redirect) {
+      redirect(check.redirect);
+    }
+  }
+  
   const [id] = params.slug.split("--");
   const product = await getProductById(id);
 

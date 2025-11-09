@@ -7,14 +7,20 @@ export async function requireActiveUser() {
   const me = await stackServerApp.getUser();
   if (!me) return { redirect: "/signin" as const };
 
-  const app = await prisma.appUser.findUnique({ where: { id: me.id! } });
+  // Look up AppUser by email instead of Stack UUID (can't use UUID as MongoDB ObjectId)
+  const app = me.primaryEmail 
+    ? await prisma.appUser.findFirst({ where: { email: me.primaryEmail } })
+    : null;
 
-  
-  if (app?.blockedAt) return { redirect: "/blocked" as const };
+  // Check blocked FIRST (blocked users also have status DEACTIVATED, so this must come first)
+  if (app?.blockedAt) {
+    return { redirect: "/blocked" as const };
+  }
 
-  
+  // If user is deactivated (but not blocked), redirect to logout endpoint which will clear session
   if (app?.status === "DEACTIVATED") {
-    return { redirect: "/signin?reason=deactivated" as const };
+    // Redirect to a route handler that will sign out and redirect to signin
+    return { redirect: "/api/auth/signout?reason=deactivated" as const };
   }
 
   return { me, app };

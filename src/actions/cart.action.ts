@@ -8,7 +8,9 @@ import { revalidatePath } from "next/cache";
 export async function addToCart(productId: string, quantity: number = 1) {
   try {
     const userId = await getUserId();
-    if (!userId) return;
+    if (!userId) {
+      throw new Error("You must be logged in to add items to cart");
+    }
 
     // Check if item already exists in cart
     const existingCartItem = await prisma.cartItem.findFirst({

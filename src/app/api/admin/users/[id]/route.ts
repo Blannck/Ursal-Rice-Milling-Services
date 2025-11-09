@@ -14,8 +14,11 @@ const { id } = params;
 const users: any[] = await stackServerApp.listUsers();
 const u = users.find((x) => x.id === id) ?? null;
 
+// Lookup AppUser by email instead of Stack UUID (can't use UUID as MongoDB ObjectId)
+const appUser = u?.primaryEmail 
+  ? await prisma.appUser.findFirst({ where: { email: u.primaryEmail } })
+  : null;
 
-const appUser = await prisma.appUser.findUnique({ where: { id } });
 const orders = await prisma.order.findMany({
 where: { userId: id },
 orderBy: { createdAt: "desc" },

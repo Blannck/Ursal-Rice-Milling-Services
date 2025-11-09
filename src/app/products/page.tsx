@@ -4,10 +4,21 @@ import { getVisibleProducts } from "@/actions/product.aciton";
 import CardList from "@/components/CardList";
 import Spinner from "@/components/Spinner";
 import { stackServerApp } from "@/lib/stack";
+import { requireActiveUser } from "@/lib/guard";
+import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
 
 async function page() {
   const user = await stackServerApp.getUser();
+  
+  // Check if user is blocked or deactivated
+  if (user) {
+    const check = await requireActiveUser();
+    if ('redirect' in check && check.redirect) {
+      redirect(check.redirect);
+    }
+  }
+  
   const products = await getVisibleProducts();
 
   return (

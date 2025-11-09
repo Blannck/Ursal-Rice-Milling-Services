@@ -24,11 +24,18 @@ export default function AddToCartButton({
     setIsLoading(true);
     try {
       await addToCart(productId, quantity);
-      toast.success("Added to cart!");
-      router.push(redirectTo); // 🔁 redirect after success
-    } catch (error) {
+      toast.success("Added to cart!", {
+        duration: 2000, // Show toast for 2 seconds
+      });
+      router.refresh(); // Refresh current page instead of redirecting
+    } catch (error: any) {
       console.error("Add to cart failed", error);
-      toast.error("Failed to add to cart");
+      // Check if it's an authentication error
+      if (error.message?.includes("logged in")) {
+        toast.error("Please sign in to add items to cart");
+      } else {
+        toast.error("Failed to add to cart");
+      }
     } finally {
       setIsLoading(false);
     }

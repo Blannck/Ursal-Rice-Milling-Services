@@ -13,7 +13,7 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, Package, CreditCard } from "lucide-react";
 import RemoveFromCartButton from "./RemoveToCart";
@@ -43,6 +43,10 @@ export default function CartTable({ cartItems }: CartTableProps) {
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [checkingOut, setCheckingOut] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  
+  // Debounce timer refs for each cart item
+  const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
 
   function toggleSelect(id: string) {
     setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -94,22 +98,41 @@ export default function CartTable({ cartItems }: CartTableProps) {
     filteredItems.every((item) => selected[item.id]);
   const someFilteredSelected = filteredItems.some((item) => selected[item.id]);
 
-  const [isPending, startTransition] = useTransition();
+  // Debounced update function - waits 500ms after last change before saving
+  const debouncedUpdate = useCallback((id: string, newQuantity: number) => {
+    // Clear any existing timer for this item
+    if (debounceTimers.current[id]) {
+      clearTimeout(debounceTimers.current[id]);
+    }
+
+    // Set a new timer
+    debounceTimers.current[id] = setTimeout(() => {
+      startTransition(() => {
+        updateCartQuantity(id, newQuantity)
+          .then(() => {
+            router.refresh();
+          })
+          .catch((err) => {
+            console.error("Failed to update quantity:", err);
+            toast.error("Failed to update cart");
+          });
+      });
+    }, 500); // Wait 500ms after last change
+  }, [router]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimers.current).forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
+    // Update local state immediately for responsive UI
     setQuantities((prev) => ({ ...prev, [id]: newQuantity }));
-
-    startTransition(() => {
-      updateCartQuantity(id, newQuantity)
-        .then(() => {
-          toast.success("Cart updated");
-          router.refresh();
-        })
-        .catch((err) => {
-          console.error("Failed to update quantity:", err);
-          toast.error("Failed to update cart");
-        });
-    });
+    
+    // Debounce the server update
+    debouncedUpdate(id, newQuantity);
   };
 
   return (
@@ -219,7 +242,6 @@ export default function CartTable({ cartItems }: CartTableProps) {
                                   Math.max(quantity - 1, 1)
                                 )
                               }
-                              disabled={isPending}
                               className="h-8 w-8 p-0"
                             >
                               −
@@ -227,7 +249,11 @@ export default function CartTable({ cartItems }: CartTableProps) {
                             <Input
                               type="number"
                               value={quantity}
-                              readOnly
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 1;
+                                handleQuantityChange(item.id, Math.max(val, 1));
+                              }}
+                              min={1}
                               className="w-16 h-8 text-center text-sm"
                             />
                             <Button
@@ -236,7 +262,6 @@ export default function CartTable({ cartItems }: CartTableProps) {
                               onClick={() =>
                                 handleQuantityChange(item.id, quantity + 1)
                               }
-                              disabled={isPending}
                               className="h-8 w-8 p-0"
                             >
                               +
