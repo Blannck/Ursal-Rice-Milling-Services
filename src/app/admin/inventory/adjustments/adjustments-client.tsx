@@ -422,9 +422,10 @@ export default function AdjustmentsClient({
 
             {/* Custom Reason */}
             {reason === "Other (specify below)" && (
-              <div className="space-y-2">
+              <div className=" space-y-2">
                 <Label htmlFor="customReason">Specify Reason *</Label>
                 <Textarea
+                className="bg-white"
                   id="customReason"
                   value={customReason}
                   onChange={(e) => setCustomReason(e.target.value)}
@@ -567,12 +568,12 @@ export default function AdjustmentsClient({
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-custom-white text-black">
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Inventory Adjustment</AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
-              <p>You are about to adjust the inventory with the following details:</p>
-              <div className="bg-accent p-4 rounded-lg mt-2 space-y-1 text-sm">
+              <p className="text-black">You are about to adjust the inventory with the following details:</p>
+              <div className="bg-white text-black p-4 rounded-lg mt-2 space-y-1 text-sm">
                 <p><strong>Product:</strong> {selectedProduct?.name}</p>
                 <p><strong>Location:</strong> {availableLocations.find(l => l.id === selectedLocationId)?.name}</p>
                 <p><strong>Type:</strong> {adjustmentType}</p>
@@ -587,11 +588,11 @@ export default function AdjustmentsClient({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-red-600" disabled={isSubmitting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-primary"
+              className="bg-green-600"
             >
               {isSubmitting ? "Processing..." : "Confirm Adjustment"}
             </AlertDialogAction>

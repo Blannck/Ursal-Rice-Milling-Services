@@ -210,19 +210,19 @@ export default function PayablesTable({
                   </div>
                 </div>
               )}
-              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <div className="bg-white border-black border p-4 rounded-lg space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Supplier:</span>
+                  <span className="text-sm text-black">Supplier:</span>
                   <span className="font-medium">{selectedPO.supplier}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Total Amount:</span>
+                  <span className="text-sm text-black">Total Amount:</span>
                   <span className="font-medium">
                     ₱{selectedPO.totalAmount.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Paid:</span>
+                  <span className="text-sm text-black">Paid:</span>
                   <span className="font-medium text-green-600">
                     ₱{selectedPO.paidAmount.toLocaleString()}
                   </span>
@@ -241,7 +241,7 @@ export default function PayablesTable({
                     className={`font-bold ${
                       accountBalance >= selectedPO.remainingAmount
                         ? "text-green-600"
-                        : "text-orange-600"
+                        : "text-red-600"
                     }`}
                   >
                     ₱{accountBalance.toLocaleString()}
@@ -253,11 +253,11 @@ export default function PayablesTable({
                 {/* Monthly Payment Option */}
                 {selectedPO.paymentType === "MONTHLY" &&
                   selectedPO.monthlyPayment && (
-                    <div className="border rounded-lg p-4">
+                    <div className="border bg-white rounded-lg p-4">
                       <div className="flex justify-between items-center mb-2">
                         <div>
                           <h4 className="font-semibold">Monthly Installment</h4>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-black">
                             {selectedPO.monthlyTerms} month payment plan
                           </p>
                         </div>
@@ -282,11 +282,11 @@ export default function PayablesTable({
                   )}
 
                 {/* Full Payment Option */}
-                <div className="border rounded-lg p-4">
+                <div className="border bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <div>
                       <h4 className="font-semibold">Pay Full Amount</h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         Clear remaining balance
                       </p>
                     </div>
