@@ -413,7 +413,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               {filteredProducts.map((product) => (
                 <Card
                   key={product.id}
-                  className="group cursor-pointer border-0 shadow-sm   hover:shadow-xl  transition-all duration-300 transform hover:-translate-y-1 "
+                  className="group cursor-pointer border-0 shadow-sm   hover:  transition-all duration-300 transform hover:-translate-y-1 "
                   onClick={() => handleProductClick(product)}
                 >
                   <CardContent className="p-0">

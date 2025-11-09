@@ -242,41 +242,47 @@ export default function OrdersClient({
 
         {/* Order Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className=" shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Total Orders
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="left-0">
-            <div className="text-2xl font-bold">{orders.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Pending Fulfillment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl  font-bold">
-              {orders.filter((o) => o.status !== "fulfilled").length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Total Value
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl left-0 font-bold ">
-              ₱{orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}
-            </div>
-          </CardContent>
-        </Card>
+  {/** Total Orders Card */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="pb-2 p-0">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Total Orders
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{orders.length}</div>
+    </CardContent>
+  </Card>
+
+  {/** Pending Fulfillment Card */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="pb-2 p-0">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Pending Fulfillment
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        {orders.filter((o) => o.status !== "fulfilled").length}
       </div>
+    </CardContent>
+  </Card>
+
+  {/** Total Value Card */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="pb-2 p-0">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Total Value
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        ₱{orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Orders List */}

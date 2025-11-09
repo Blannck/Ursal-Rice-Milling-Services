@@ -316,66 +316,78 @@ export default function InventoryReportClient({
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-black">Active SKUs</p>
-          </CardContent>
-        </Card>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+  {/* Total Products */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Total Products</CardTitle>
+      <Package className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{stats.totalProducts}</div>
+      <p className="text-xs text-black text-left">Active SKUs</p>
+    </CardContent>
+  </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Stock</CardTitle>
-            <TrendingUp className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.totalStockUnits.toLocaleString()} kg
-            </div>
-            <p className="text-xs text-black">Total quantity</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Stock Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ₱{stats.totalStockValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-black">Inventory value</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-500">{stats.lowStockCount}</div>
-            <p className="text-xs text-black">Needs attention</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Storage Locations</CardTitle>
-            <MapPin className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeLocations}</div>
-            <p className="text-xs text-black">Active locations</p>
-          </CardContent>
-        </Card>
+  {/* Total Stock */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Total Stock</CardTitle>
+      <TrendingUp className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        {stats.totalStockUnits.toLocaleString()} kg
       </div>
+      <p className="text-xs text-black text-left">Total quantity</p>
+    </CardContent>
+  </Card>
+
+  {/* Stock Value */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Stock Value</CardTitle>
+      <DollarSign className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        ₱
+        {stats.totalStockValue.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </div>
+      <p className="text-xs text-black text-left">Inventory value</p>
+    </CardContent>
+  </Card>
+
+  {/* Low Stock Alerts */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Low Stock Alerts</CardTitle>
+      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-yellow-500 text-left">
+        {stats.lowStockCount}
+      </div>
+      <p className="text-xs text-black text-left">Needs attention</p>
+    </CardContent>
+  </Card>
+
+  {/* Storage Locations */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Storage Locations</CardTitle>
+      <MapPin className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{stats.activeLocations}</div>
+      <p className="text-xs text-black text-left">Active locations</p>
+    </CardContent>
+  </Card>
+</div>
+
 
       {/* Rice Type Breakdown (Milled vs Unmilled) */}
       <Card>

@@ -274,62 +274,79 @@ export default function TransactionsClient({
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Total Transactions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalTransactions}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <ArrowUpCircle className="h-4 w-4 text-green-600" />
-              Stock-In
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.stockInCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <ArrowDownCircle className="h-4 w-4 text-red-600" />
-              Stock-Out
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.stockOutCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <RefreshCw className="h-4 w-4 text-blue-600" />
-              Adjustments
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.adjustmentCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              Last 7 Days
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.recentTransactions}</div>
-          </CardContent>
-        </Card>
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+  {/* Total Transactions */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Total Transactions
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{stats.totalTransactions}</div>
+    </CardContent>
+  </Card>
+
+  {/* Stock-In */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <ArrowUpCircle className="h-4 w-4 text-green-600" />
+        Stock-In
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-green-600 text-left">
+        {stats.stockInCount}
       </div>
+    </CardContent>
+  </Card>
+
+  {/* Stock-Out */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <ArrowDownCircle className="h-4 w-4 text-red-600" />
+        Stock-Out
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-red-600 text-left">
+        {stats.stockOutCount}
+      </div>
+    </CardContent>
+  </Card>
+
+  {/* Adjustments */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <RefreshCw className="h-4 w-4 text-blue-600" />
+        Adjustments
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-blue-600 text-left">
+        {stats.adjustmentCount}
+      </div>
+    </CardContent>
+  </Card>
+
+  {/* Last 7 Days */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <Calendar className="h-4 w-4 text-black" />
+        Last 7 Days
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        {stats.recentTransactions}
+      </div>
+    </CardContent>
+  </Card>
+</div>
 
       {/* Filters */}
       <Card>

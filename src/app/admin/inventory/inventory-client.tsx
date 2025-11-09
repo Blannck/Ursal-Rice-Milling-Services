@@ -255,61 +255,75 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Locations</CardTitle>
-            <Warehouse className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalLocations}</div>
-            <p className="text-xs text-black">Active storage locations</p>
-          </CardContent>
-        </Card>
+  {/* Total Locations */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Total Locations</CardTitle>
+      <Warehouse className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{totalLocations}</div>
+      <p className="text-xs text-black text-left">Active storage locations</p>
+    </CardContent>
+  </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products Stored</CardTitle>
-            <Package className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-black">Unique products in inventory</p>
-          </CardContent>
-        </Card>
+  {/* Products Stored */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Products Stored</CardTitle>
+      <Package className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{totalProducts}</div>
+      <p className="text-xs text-black text-left">Unique products in inventory</p>
+    </CardContent>
+  </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Unmilled Rice</CardTitle>
-            <Package className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalUnmilledQuantity.toLocaleString()}</div>
-            <p className="text-xs text-black">Total unmilled rice stock</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Milled Rice</CardTitle>
-            <MapPin className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalMilledQuantity.toLocaleString()}</div>
-            <p className="text-xs text-black">Total milled rice stock</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{lowStockItems.length}</div>
-            <p className="text-xs text-black">Items need reordering</p>
-          </CardContent>
-        </Card>
+  {/* Total Unmilled Rice */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Total Unmilled Rice</CardTitle>
+      <Package className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        {totalUnmilledQuantity.toLocaleString()}
       </div>
+      <p className="text-xs text-black text-left">Total unmilled rice stock</p>
+    </CardContent>
+  </Card>
+
+  {/* Total Milled Rice */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Total Milled Rice</CardTitle>
+      <MapPin className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        {totalMilledQuantity.toLocaleString()}
+      </div>
+      <p className="text-xs text-black text-left">Total milled rice stock</p>
+    </CardContent>
+  </Card>
+
+  {/* Low Stock Alerts */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-left">Low Stock Alerts</CardTitle>
+      <AlertTriangle className="h-4 w-4 text-black" />
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-orange-600 text-left">
+        {lowStockItems.length}
+      </div>
+      <p className="text-xs text-black text-left">Items need reordering</p>
+    </CardContent>
+  </Card>
+</div>
+
+     
+     
       
       <Tabs defaultValue="unmilled" className="space-y-4  w-full">
         <div className="flex items-center justify-between mr-2 mb-4">

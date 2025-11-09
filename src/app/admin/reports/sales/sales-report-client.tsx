@@ -306,76 +306,65 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gross Sales</CardTitle>
-            <DollarSign className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ₱{stats.grossSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-black flex items-center gap-1 mt-1">
-              {stats.growthRate >= 0 ? (
-                <>
-                  <ArrowUpRight className="h-3 w-3 text-green-500" />
-                  <span className="text-green-500">+{stats.growthRate.toFixed(1)}%</span>
-                </>
-              ) : (
-                <>
-                  <ArrowDownRight className="h-3 w-3 text-red-500" />
-                  <span className="text-red-500">{stats.growthRate.toFixed(1)}%</span>
-                </>
-              )}
-              <span className="ml-1">from previous period</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Net Sales</CardTitle>
-            <TrendingUp className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ₱{stats.netSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-black mt-1">
-              Same as gross (no returns/discounts)
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-black mt-1">
-              {stats.completedOrders} completed, {stats.fulfilledOrders} fulfilled
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Order</CardTitle>
-            <Package className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ₱{stats.averageOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-black mt-1">
-              Per order value
-            </p>
-          </CardContent>
-        </Card>
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  {[
+    {
+      title: "Gross Sales",
+      icon: <DollarSign className="h-4 w-4 text-black" />,
+      value: `₱${stats.grossSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      footer: (
+        <p className="text-xs text-black flex items-center gap-1 mt-1">
+          {stats.growthRate >= 0 ? (
+            <>
+              <ArrowUpRight className="h-3 w-3 text-green-500" />
+              <span className="text-green-500">+{stats.growthRate.toFixed(1)}%</span>
+            </>
+          ) : (
+            <>
+              <ArrowDownRight className="h-3 w-3 text-red-500" />
+              <span className="text-red-500">{stats.growthRate.toFixed(1)}%</span>
+            </>
+          )}
+          <span className="ml-1">from previous period</span>
+        </p>
+      ),
+    },
+    {
+      title: "Net Sales",
+      icon: <TrendingUp className="h-4 w-4 text-black" />,
+      value: `₱${stats.netSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      footer: <p className="text-xs text-black mt-1">Same as gross (no returns/discounts)</p>,
+    },
+    {
+      title: "Total Orders",
+      icon: <ShoppingCart className="h-4 w-4 text-black" />,
+      value: stats.totalOrders,
+      footer: (
+        <p className="text-xs text-black mt-1">
+          {stats.completedOrders} completed, {stats.fulfilledOrders} fulfilled
+        </p>
+      ),
+    },
+    {
+      title: "Average Order",
+      icon: <Package className="h-4 w-4 text-black" />,
+      value: `₱${stats.averageOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      footer: <p className="text-xs text-black mt-1">Per order value</p>,
+    },
+  ].map((card, i) => (
+    <Card key={i} className="flex flex-col justify-between h-full">
+      <div className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+        {card.icon}
       </div>
+      <CardContent className="mt-auto">
+        <div className="text-2xl font-bold">{card.value}</div>
+        {card.footer}
+      </CardContent>
+    </Card>
+  ))}
+</div>
+
 
       {/* Revenue Trend Chart */}
       <Card>

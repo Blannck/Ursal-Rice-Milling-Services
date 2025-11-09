@@ -229,81 +229,103 @@ export default function AlertsClient({
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Total Alerts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAlerts}</div>
-            <p className="text-xs  text-black mt-1">Products below reorder point</p>
-          </CardContent>
-        </Card>
+  {/* Total Alerts */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Total Alerts
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">{stats.totalAlerts}</div>
+      <p className="text-xs text-black mt-1 text-left">
+        Products below reorder point
+      </p>
+    </CardContent>
+  </Card>
 
-        <Card className="border-red-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-              Critical
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.critical}</div>
-            <p className="text-xs  text-black mt-1">Out of stock</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-orange-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
-              High Priority
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{stats.high}</div>
-            <p className="text-xs text-black mt-1">Below 50% reorder point</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-yellow-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black flex items-center gap-1">
-              <Bell className="h-4 w-4 text-yellow-600" />
-              Medium Priority
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.medium}</div>
-            <p className="text-xs text-black mt-1">At reorder point</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Value at Risk
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₱{stats.totalValueAtRisk.toFixed(2)}</div>
-            <p className="text-xs text-black mt-1">Current stock value</p>
-          </CardContent>
-        </Card>
+  {/* Critical */}
+  <Card className="shadow-sm flex flex-col justify-between border border-red-200 p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <AlertCircle className="h-4 w-4 text-red-600" />
+        Critical
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-red-600 text-left">
+        {stats.critical}
       </div>
+      <p className="text-xs text-black mt-1 text-left">Out of stock</p>
+    </CardContent>
+  </Card>
 
-      {stats.totalAlerts === 0 ? (
-        <Card>
-          <CardContent className="text-center py-16">
-            <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-green-500" />
-            <h3 className="text-xl font-semibold mb-2">All Stock Levels Healthy!</h3>
-            <p className="text-black">
-              No products are currently below their reorder points.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
+  {/* High Priority */}
+  <Card className="shadow-sm flex flex-col justify-between border border-orange-200 p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <AlertTriangle className="h-4 w-4 text-orange-600" />
+        High Priority
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-orange-600 text-left">
+        {stats.high}
+      </div>
+      <p className="text-xs text-black mt-1 text-left">
+        Below 50% reorder point
+      </p>
+    </CardContent>
+  </Card>
+
+  {/* Medium Priority */}
+  <Card className="shadow-sm flex flex-col justify-between border border-yellow-200 p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black flex items-center gap-1 text-left">
+        <Bell className="h-4 w-4 text-yellow-600" />
+        Medium Priority
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-yellow-600 text-left">
+        {stats.medium}
+      </div>
+      <p className="text-xs text-black mt-1 text-left">At reorder point</p>
+    </CardContent>
+  </Card>
+
+  {/* Value at Risk */}
+  <Card className="shadow-sm flex flex-col justify-between p-4">
+    <CardHeader className="p-0 pb-2">
+      <CardTitle className="text-sm font-medium text-black text-left">
+        Value at Risk
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0">
+      <div className="text-2xl font-bold text-left">
+        ₱{stats.totalValueAtRisk.toFixed(2)}
+      </div>
+      <p className="text-xs text-black mt-1 text-left">Current stock value</p>
+    </CardContent>
+  </Card>
+</div>
+
+{/* Healthy Stock Message */}
+{stats.totalAlerts === 0 && (
+  <Card className="shadow-sm mt-6">
+    <CardContent className="text-center py-16">
+      <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-green-500" />
+      <h3 className="text-xl font-semibold mb-2 text-black">
+        All Stock Levels Healthy!
+      </h3>
+      <p className="text-black">
+        No products are currently below their reorder points.
+      </p>
+    </CardContent>
+  </Card>
+)}
+
+   
         <>
           {/* Filters */}
           <Card>
@@ -496,7 +518,7 @@ export default function AlertsClient({
             </CardContent>
           </Card>
         </>
-      )}
+    
     </div>
   );
 }
