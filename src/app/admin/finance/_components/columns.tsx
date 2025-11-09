@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/utils";
 
 export const columns: ColumnDef<any>[] = [
   {
@@ -13,10 +14,10 @@ export const columns: ColumnDef<any>[] = [
         <Badge
           variant={
             type === "PAYABLE"
-              ? "destructive"
+              ? "secondary"
               : type === "PAYMENT"
-              ? "outline"
-              : "default"
+              ? "secondary"
+              : "secondary"
           }
         >
           {type}
@@ -60,20 +61,20 @@ export const columns: ColumnDef<any>[] = [
       }
       if (orderId) {
         return (
-          <span className="text-gray-600">
+          <span className="text-black">
             Order #{orderId.slice(-8)}
           </span>
         );
       }
-      return <span className="text-gray-400">-</span>;
+      return <span className="text-black">-</span>;
     },
   },
   {
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return date.toLocaleDateString();
+      const raw = row.getValue("createdAt");
+      return formatDate(raw as string);
     },
   },
 ];

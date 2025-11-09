@@ -432,10 +432,10 @@ export default function InventoryReportClient({
           <p className="text-sm text-black">Stock levels by product category</p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 bg-white">
+          <div className="space-y-4 ">
             {stats.categoryBreakdown.map((cat) => (
-              <div key={cat.category} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
+              <div key={cat.category} className="border bg-white rounded-lg p-4">
+                <div className="flex items-center  justify-between mb-2">
                   <h3 className="font-semibold text-lg">{cat.category}</h3>
                   <Badge variant="secondary">{cat.productCount} products</Badge>
                 </div>

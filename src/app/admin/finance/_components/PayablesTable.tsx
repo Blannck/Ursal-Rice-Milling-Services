@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { formatDate } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 interface PayableOrder {
@@ -129,7 +130,7 @@ export default function PayablesTable({
                 </TableCell>
                 <TableCell>{payable.supplier}</TableCell>
                 <TableCell>
-                  <Badge variant={payable.paymentType === "MONTHLY" ? "default" : "outline"}>
+                  <Badge variant={payable.paymentType === "MONTHLY" ? "tertiary" : "secondary"}>
                     {payable.paymentType === "MONTHLY"
                       ? `${payable.monthlyTerms} Months`
                       : "One-Time"}
@@ -143,7 +144,7 @@ export default function PayablesTable({
                           ? `${payable.installments.filter(i => i.paid).length}/${payable.monthlyTerms}`
                           : `0/${payable.monthlyTerms}`}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-black">
                         {payable.remainingMonths ? `${payable.remainingMonths} mo left` : ""}
                       </div>
                     </div>
@@ -152,9 +153,7 @@ export default function PayablesTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {payable.dueDate
-                    ? new Date(payable.dueDate).toLocaleDateString()
-                    : "—"}
+                  {payable.dueDate ? formatDate(payable.dueDate) : "—"}
                 </TableCell>
                 <TableCell className="text-right">
                   ₱{payable.totalAmount.toLocaleString()}
@@ -172,7 +171,7 @@ export default function PayablesTable({
                       setSelectedPO(payable);
                       setPaymentDialogOpen(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-custom-orange hover:bg-custom-orange/90"
                   >
                     Pay
                   </Button>
@@ -200,12 +199,12 @@ export default function PayablesTable({
                 <div>
                   <h4 className="font-semibold mb-2">Installment Schedule</h4>
                   <div className="flex flex-wrap gap-2">
-                    {selectedPO.installments.map((ins) => (
+                        {selectedPO.installments.map((ins) => (
                       <Badge
                         key={ins.index}
                         className={`px-3 py-1 ${ins.paid ? 'bg-green-600 text-white' : 'bg-orange-100 text-orange-700'}`}
                       >
-                        {`#${ins.index} • ${new Date(ins.dueDate).toLocaleDateString()} `}
+                        {`#${ins.index} • ${formatDate(ins.dueDate)}`}
                       </Badge>
                     ))}
                   </div>

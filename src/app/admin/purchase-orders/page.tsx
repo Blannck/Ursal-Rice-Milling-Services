@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Eye, Edit, Package } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -301,9 +302,7 @@ export default function PurchaseOrdersPage() {
                       </TableCell>
 
                       <TableCell>
-                        {order.orderDate
-                          ? new Date(order.orderDate).toLocaleDateString()
-                          : "—"}
+              {order.orderDate ? formatDate(order.orderDate) : "—"}
                       </TableCell>
 
                       <TableCell>

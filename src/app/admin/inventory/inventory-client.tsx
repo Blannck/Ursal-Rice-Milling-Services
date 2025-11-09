@@ -227,8 +227,8 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
                     </span>
                   </div>
                 </TableCell>
-                <TableCell><span className="font-mono">{item.quantity}</span></TableCell>
-                <TableCell><span className="font-mono">{item.product.reorderPoint}</span></TableCell>
+                <TableCell><span className="">{item.quantity}</span></TableCell>
+                <TableCell><span className="">{item.product.reorderPoint}</span></TableCell>
                 <TableCell>
                   {isLowStock ? (
                     <Badge variant="destructive">Low Stock</Badge>

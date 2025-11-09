@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, Edit, FileText, Calendar, Package, ArrowDown01, ArrowDownIcon } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 interface PurchaseOrder {
   id: string;
@@ -507,13 +508,7 @@ const handleSubmitReturn = async () => {
                       <label className="text-sm text-black">
                         {purchaseOrder.paymentType === "MONTHLY" ? "First Payment Due" : "Payment Due Date"}
                       </label>
-                      <p className="text-lg font-semibold">
-                        {new Date(purchaseOrder.dueDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
+                      <p className="text-lg font-semibold">{formatDate(purchaseOrder.dueDate)}</p>
                     </div>
                   )}
                   {purchaseOrder.paymentType === "MONTHLY" && purchaseOrder.monthlyTerms && (
@@ -844,16 +839,16 @@ const handleSubmitReturn = async () => {
                 <CardContent className="space-y-2">
   {backorders.length === 0 ? (
     <p className="text-sm text-gray-500 italic">No Open Back Orders</p>
-  ) : (
+      ) : (
     backorders.map((b) => (
       <div key={b.id} className="flex justify-between items-center">
   <div>
     <p className="text-sm font-medium text-gray-800">
       {b.purchaseOrderItem.product.name}
     </p>
-    <p className="text-xs text-gray-600">
+      <p className="text-xs text-gray-600">
       Qty: {b.quantity}
-      {b.expectedDate && ` • ETA ${new Date(b.expectedDate).toLocaleDateString()}`}
+      {b.expectedDate && ` • ETA ${formatDate(b.expectedDate)}`}
       {b.status && ` • ${b.status}`}
     </p>
   </div>
@@ -923,9 +918,7 @@ const handleSubmitReturn = async () => {
                 <div>
                   <label className="text-sm text-black">Order Date</label>
                   <p className="font-medium">
-                    {purchaseOrder.orderDate
-                      ? new Date(purchaseOrder.orderDate).toLocaleDateString()
-                      : "—"}
+                    {purchaseOrder.orderDate ? formatDate(purchaseOrder.orderDate) : "—"}
                   </p>
                 </div>
                 <div>

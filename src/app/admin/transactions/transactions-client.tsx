@@ -30,6 +30,7 @@ import {
   Filter,
   Calendar,
 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 type Product = {
   id: string;
@@ -480,7 +481,7 @@ export default function TransactionsClient({
                           <TableCell className="whitespace-nowrap">
                             <div className="text-sm">
                               <div className="font-medium">
-                                {new Date(transaction.createdAt).toLocaleDateString()}
+                                {formatDate(transaction.createdAt)}
                               </div>
                               <div className="text-black text-xs">
                                 {new Date(transaction.createdAt).toLocaleTimeString()}

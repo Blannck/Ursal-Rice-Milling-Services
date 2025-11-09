@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { formatDate } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,11 +91,7 @@ export default function InvoiceView({
                     </p>
                     <p className="text-sm text-gray-600 mt-2">Date</p>
                     <p className="text-sm font-medium">
-                      {new Date(order.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {formatDate(order.createdAt)}
                     </p>
                   </div>
                 </div>

@@ -382,7 +382,7 @@ export default function AdjustmentsClient({
             </div>
 
             {/* Quantity */}
-            <div className="space-y-2">
+            <div className="space-y-2 ">
               <Label htmlFor="quantity">
                 Quantity * {adjustmentType === "SET" && "(New Total)"}
               </Label>
@@ -392,7 +392,9 @@ export default function AdjustmentsClient({
                 min="0"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                placeholder={adjustmentType === "SET" ? "Enter new total quantity" : "Enter quantity"}
+                placeholder={adjustmentType === "SET" ? "Enter new total quantity" : "Enter quantity"
+                
+                }
               />
               {adjustmentType === "REMOVE" && newQuantity < 0 && (
                 <p className="text-sm text-red-600">

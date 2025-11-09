@@ -2,6 +2,7 @@
 
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { formatDate } from "@/lib/utils";
 
 interface PriceHistory {
   id: string;
@@ -43,7 +44,7 @@ export default function MiniPriceChart({ priceHistory, currentPrice, showStats =
 
   // Get last change info
   const lastChange = priceHistory[priceHistory.length - 1];
-  const lastChangeDate = lastChange ? new Date(lastChange.createdAt).toLocaleDateString() : null;
+  const lastChangeDate = lastChange ? formatDate(lastChange.createdAt) : null;
 
   // Determine color based on trend
   const strokeColor = isIncrease ? "#ef4444" : isDecrease ? "#22c55e" : "#6b7280";

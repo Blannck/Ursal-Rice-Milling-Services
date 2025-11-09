@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Package, MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -263,8 +264,7 @@ export function ReceiveShipmentClient({
                   ) : (
                     purchaseOrders.map((po) => (
                       <SelectItem key={po.id} value={po.id}>
-                        PO-{po.id.slice(-6)} - {po.supplier.name} -{" "}
-                        {new Date(po.orderDate).toLocaleDateString()} - {po.status}
+                        PO-{po.id.slice(-6)} - {po.supplier.name} - {formatDate(po.orderDate)} - {po.status}
                       </SelectItem>
                     ))
                   )}
@@ -280,7 +280,7 @@ export function ReceiveShipmentClient({
                       {selectedPo.supplier.name}
                     </p>
                     <p className="text-sm text-black">
-                      Order Date: {new Date(selectedPo.orderDate).toLocaleDateString()}
+                      Order Date: {formatDate(selectedPo.orderDate)}
                     </p>
                   </div>
                   <Badge>{selectedPo.status}</Badge>

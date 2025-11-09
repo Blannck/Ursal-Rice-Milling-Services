@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { stackServerApp } from "@/lib/stack";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { formatDate } from "@/lib/utils";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
@@ -66,7 +67,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
         </div>
         <div className="rounded-xl bg-custom-white border-transparent p-4">
           <div className="text-xs text-black">Last Active</div>
-          <div className="mt-1 text-black text-lg">{user.lastActiveAt ? new Date(user.lastActiveAt).toLocaleString() : "–"}</div>
+          <div className="mt-1 text-black text-lg">{user.lastActiveAt ? formatDate(user.lastActiveAt) : "–"}</div>
         </div>
       </div>
 
@@ -87,7 +88,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
               {orders.map((o: any) => (
                 <tr key={o.id} className="border-t border-gray-700">
                   <td className="px-3 py-2 font-mono text-xs">{o.id}</td>
-                  <td className="px-3 py-2">{new Date(o.createdAt).toLocaleString()}</td>
+                  <td className="px-3 py-2">{formatDate(o.createdAt)}</td>
                   <td className="px-3 py-2">{o.total.toFixed(2)}</td>
                   <td className="px-3 py-2">{o.status}</td>
                   <td className="px-3 py-2">

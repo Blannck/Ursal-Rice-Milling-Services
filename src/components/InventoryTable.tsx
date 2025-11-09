@@ -48,6 +48,7 @@ import {
 import CreateDialog from "./CreateDialog";
 import EditDialog from "./EditDialog";
 import { getProducts, toggleProductVisibility } from "@/actions/product.aciton";
+import { formatDate } from "@/lib/utils";
 
 type Products = Awaited<ReturnType<typeof getProducts>>;
 
@@ -135,14 +136,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
     router.push(productUrl);
   };
 
-  const formatDate = (date: string | Date) => {
-    const d = typeof date === "string" ? new Date(date) : date;
-    return d.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  // use centralized formatDate from utils for consistent abbreviated dates
 
   return (
     <div className="min-h-screen ">
@@ -301,16 +295,16 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="">
-                      <TableHead className="font-semibold">Product</TableHead>
-                      <TableHead className="font-semibold  ">Category</TableHead>
-                      <TableHead className="font-semibold ">Price</TableHead>
-                      <TableHead className="font-semibold ">Status</TableHead>
-                      <TableHead className="font-semibold">Created</TableHead>
-                      <TableHead className="font-semibold ">
+                    <TableRow className=" text-white">
+                      <TableHead className="font-semibold text-white">Product</TableHead>
+                      <TableHead className="font-semibold text-white ">Category</TableHead>
+                      <TableHead className="font-semibold text-white">Price</TableHead>
+                      <TableHead className="font-semibold text-white">Status</TableHead>
+                      <TableHead className="font-semibold text-white">Created</TableHead>
+                      <TableHead className="font-semibold text-white">
                         Download Url
                       </TableHead>
-                      <TableHead className="font-semibold text-center ">
+                      <TableHead className="font-semibold text-white text-center ">
                         Actions
                       </TableHead>
                     </TableRow>

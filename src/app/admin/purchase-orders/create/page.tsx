@@ -335,10 +335,10 @@ if (data?.ok || data?.success) {
                   <div>
                     <Label htmlFor="paymentType">Payment Type</Label>
                     <Select value={paymentType} onValueChange={(value: "ONE_TIME" | "MONTHLY") => setPaymentType(value)}>
-                      <SelectTrigger className="bg-white">
+                      <SelectTrigger className="">
                         <SelectValue placeholder="Select payment type" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200">
+                      <SelectContent className=" border border-gray-200">
                         <SelectItem value="ONE_TIME" className="text-black hover:bg-gray-100">
                           One-Time Payment
                         </SelectItem>
@@ -353,7 +353,7 @@ if (data?.ok || data?.success) {
                     <div>
                       <Label htmlFor="monthlyTerms">Monthly Terms</Label>
                       <Select value={monthlyTerms.toString()} onValueChange={(value) => setMonthlyTerms(parseInt(value))}>
-                        <SelectTrigger className="bg-white">
+                        <SelectTrigger className="">
                           <SelectValue placeholder="Select terms" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border border-gray-200">
@@ -381,7 +381,7 @@ if (data?.ok || data?.success) {
                       className="bg-white"
                       min={new Date().toISOString().split('T')[0]}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs  mt-1">
                       {paymentType === "MONTHLY" 
                         ? `First installment due date (${monthlyTerms} monthly payments)` 
                         : "Final payment due date"}

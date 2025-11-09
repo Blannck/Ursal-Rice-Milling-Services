@@ -313,7 +313,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       icon: <DollarSign className="h-4 w-4 text-black" />,
       value: `₱${stats.grossSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       footer: (
-        <p className="text-xs text-black flex items-center gap-1 mt-1">
+        <div className="text-xs text-black mt-2 flex items-center gap-1">
           {stats.growthRate >= 0 ? (
             <>
               <ArrowUpRight className="h-3 w-3 text-green-500" />
@@ -326,44 +326,55 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
             </>
           )}
           <span className="ml-1">from previous period</span>
-        </p>
+        </div>
       ),
     },
     {
       title: "Net Sales",
       icon: <TrendingUp className="h-4 w-4 text-black" />,
       value: `₱${stats.netSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      footer: <p className="text-xs text-black mt-1">Same as gross (no returns/discounts)</p>,
+      footer: <div className="text-xs text-black mt-2">Same as gross (no returns/discounts)</div>,
     },
     {
       title: "Total Orders",
       icon: <ShoppingCart className="h-4 w-4 text-black" />,
       value: stats.totalOrders,
       footer: (
-        <p className="text-xs text-black mt-1">
+        <div className="text-xs text-black mt-2">
           {stats.completedOrders} completed, {stats.fulfilledOrders} fulfilled
-        </p>
+        </div>
       ),
     },
     {
       title: "Average Order",
       icon: <Package className="h-4 w-4 text-black" />,
       value: `₱${stats.averageOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      footer: <p className="text-xs text-black mt-1">Per order value</p>,
+      footer: <div className="text-xs text-black mt-2">Per order value</div>,
     },
   ].map((card, i) => (
-    <Card key={i} className="flex flex-col justify-between h-full">
-      <div className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-        {card.icon}
+    <Card
+      key={i}
+      className="flex flex-col h-full text-left" // force left text and full height
+    >
+      {/* Header: force items-start so title stays left, icon sits to the right */}
+      <div className="flex items-start justify-between pb-2">
+        <h3 className="text-sm font-medium text-left">{card.title}</h3>
+        <div className="flex-shrink-0">{card.icon}</div>
       </div>
-      <CardContent className="mt-auto">
-        <div className="text-2xl font-bold">{card.value}</div>
-        {card.footer}
-      </CardContent>
+
+      {/* Content: use flex-1 so the content area expands and keeps footer at bottom if desired */}
+      <div className="flex-1 flex flex-col justify-between">
+        <div>
+          <div className="text-2xl font-bold text-left">{card.value}</div>
+        </div>
+
+        {/* footer placed at bottom of card content; left aligned */}
+        <div>{card.footer}</div>
+      </div>
     </Card>
   ))}
 </div>
+
 
 
       {/* Revenue Trend Chart */}

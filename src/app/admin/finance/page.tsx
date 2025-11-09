@@ -40,8 +40,15 @@ export default function FinancePage() {
   }, []);
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div className="container  p-6 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+        <div className="space-y-6">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Finance</h1>
+          <p className="text-white mt-1">Manage payables and view transaction histories</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6  ">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-2">Total Payables</h3>
           <p className="text-3xl font-bold text-red-600">
@@ -88,6 +95,7 @@ export default function FinancePage() {
           }}
         />
       </Card>
+    </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText, Package, Calendar, User, MapPin } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function AdminOrderDetailPage({
@@ -134,13 +135,7 @@ export default async function AdminOrderDetailPage({
                   Order Date
                 </p>
                 <p className="font-medium">
-                  {new Date(order.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatDate(order.createdAt)} {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
             </div>

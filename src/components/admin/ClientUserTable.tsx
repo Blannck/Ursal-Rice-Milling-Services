@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatDate } from "@/lib/utils";
 
 interface UserRow {
   id: string;
@@ -103,8 +104,8 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="w-full max-w-sm">
+      <div className="flex flex-wrap  items-center gap-3">
+        <div className="w-full bg-white max-w-sm rounded-md overflow-hidden">
           <Input
             placeholder="Search users..."
             value={query}
@@ -169,7 +170,7 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
         <Table>
           <TableHeader className="text-black">
             <TableRow>
-              <TableHead className="w-[56px]">Avatar</TableHead>
+              <TableHead className="w-[56px] ">Avatar</TableHead>
               <TableHead>Display Name</TableHead>
               <TableHead>Primary Email</TableHead>
               <TableHead>Last Active</TableHead>
@@ -206,15 +207,11 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
                   <TableCell>{u.displayName ?? "–"}</TableCell>
                   <TableCell>{u.primaryEmail ?? "–"}</TableCell>
                   <TableCell>
-                    {u.lastActiveAt
-                      ? new Date(u.lastActiveAt).toLocaleString()
-                      : "–"}
+                    {u.lastActiveAt ? formatDate(u.lastActiveAt) : "–"}
                   </TableCell>
                   <TableCell>{u.authMethod ?? "–"}</TableCell>
                   <TableCell>
-                    {u.signedUpAt
-                      ? new Date(u.signedUpAt as any).toLocaleString()
-                      : "–"}
+                    {u.signedUpAt ? formatDate(u.signedUpAt as any) : "–"}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
