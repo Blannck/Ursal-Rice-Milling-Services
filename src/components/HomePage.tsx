@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Facebook, Phone, MessageCircle } from "lucide-react";
+
 
 
 
@@ -387,6 +389,60 @@ export  default async function HomePage() {
           
           </div>
         </div>
+      </section>
+      <section className="bg-[#1b1717] text-white py-16 px-6 md:px-20">
+          
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        
+        {/* Left: Contact Information */}
+        <div>
+          <h2 className="text-3xl font-bold mb-4">You can reach us at:</h2>
+
+          <div className="mb-6">
+            <p className="text-sm uppercase font-semibold mb-1">Address:</p>
+            <p className="text-lg leading-relaxed">
+              Purok Bagong Silang,<br />
+              Barangay Poblacion, Santo Niño,<br />
+              South Cotabato
+            </p>
+          </div>
+
+          <div className="mb-6">
+            <p className="text-sm uppercase font-semibold mb-1">Contact:</p>
+            <p className="text-lg font-medium">0999 592 7346</p>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex gap-6 mt-6">
+            <a
+              href="#"
+              className="bg-custom-orange text-black rounded-full p-3 hover:bg-custom-orange/90 transition"
+            >
+              <Facebook className="w-6 h-6" />
+            </a>
+            <a
+              href="#"
+              className="bg-custom-orange text-black rounded-full p-3 hover:bg-custom-orange/90 transition"
+            >
+              <MessageCircle className="w-6 h-6" />
+            </a>
+          </div>
+        </div>
+
+        {/* Right: Google Map Embed */}
+        <div className="w-full h-[400px]">
+          <iframe
+            title="Location Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63783.01629578757!2d124.664!3d6.369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x32f7e9c3a1b1a28f%3A0x4a7bfb7f8764e4ce!2sSanto%20Ni%C3%B1o%2C%20South%20Cotabato!5e0!3m2!1sen!2sph!4v1700000000000!5m2!1sen!2sph"
+            width="100%"
+            height="100%"
+            allowFullScreen
+            loading="lazy"
+            className="rounded-xl shadow-lg border-0"
+          ></iframe>
+        </div>
+      </div>
+    
       </section>
     </div>
   );
