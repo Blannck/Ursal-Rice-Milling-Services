@@ -47,7 +47,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className=" max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  mt-10 lg:gap-12 ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  mt-10 lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+         
         {/* Left Column: Image and Details Card */}
         <div className="flex flex-col space-y-8">
           {/* Product Image */}
