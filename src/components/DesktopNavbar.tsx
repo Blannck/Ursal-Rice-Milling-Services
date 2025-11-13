@@ -70,7 +70,9 @@ export default function DesktopNavbar({ user, app, isAdmin }: Props) {
               href="/"
               className="flex items-center gap-2 text-xl font-bold tracking-wider whitespace-nowrap"
             >
-              🌾
+              <img
+                src="/Ursal.png"
+                className="w-8 h-8"></img>
             </Link>
 
             <Button variant="ghost" className="flex items-center gap-2" asChild>

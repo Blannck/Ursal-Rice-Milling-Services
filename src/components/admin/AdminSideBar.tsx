@@ -87,7 +87,9 @@ export default function AdminSidebar({ user, app }: Props) {
           )}
           title="Ursal Rice Milling Services"
         >
-          <span className="text-lg">🌾</span>
+          <img
+            src="/Ursal.png"
+            className="w-8 h-8"></img>
           {!collapsed && (
             <span className="text-sm">Ursal Rice Milling Services</span>
           )} 
