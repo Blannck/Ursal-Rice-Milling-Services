@@ -1,8 +1,9 @@
 "use client";
 
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Label, CartesianGrid } from 'recharts';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatDate } from "@/lib/utils";
+import { format } from 'date-fns';
 
 interface PriceHistory {
   id: string;
@@ -22,16 +23,20 @@ interface MiniPriceChartProps {
 
 export default function MiniPriceChart({ priceHistory, currentPrice, showStats = true }: MiniPriceChartProps) {
   // Prepare data for sparkline (last 10 changes + current)
-  const chartData = priceHistory.slice(-10).map((entry) => ({
-    price: entry.newPrice,
+  const chartData = priceHistory.slice(-10).map((entry, index) => ({
+    price: Number(entry.newPrice),
     date: entry.createdAt,
+    label: format(new Date(entry.createdAt), 'MMM dd'),
+    reason: entry.reason || 'No reason',
   }));
 
   // Add current price as the latest point
   if (chartData.length > 0) {
     chartData.push({
-      price: currentPrice,
+      price: Number(currentPrice),
       date: new Date(),
+      label: 'Current',
+      reason: 'Current price',
     });
   }
 
@@ -61,17 +66,52 @@ export default function MiniPriceChart({ priceHistory, currentPrice, showStats =
 
   return (
     <div className="space-y-2 bg-white border p-3 rounded-md shadow-sm">
-      {/* Mini sparkline chart */}
-      <div className="h-12 w-full">
+      <h3 className="text-sm font-semibold text-gray-700">Price History</h3>
+      {/* Mini chart with labels */}
+      <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis 
+              dataKey="label" 
+              tick={{ fill: '#374151', fontSize: 10 }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+            />
+            <YAxis 
+              tick={{ fill: '#374151', fontSize: 10 }}
+              domain={['auto', 'auto']}
+            >
+              <Label 
+                value="Price (₱)" 
+                angle={-90} 
+                position="insideLeft" 
+                style={{ textAnchor: 'middle', fill: '#374151', fontSize: 11 }}
+              />
+            </YAxis>
             <Line
               type="monotone"
               dataKey="price"
               stroke={strokeColor}
               strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
+              dot={{ fill: strokeColor, r: 4 }}
+              activeDot={false}
+              label={(props: any) => {
+                const { x, y, value } = props;
+                return (
+                  <text
+                    x={x}
+                    y={y - 5}
+                    fill="#374151"
+                    fontSize={10}
+                    textAnchor="middle"
+                  >
+                    ₱{Number(value).toFixed(2)}
+                  </text>
+                );
+              }}
+              isAnimationActive={true}
             />
           </LineChart>
         </ResponsiveContainer>

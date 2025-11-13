@@ -1,6 +1,6 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 
@@ -24,8 +24,8 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
   const chartData = priceHistory.map((entry) => ({
     date: format(new Date(entry.createdAt), 'MMM dd, yyyy'),
     fullDate: format(new Date(entry.createdAt), 'PPpp'),
-    price: entry.newPrice,
-    oldPrice: entry.oldPrice,
+    price: Number(entry.newPrice),
+    oldPrice: Number(entry.oldPrice),
     reason: entry.reason || 'No reason provided',
   }));
 
@@ -34,8 +34,8 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
     chartData.push({
       date: 'Current',
       fullDate: format(new Date(), 'PPpp'),
-      price: currentPrice,
-      oldPrice: chartData[chartData.length - 1]?.price || currentPrice,
+      price: Number(currentPrice),
+      oldPrice: chartData[chartData.length - 1]?.price || Number(currentPrice),
       reason: 'Current price',
     });
   }
@@ -79,29 +79,6 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
                   label={{ value: 'Price (₱)', angle: -90, position: 'insideLeft' }}
                   domain={['auto', 'auto']}
                 />
-                <Tooltip 
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      return (
-                        <div className="bg-white  p-4 border rounded shadow-lg">
-                          <p className="font-semibold ">{data.fullDate}</p>
-                          <p className="text-sm text-black">{data.reason}</p>
-                          <p className="mt-2">
-                            <span className="font-semibold">Price: </span>
-                            <span className="text-black ">₱{data.price.toFixed(2)}</span>
-                          </p>
-                          {data.oldPrice !== data.price && (
-                            <p className="text-sm text-black">
-                              Previous: ₱{data.oldPrice.toFixed(2)}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
                 <Legend />
                 <Line 
                   type="monotone" 
@@ -109,8 +86,23 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
                   stroke="#8884d8" 
                   strokeWidth={2}
                   dot={{ fill: '#8884d8', r: 5 }}
-                  activeDot={{ r: 8 }}
+                  activeDot={false}
                   name="Price (₱)"
+                  label={(props: any) => {
+                    const { x, y, value } = props;
+                    return (
+                      <text
+                        x={x}
+                        y={y - 10}
+                        fill="#374151"
+                        fontSize={11}
+                        fontWeight="600"
+                        textAnchor="middle"
+                      >
+                        ₱{Number(value).toFixed(2)}
+                      </text>
+                    );
+                  }}
                 />
               </LineChart>
             </ResponsiveContainer>
