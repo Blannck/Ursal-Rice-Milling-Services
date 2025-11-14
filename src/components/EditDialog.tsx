@@ -35,12 +35,15 @@ interface EditDialogProps {
     userId: string;
     imageUrl: string | null;
   };
+
+  // ⭐ NEW: Notifies parent to update UI
+  onUpdated?: (updated: any) => void;
 }
 
-export default function EditDialog({ product }: EditDialogProps) {
+export default function EditDialog({ product, onUpdated }: EditDialogProps) {
   const [fullProduct, setFullProduct] = useState<ProductWithHistory | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState(() => ({
     name: product.name.trim(),
     description: (product.description || "").trim(),
@@ -50,16 +53,13 @@ export default function EditDialog({ product }: EditDialogProps) {
     category: product.category.trim(),
     userId: product.userId.trim(),
     imageUrl: product.imageUrl || "",
-    priceChangeReason: "", // NEW: Reason for price change
+    priceChangeReason: "",
   }));
 
-  // Fetch full product data with price history when dialog opens
   useEffect(() => {
     if (isOpen && !fullProduct) {
       getProductById(product.id).then((data) => {
-        if (data) {
-          setFullProduct(data);
-        }
+        if (data) setFullProduct(data);
       });
     }
   }, [isOpen, product.id, fullProduct]);
@@ -70,26 +70,26 @@ export default function EditDialog({ product }: EditDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Validate price change reason if price changed
+
     if (formData.price !== product.price && !formData.priceChangeReason.trim()) {
       toast.error("Please provide a reason for the price change");
       return;
     }
-    
+
     try {
       const updatedProduct = await editProduct(product.id, {
         ...formData,
-        priceChangeReason: formData.priceChangeReason, // Pass reason to action
+        priceChangeReason: formData.priceChangeReason,
       });
-      console.log("Product edited: ", updatedProduct);
+
       toast.success("Product edited successfully");
-      
-      // Reset full product to refetch on next open
+
+      // ⭐ NEW: Tell parent to update ProductCard immediately
+      onUpdated?.(updatedProduct);
+
       setFullProduct(null);
       setIsOpen(false);
-      
-      // Reset form
+
       setFormData({
         name: product.name.trim(),
         description: (product.description || "").trim(),
@@ -112,7 +112,7 @@ export default function EditDialog({ product }: EditDialogProps) {
       <AlertDialogTrigger asChild>
         <Button
           variant="default"
-          className="w-full  h-10 flex items-center justify-center gap-2"
+          className="w-full h-10 flex items-center justify-center gap-2"
           asChild
         >
           <span>
@@ -121,6 +121,7 @@ export default function EditDialog({ product }: EditDialogProps) {
           </span>
         </Button>
       </AlertDialogTrigger>
+
       <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle>Edit Product</AlertDialogTitle>
@@ -144,7 +145,6 @@ export default function EditDialog({ product }: EditDialogProps) {
             <div>
               <Label htmlFor="category">Category</Label>
               <Combobox
-                
                 value={formData.category}
                 onChange={(val) => handleChange("category", val)}
               />
@@ -184,9 +184,8 @@ export default function EditDialog({ product }: EditDialogProps) {
             </div>
           </div>
 
-          {/* NEW: Show mini price chart if product has price history */}
           {fullProduct?.priceHistory && fullProduct.priceHistory.length > 0 && (
-            <div className="my-4 ">
+            <div className="my-4">
               <MiniPriceChart
                 priceHistory={fullProduct.priceHistory}
                 currentPrice={product.price}
@@ -194,26 +193,18 @@ export default function EditDialog({ product }: EditDialogProps) {
             </div>
           )}
 
-          {/* NEW: Show price change reason field if price is being changed */}
           {formData.price !== product.price && (
             <div>
               <Label htmlFor="priceChangeReason">
-                Price Change Reason <span className="text-red-500">(Required for tracking)</span>
+                Price Change Reason <span className="text-red-500">(Required)</span>
               </Label>
               <Input
                 id="priceChangeReason"
                 type="text"
-                placeholder="e.g., Supplier price increase, Market adjustment, Promotion"
+                placeholder="e.g., Supplier increase, Promotion, Market change"
                 value={formData.priceChangeReason}
                 onChange={(e) => handleChange("priceChangeReason", e.target.value)}
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Old price: ₱{product.price.toFixed(2)} → New price: ₱{formData.price.toFixed(2)}
-                <span className={formData.price > product.price ? "text-red-500 ml-2" : "text-green-500 ml-2"}>
-                  {formData.price > product.price ? "↑" : "↓"}
-                  {Math.abs(((formData.price - product.price) / product.price) * 100).toFixed(2)}%
-                </span>
-              </p>
             </div>
           )}
 
@@ -228,13 +219,9 @@ export default function EditDialog({ product }: EditDialogProps) {
                 value={formData.reorderPoint}
                 onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
               />
-              <p className="text-xs text-black mt-1">
-                Alert when stock falls below this level
-              </p>
             </div>
           </div>
 
-          {/* Image Upload */}
           <div className="py-5 font-semibold">
             Product Image
             <ImageUpload

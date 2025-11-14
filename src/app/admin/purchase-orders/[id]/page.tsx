@@ -607,12 +607,12 @@ const handleSubmitReturn = async () => {
             {/* Payment History */}
             {(purchaseOrder.payments && purchaseOrder.payments.length > 0) && (
               <Card>
-                <CardHeader>
+                <CardHeader className="mb-5">
                   <CardTitle>Payment History</CardTitle>
                   <CardDescription className="text-black">Payments applied to this purchase order</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-2 bg-white p-3 border rounded-lg">
                     {purchaseOrder.payments.map((p) => (
                       <div key={p.id} className="flex justify-between items-center border-b pb-2">
                         <div>
@@ -720,7 +720,7 @@ const handleSubmitReturn = async () => {
   id={`qty-${item.id}`}
   type="number"
   min="0"
-  className="w-24 bg-white border border-transparent rounded-md"
+  className="w-64 bg-white border border-transparent rounded-md"
   placeholder="Qty"
 />
 
@@ -751,125 +751,78 @@ const handleSubmitReturn = async () => {
     <CardTitle className="text-black text-lg">Attachments</CardTitle>
   </CardHeader>
   <CardContent className="space-y-4 flex-1">
-    {/* Upload controls */}
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
-      <div>
-       <label className="text-sm text-gray-700">Type</label>
-        <Select value={attType} onValueChange={setAttType}>
-          <SelectTrigger className="w-full bg-custom-green border border-transparent">
+
+  {/* Upload controls */}
+  <div className="flex flex-col gap-4">
+
+    {/* Type */}
+    <div className="flex flex-col gap-1">
+      
+      <Select   value={attType} onValueChange={setAttType}>
+        <label className="text-sm text-black" >Type</label>
+        <SelectTrigger  className="w-full bg-custom-green border border-transparent">
+          <SelectValue  placeholder="Type" />
            
-            
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="invoice">Invoice</SelectItem>
-            <SelectItem value="receipt">Receipt</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="md:col-span-2">
-        <label className="text-sm text-black">Image</label>
-        <Input
-          type="file"
-          accept="image/*"
-          className="bg-white text-black border border-transparent"
-          onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
-        />
-      </div>
-
-      <div>
-        <label className="text-sm text-gray-700">Note</label>
-        <Input
-          className="bg-white border border-transparent"
-          placeholder="Optional note"
-          value={attNote}
-          onChange={(e) => setAttNote(e.target.value)}
-        />
-      </div>
-
-      <div className="md:col-span-4">
-        <Button
-          onClick={handleUploadAttachment}
-          disabled={!fileToUpload || uploading}
-          className="bg-custom-orange hover:bg-custom-orange text-white rounded-lg"
-        >
-          {uploading ? "Uploading..." : "Upload"}
-        </Button>
-      </div>
+        </SelectTrigger>
+        <SelectContent >
+          <SelectItem value="invoice">Invoice</SelectItem>
+          <SelectItem value="receipt">Receipt</SelectItem>
+          <SelectItem value="other">Other</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
-    {/* Gallery */}
-    {attachments.length === 0 ? (
-      <p className="text-sm text-gray-500 italic">No attachments yet</p>
-    ) : (
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {attachments.map((att) => (
-          <a
-            key={att.id}
-            href={att.fileUrl}
-            target="_blank"
-            className="block group"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={att.fileUrl}
-              alt={att.fileName}
-              className="h-32 w-full object-cover rounded-lg border border-amber-200"
-            />
-            <div className="mt-1 text-xs text-gray-700 truncate">
-              {att.fileName}
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
-  </CardContent>
-</Card>
+    {/* Image Upload */}
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-black">Image</label>
+      <Input
+        type="file"
+        accept="image/*"
+        className="bg-white text-black border border-transparent"
+        onChange={(e) => setFileToUpload(e.target.files?.[0] || null)}
+      />
+    </div>
 
+    {/* Note */}
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-gray-700">Note</label>
+      <Input
+        className="bg-white border border-transparent"
+        placeholder="Optional note"
+        value={attNote}
+        onChange={(e) => setAttNote(e.target.value)}
+      />
+    </div>
 
-              {/* Back Orders */}
-              <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-black text-lg">
-                    Back Orders
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-  {backorders.length === 0 ? (
-    <p className="text-sm text-gray-500 italic">No Open Back Orders</p>
-      ) : (
-    backorders.map((b) => (
-      <div key={b.id} className="flex justify-between items-center">
-  <div>
-    <p className="text-sm font-medium text-gray-800">
-      {b.purchaseOrderItem.product.name}
-    </p>
-      <p className="text-xs text-gray-600">
-      Qty: {b.quantity}
-      {b.expectedDate && ` • ETA ${formatDate(b.expectedDate)}`}
-      {b.status && ` • ${b.status}`}
-    </p>
+    {/* Upload Button */}
+    <Button
+      onClick={handleUploadAttachment}
+      disabled={!fileToUpload || uploading}
+      className="bg-custom-orange hover:bg-custom-orange text-white rounded-lg"
+    >
+      {uploading ? "Uploading..." : "Upload"}
+    </Button>
   </div>
-  <Button
-  size="sm"
-  variant="outline"
-  onClick={() => remindBackorder(b.id)}
-  disabled={!!reminding[b.id] || b.status === "Reminded"}
->
-  {reminding[b.id]
-    ? "Sending..."
-    : b.status === "Reminded"
-    ? "Reminded"
-    : "Remind"}
-</Button>
 
-</div>
-
-    ))
+  {/* Gallery */}
+  {attachments.length === 0 ? (
+    <p className="text-sm text-gray-500 italic">No attachments yet</p>
+  ) : (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {attachments.map((att) => (
+        <a key={att.id} href={att.fileUrl} target="_blank" className="block group">
+          <img
+            src={att.fileUrl}
+            alt={att.fileName}
+            className="h-32 w-full object-cover rounded-lg border border-amber-200"
+          />
+          <div className="mt-1 text-xs text-gray-700 truncate">{att.fileName}</div>
+        </a>
+      ))}
+    </div>
   )}
 </CardContent>
+
 
               </Card>
             </div>
@@ -879,7 +832,7 @@ const handleSubmitReturn = async () => {
           <div className="space-y-6">
             {/* Order Summary */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -909,7 +862,7 @@ const handleSubmitReturn = async () => {
 
             {/* Order Information */}
             <Card>
-              <CardHeader>
+              <CardHeader className="mb-5">
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5" /> Order Information
                 </CardTitle>
@@ -973,7 +926,7 @@ const handleSubmitReturn = async () => {
                           type="number"
                           min="0"
                           max={maxReturnable}
-                          className="w-24 mx-auto bg-white border border-gray-300"
+                          className="w-64 justify-start bg-white border border-gray-300"
                           value={returnQty[item.id] ?? ""}
                           onChange={(e) => {
                             const val = Number(e.target.value);

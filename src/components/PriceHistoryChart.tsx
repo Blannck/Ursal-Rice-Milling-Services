@@ -111,8 +111,8 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-3">Price Change Log</h3>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b">
+                <table className="w-full text-sm rounded-lg bg-white border">
+                  <thead className="mx-1 bg-custom-green text-white">
                     <tr className="text-left">
                       <th className="pb-2">Date</th>
                       <th className="pb-2">Old Price</th>

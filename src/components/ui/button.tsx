@@ -17,6 +17,9 @@ const buttonVariants = cva(
           "bg-custom-orange shadow-sm text-white hover:bg-custom-orange/90 ",
         secondary:
           "bg-custom-orange text-white shadow-sm hover:bg-custom-orange/80",
+        tertiary:
+          "bg-custom-green text-white shadow-sm hover:bg-custom-green/90",
+       
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

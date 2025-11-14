@@ -231,13 +231,13 @@ export  default async function HomePage() {
 </section>
 
 
-<section className="py-20 bg-custom-white">
+<section className="py-20 bg-custom-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-6xl font-bold text-custom-green mb-4">
               Why Choose Us?
             </h2>
-            <p className="text-xl text-custom-green">
+            <p className="text-xl text-black">
               Discover the advantages of partnering with Ursal Rice Milling
             </p>
           </div>
@@ -276,11 +276,92 @@ export  default async function HomePage() {
         </div>
       </section>
 
+ <section className="w-full bg-cover  bg-black/50 py-20">
+      
+      
+      {/* Container */}
+      <div className=" mx-auto px-6 max-w-7xl space-y-24">
+        
+        {/* Top Section */}
+        <div className="grid lg:grid-cols-2 gap-10  items-center">
+          
+          {/* Image Left */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="/rice2.png"
+              alt="Rice Milling"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Text Right */}
+          <div className="text-white text-right">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Our Rice Milling Process
+            </h2>
+            <p className="text-lg leading-relaxed mb-6">
+              We carefully clean, husk, and mill our rice to remove impurities while preserving its natural quality. 
+              Each grain is polished to a smooth, premium finish — ensuring perfect taste, texture, 
+              and appearance every time.
+            </p>
+           <Link className="" href="/products">
+        <Button
+          variant="default"
+          size="lg"
+          className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8 "
+        >
+          Shop Now
+        </Button>
+      </Link>
+    
+          </div>
+
+        </div>
+
+        {/* Bottom Section */}
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
+
+          {/* Text Left */}
+          <div className="text-white">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Professional Rice Milling Services
+            </h2>
+            <p className="text-lg leading-relaxed mb-6">
+              We offer advanced rice milling solutions to help farmers and businesses get the best from their harvest. 
+              Using modern equipment, we ensure efficient cleaning, husking, whitening, and grading — delivering 
+              high-quality, market-ready rice with maximum yield and minimal waste.
+            </p>
+           <Link href="/products">
+        <Button
+          variant="default"
+          size="lg"
+          className="bg-custom-orange hover:bg-custom-orange/90 text-white font-semibold px-8"
+        >
+          Shop Now
+        </Button>
+      </Link>
+    
+          </div>
+
+          {/* Image Right */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="/rice3.png"
+              alt="Polished Rice"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+      
 
     
 
       {/* Featured Products Section */}
-      <section className="py-20 ">
+      <section className="py-20 bg-custom-brown shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div> 
@@ -291,7 +372,7 @@ export  default async function HomePage() {
                 Hand-picked premium products from our collection
               </p>
             </div>
-            <Link href="/products">
+            <Link  href="/products">
             <Button variant="outline" className="hidden md:flex text-white border-white hover:bg-white/10">
               View All Products
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -368,29 +449,30 @@ export  default async function HomePage() {
       </section>
 
       {/* Why Choose Us Section */}
-      
+     
 
-      {/* Call to Action Section */}
-      <section className="py-20 bg-custom-brown">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Experience Our Premium Rice Products?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Join our growing family of satisfied customers and discover the difference of quality rice products.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/products">
+  {/* Call to Action Section (rounded gradient panel to blend with surrounding sections) */}
+  <section className="pt-16 pb-24 bg-black/50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto rounded-2xl  p-8 md:p-12 text-center  border border-transparent">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Ready to Experience Our Premium Rice Products?
+        </h2>
+        <p className="text-lg md:text-xl text-white/90 mb-6 max-w-3xl mx-auto">
+          Join our growing family of satisfied customers and discover the difference of quality rice products.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/products">
             <Button size="lg" variant="default">
               Shop Now
               <ShoppingCart className="ml-2 h-5 w-5" />
             </Button>
-            </Link>
-          
-          </div>
+          </Link>
         </div>
-      </section>
-      <section className="bg-[#1b1717] text-white py-16 px-6 md:px-20">
+      </div>
+    </div>
+  </section>
+      <section className="bg-black text-white py-16 px-6 md:px-20">
           
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         
@@ -416,15 +498,15 @@ export  default async function HomePage() {
           <div className="flex gap-6 mt-6">
             <a
               href="#"
-              className="bg-custom-orange text-black rounded-full p-3 hover:bg-custom-orange/90 transition"
+              className="bg-custom-orange text-white   rounded-full p-3 hover:bg-custom-orange/90 transition"
             >
-              <Facebook className="w-6 h-6" />
+              <Facebook className="w-8 h-8" />
             </a>
             <a
               href="#"
-              className="bg-custom-orange text-black rounded-full p-3 hover:bg-custom-orange/90 transition"
+              className="bg-custom-orange text-white rounded-full p-3 hover:bg-custom-orange/90 transition"
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-8 h-8" />
             </a>
           </div>
         </div>

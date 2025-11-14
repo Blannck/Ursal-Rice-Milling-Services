@@ -66,6 +66,7 @@ export default function PurchaseOrdersPage() {
     { value: "Ordered", label: "Ordered" , variant: "fifth"},
     { value: "Received", label: "Received" },
     { value: "Cancelled", label: "Cancelled" , variant: "destructive"},
+    { value: "Partial", label: "Partial" , variant: "tertiary"},
   ];
 
   // Fetch purchase orders
@@ -130,7 +131,7 @@ export default function PurchaseOrdersPage() {
   }, [searchTerm, statusFilter]);
 
   const getStatusBadgeVariant = (status: string, hasBackorders?: boolean) => {
-  if (hasBackorders) return "secondary";
+  if (hasBackorders) return "tertiary";
   switch (status) {
     case "Pending": return "tertiary";
     case "Ordered": return "fifth";

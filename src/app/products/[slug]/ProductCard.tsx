@@ -47,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className=" max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  mt-10 lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8   lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
          
         {/* Left Column: Image and Details Card */}
         <div className="flex flex-col space-y-8">
@@ -55,7 +55,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">
               {product.imageUrl ? (
-                <div className="w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
+                <div className="w-full min-h-[250px] aspect-[16/9] overflow-hidden">
+
                   <img
                     src={product.imageUrl}
                     alt={product.name}
@@ -79,14 +80,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                   <span className="text-black">Category</span>
                   <span className="font-medium">{product.category}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-black">Type</span>
-                  <span className="font-medium">Digital Download</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-black">Delivery</span>
-                  <span className="font-medium">Instant</span>
-                </div>
+              
+                
                 <div className="flex justify-between">
                   <span className="text-black">Updated</span>
                   <span className="font-medium">
@@ -122,9 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <span className="text-4xl font-bold text-white">
                   ₱{product.price.toFixed(2)}
                 </span>
-                <span className="text-sm text-white">
-                  Digital Download
-                </span>
+            
               </div>
             </div>
 
@@ -148,7 +141,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <span>Instant Download</span>
               </div>
               <div className="h-4 w-px bg-border" />
-              <span>Digital Product</span>
+            
             </div>
           </div>
           
