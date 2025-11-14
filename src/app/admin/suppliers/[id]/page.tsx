@@ -67,7 +67,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
       {/* recent items */}
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Recent Products</h2>
-        <div className="overflow-hidden rounded-xl border-transparent bg-custom-white text-black">
+        <div className="overflow-hidden rounded-xl border-transparent bg-white text-black">
           <table className="w-full text-sm">
             <thead className="bg-custom-green text-white">
               <tr>

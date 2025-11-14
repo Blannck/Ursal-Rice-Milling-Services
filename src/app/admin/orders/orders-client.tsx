@@ -393,7 +393,7 @@ export default function OrdersClient({
                   </div>
                 </div>
 
-                <div className="border rounded-lg overflow-hidden">
+                <div className="overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
