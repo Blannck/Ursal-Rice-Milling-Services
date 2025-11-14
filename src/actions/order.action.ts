@@ -157,7 +157,7 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
         console.log(`      📊 Product stockOnHand decreased by ${item.quantity}`);
       }
 
-      console.log(`\n   🎉 Order fulfilled successfully!\n`);
+      console.log(`\n   🎉 Order Fulfilled successfully!\n`);
 
       return newOrder;
     });

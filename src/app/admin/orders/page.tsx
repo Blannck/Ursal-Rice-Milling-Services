@@ -8,9 +8,9 @@ export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({
     where: {
       OR: [
-        { status: "completed" },
-        { status: "pending" },
-        { status: "processing" },
+        { status: "Completed" },
+        { status: "Pending" },
+        { status: "Processing" },
       ],
     },
     include: {

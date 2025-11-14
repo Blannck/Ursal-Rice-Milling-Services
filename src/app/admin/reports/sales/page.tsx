@@ -14,7 +14,7 @@ async function getSalesReportData() {
   const orders = await prisma.order.findMany({
     where: {
       status: {
-        in: ["completed", "fulfilled"],
+        in: ["Completed", "Fulfilled"],
       },
     },
     include: {

@@ -116,8 +116,8 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
     const averageOrderValue = totalOrders > 0 ? grossSales / totalOrders : 0;
 
     // Order status breakdown
-    const completedOrders = filteredOrders.filter((o) => o.status === "completed").length;
-    const fulfilledOrders = filteredOrders.filter((o) => o.status === "fulfilled").length;
+    const completedOrders = filteredOrders.filter((o) => o.status === "Completed").length;
+    const fulfilledOrders = filteredOrders.filter((o) => o.status === "Fulfilled").length;
 
     // Calculate growth (compare with previous period)
     const now = new Date();
@@ -341,7 +341,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       value: stats.totalOrders,
       footer: (
         <div className="text-xs text-black mt-2">
-          {stats.completedOrders} completed, {stats.fulfilledOrders} fulfilled
+          {stats.completedOrders} completed, {stats.fulfilledOrders} Fulfilled
         </div>
       ),
     },

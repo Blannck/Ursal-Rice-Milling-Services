@@ -56,13 +56,13 @@ export default async function AdminOrderDetailPage({
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "completed":
+      case "Completed":
         return "bg-green-100 text-green-800 border-green-200";
-      case "pending":
+      case "Pending":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "processing":
+      case "Processing":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "fulfilled":
+      case "Fulfilled":
         return "bg-purple-100 text-purple-800 border-purple-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
@@ -188,7 +188,7 @@ export default async function AdminOrderDetailPage({
             {stockOutTransactions.length > 0 ? (
               <div className="space-y-4">
                 <p className="text-sm text-black">
-                  This order was fulfilled using FIFO (First-In, First-Out) from the
+                  This order was Fulfilled from the
                   following warehouse locations:
                 </p>
 

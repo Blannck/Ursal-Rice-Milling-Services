@@ -22,13 +22,19 @@ export default async function UserDetailsPage({ params }: { params: { id: string
   // get app data and orders (be resilient if Mongo is down)
   let app = null, orders: any[] = [];
   try {
-    app = await prisma.appUser.findUnique({ where: { id } });
+    // Look up AppUser by email since Stack Auth uses UUIDs but MongoDB uses ObjectIds
+    if (u?.primaryEmail) {
+      app = await prisma.appUser.findFirst({ where: { email: u.primaryEmail } });
+    }
+    
+    // Query orders using Stack Auth's UUID (stored in Order.userId)
     orders = await prisma.order.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
       include: { items: { include: { product: true } } },
     });
-  } catch {
+  } catch (error) {
+    console.error("Error fetching user data:", error);
     // leave fallbacks
   }
 

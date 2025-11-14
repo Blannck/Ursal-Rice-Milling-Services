@@ -41,14 +41,9 @@ export async function POST(req: NextRequest) {
         throw new Error("Order not found");
       }
 
-      if (order.status === "fulfilled") {
-        throw new Error("Order is already fulfilled");
+      if (order.status === "Fulfilled") {
+        throw new Error("Order is already Fulfilled");
       }
-
-      // ✅ NOTE: Stock was already deducted during order creation (FIFO logic in createOrderFromCart)
-      // Admin fulfillment now only updates the order status to "fulfilled"
-      // This prevents double-deduction bug
-
       console.log(`\n📦 Admin fulfilling order #${orderId.slice(0, 8)}`);
       console.log(`   ⚠️  Stock was already deducted at checkout - only updating status`);
 
@@ -56,7 +51,7 @@ export async function POST(req: NextRequest) {
       const updatedOrder = await tx.order.update({
         where: { id: orderId },
         data: {
-          status: "fulfilled",
+          status: "Fulfilled",
         },
         include: {
           items: {
@@ -67,7 +62,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      console.log(`   ✅ Order status updated to "fulfilled"\n`);
+      console.log(`   ✅ Order status updated to "Fulfilled"\n`);
 
       return updatedOrder;
     });
