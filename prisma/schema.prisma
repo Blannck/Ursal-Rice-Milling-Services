@@ -72,7 +72,7 @@ model Order {
   userId    String
   email     String
   total     Float
-  status    String   @default("completed")
+  status    String   @default("Completed")
   createdAt DateTime @default(now())
 
   items OrderItem[]

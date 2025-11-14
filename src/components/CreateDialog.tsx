@@ -21,6 +21,7 @@ import ImageUpload from "./ImageUpload";
 import { createProduct } from "@/actions/product.aciton";
 
 export default function CreateDialog() {
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -34,16 +35,24 @@ export default function CreateDialog() {
   });
 
   const handleChange = (field: string, value: string | number | boolean) => {
+    console.log(`Updating field "${field}" with value:`, value);
     setFormData({ ...formData, [field]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    console.log("Submitting product with data:", formData);
+    
     try {
       const newProduct = await createProduct(formData);
-      console.log("Product created: ", newProduct);
+      console.log("Product created successfully:", newProduct);
       toast.success("Product created successfully");
 
+      // Close dialog first
+      setIsOpen(false);
+
+      // Reset form
       setFormData({
         name: "",
         description: "",
@@ -56,6 +65,11 @@ export default function CreateDialog() {
         isMilledRice: true
       });
 
+      // Force a page refresh to show the new product with its image
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+
     } catch (error) {
       console.error("Error creating product", error);
       toast.error("Failed to create product");
@@ -63,7 +77,7 @@ export default function CreateDialog() {
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button
           variant="default"
@@ -114,17 +128,6 @@ export default function CreateDialog() {
           />
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="downloadUrl">Download URL</Label>
-              <Input
-                id="downloadUrl"
-                type="url"
-                placeholder="https://example.com/your-file.zip"
-                value={formData.downloadUrl}
-                onChange={(e) => handleChange("downloadUrl", e.target.value)}
-              />
-            </div>
-
-            <div>
               <Label htmlFor="price">Price</Label>
               <Input
                 id="price"
@@ -151,19 +154,6 @@ export default function CreateDialog() {
                 Alert when stock falls below this level
               </p>
             </div>
-          </div>
-
-          {/* Image Upload */}
-          <div className="py-5 font-semibold  ">
-              Product Image
-            <ImageUpload
-             
-              endpoint="postImage"
-              value={formData.imageUrl}
-              onChange={(url) => {
-                handleChange("imageUrl", url);
-              }}
-            />
           </div>
 
           <AlertDialogFooter>

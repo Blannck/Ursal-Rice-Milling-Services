@@ -163,16 +163,6 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="downloadUrl">Download URL</Label>
-              <Input
-                id="downloadUrl"
-                type="url"
-                placeholder="https://example.com/your-file.zip"
-                value={formData.downloadUrl}
-                onChange={(e) => handleChange("downloadUrl", e.target.value)}
-              />
-            </div>
-            <div>
               <Label htmlFor="price">Price</Label>
               <Input
                 id="price"
@@ -220,15 +210,6 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
                 onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
               />
             </div>
-          </div>
-
-          <div className="py-5 font-semibold">
-            Product Image
-            <ImageUpload
-              endpoint="postImage"
-              value={formData.imageUrl}
-              onChange={(url) => handleChange("imageUrl", url)}
-            />
           </div>
 
           <AlertDialogFooter>

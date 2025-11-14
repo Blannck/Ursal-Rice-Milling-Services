@@ -288,7 +288,7 @@ export default function InventoryReportClient({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category) => (
+                  {categories.filter(cat => cat && cat.trim()).map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>

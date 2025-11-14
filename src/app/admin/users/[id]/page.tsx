@@ -96,7 +96,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
                   <td className="px-3 py-2 font-mono text-xs">{o.id}</td>
                   <td className="px-3 py-2">{formatDate(o.createdAt)}</td>
                   <td className="px-3 py-2">{o.total.toFixed(2)}</td>
-                  <td className="px-3 py-2">{o.status}</td>
+                  <td className="px-3 py-2">{o.status.toUpperCase()}</td>
                   <td className="px-3 py-2">
                     {o.items.map((i: any) => `${i.quantity}× ${i.product.name}`).join(", ")}
                   </td>

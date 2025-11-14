@@ -51,7 +51,7 @@ export default async function OrdersPage() {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status.toUpperCase()) {
       case "completed":
         return "bg-green-50 text-green-700 border-green-200";
       case "pending":

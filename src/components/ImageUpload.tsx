@@ -45,13 +45,17 @@ export default function ImageUpload({ endpoint, onChange, value }: ImageUploadPr
           // Debug log entire response
           console.log("UploadThing onClientUploadComplete response:", res);
 
-          // UploadThing returns res[0].url (NOT ufsUrl in newer versions)
+          // UploadThing returns the URL in res[0].url
           if (res && res[0]?.url) {
-            console.log("Using url:", res[0].url);
+            console.log("Image uploaded successfully, calling onChange with URL:", res[0].url);
             onChange(res[0].url);
+          } else if (res && res[0]?.fileUrl) {
+            // Fallback for older versions
+            console.log("Image uploaded successfully (fileUrl), calling onChange:", res[0].fileUrl);
+            onChange(res[0].fileUrl);
           } else {
             // If it's not there, log everything so you can inspect
-            console.error("UploadThing response did not include res[0].url:", res);
+            console.error("UploadThing response did not include URL:", res);
             alert("Upload completed but no URL was returned. Check console for details.");
           }
         }}

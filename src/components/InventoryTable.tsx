@@ -207,7 +207,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map((category) => (
+                    {categories.filter(cat => cat && cat.trim()).map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
