@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Calendar, Package, ShoppingBag, FileText } from "lucide-react";
+import { Download, Calendar, Package, ShoppingBag, FileText, Truck } from "lucide-react";
 import Spinner from "@/components/Spinner";
 import { requireActiveUser } from "@/lib/guard";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function OrdersPage() {
   // Check if user is deactivated or blocked
@@ -71,6 +72,19 @@ export default async function OrdersPage() {
     }
   };
 
+  const getShipmentStatusColor = (status: string) => {
+    switch (status) {
+      case "Processing Order":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "In Transit":
+        return "bg-orange-50 text-orange-700 border-orange-200";
+      case "Delivered":
+        return "bg-green-50 text-green-700 border-green-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
   return (
     <Suspense fallback={<Spinner></Spinner>}>
 
@@ -107,6 +121,15 @@ export default async function OrdersPage() {
                       >
                         {order.status.charAt(0).toUpperCase() +
                           order.status.slice(1)}
+                      </Badge>
+                      <Badge
+                        variant="outline"
+                        className={`${getShipmentStatusColor(
+                          order.shipmentStatus || "Processing Order"
+                        )} font-medium flex items-center gap-1`}
+                      >
+                        <Truck className="h-3 w-3" />
+                        {order.shipmentStatus || "Processing Order"}
                       </Badge>
                       {isAdmin && (
                         <span className=" text-xs  px-2 py-1 rounded">
@@ -213,21 +236,33 @@ export default async function OrdersPage() {
                                 
                                 {/* View Invoice Button - Show once per order */}
                                 {index === 0 && (
-                                  <Button
-                                    asChild
-                                    variant="outline"
-                                    className="border-green-600 text-white hover:bg-custom-orange/50"
-                                  >
-                                    <a
-                                      href={`/orders/${order.id}/invoice`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center gap-2"
+                                  <>
+                                    <Button
+                                      asChild
+                                      variant="outline"
+                                      className="border-green-600 text-white hover:bg-custom-orange/50"
                                     >
-                                      <FileText className="h-4 w-4" />
-                                      View Invoice
-                                    </a>
-                                  </Button>
+                                      <a
+                                        href={`/orders/${order.id}/invoice`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2"
+                                      >
+                                        <FileText className="h-4 w-4" />
+                                        View Invoice
+                                      </a>
+                                    </Button>
+                                    <Button
+                                      asChild
+                                      variant="default"
+                                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    >
+                                      <Link href={`/orders/${order.id}`} className="flex items-center gap-2">
+                                        <Package className="h-4 w-4" />
+                                        Order Details
+                                      </Link>
+                                    </Button>
+                                  </>
                                 )}
                               </div>
                             </div>

@@ -164,7 +164,7 @@ if (fullyReceived) {
         
         if (short > 0) {
           const existing = await tx.backorder.findFirst({
-            where: { purchaseOrderItemId: poi.id, status: "Open" },
+            where: { purchaseOrderItemId: poi.id, status: "Waiting" },
           })
           if (existing) {
             console.log(`   📝 Updating existing backorder: ${existing.quantity} + ${short} = ${existing.quantity + short}`);

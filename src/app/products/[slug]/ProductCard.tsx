@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/utils";
-import { ShoppingCart, Download } from "lucide-react";
+import { ShoppingCart, Download, Package, AlertCircle, Plus, Minus } from "lucide-react";
 import AddToCartButton from "@/components/AddtoCartButton";
 import MiniPriceChart from "@/components/MiniPriceChart";
 import Link from "next/link";
@@ -21,6 +22,10 @@ type Product = {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  stockOnHand: number;
+  stockAllocated: number;
+  stockOnOrder: number;
+  reorderPoint: number;
   priceHistory?: {
     id: string;
     productId: string;
@@ -37,6 +42,16 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [quantity, setQuantity] = useState(10);
+
+  const incrementQuantity = () => setQuantity(prev => prev + 1);
+  const decrementQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
+  const handleQuantityChange = (value: number) => {
+    if (!isNaN(value) && value >= 1) {
+      setQuantity(value);
+    }
+  };
+
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -81,6 +96,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                   <span className="font-medium">{product.category}</span>
                 </div>
               
+                <div className="flex justify-between">
+                  <span className="text-black">Stock Availability</span>
+                  <span className={`font-semibold ${
+                    (product.stockOnHand - product.stockAllocated) <= 0 ? 'text-red-600' :
+                    (product.stockOnHand - product.stockAllocated) <= 10 ? 'text-yellow-600' :
+                    'text-green-600'
+                  }`}>
+                    {product.stockOnHand - product.stockAllocated} available
+                  </span>
+                </div>
                 
                 <div className="flex justify-between">
                   <span className="text-black">Updated</span>
@@ -104,9 +129,29 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Right Column: Product Information */}
         <div className="flex flex-col justify-start space-y-6">
           <div className="space-y-4">
-            <Badge variant="secondary" className="w-fit text-sm">
-              {product.category}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="w-fit text-sm">
+                {product.category}
+              </Badge>
+              {(() => {
+                const availableStock = product.stockOnHand - product.stockAllocated;
+                return (
+                  <Badge
+                    variant="outline"
+                    className={`${
+                      availableStock <= 0 ? 'bg-red-100 text-red-700 border-red-200' :
+                      availableStock <= 10 ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                      'bg-green-100 text-green-700 border-green-200'
+                    } font-medium flex items-center gap-1`}
+                  >
+                    <Package className="h-3 w-3" />
+                    {availableStock <= 0 ? 'Out of Stock' :
+                     availableStock <= 10 ? `${availableStock} left` :
+                     `${availableStock} available`}
+                  </Badge>
+                );
+              })()}
+            </div>
 
             <div className="space-y-3">
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
@@ -133,7 +178,63 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Purchase Section */}
           <div className="space-y-4 pt-4">
-            <AddToCartButton productId={product.id} />
+            {/* Quantity Selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white">Quantity</label>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-10 w-10 p-0"
+                  onClick={decrementQuantity}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
+                  className="w-24 h-10 text-center"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-10 w-10 p-0"
+                  onClick={incrementQuantity}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Add to Cart Button */}
+            {(() => {
+              const availableStock = product.stockOnHand - product.stockAllocated;
+              if (availableStock <= 10 && availableStock > 0) {
+                return (
+                  <>
+                    <AddToCartButton 
+                      productId={product.id}
+                      quantity={quantity}
+                      availableStock={availableStock}
+                    />
+                    <div className="flex items-center gap-2 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>Hurry! Only {availableStock} left in stock</span>
+                    </div>
+                  </>
+                );
+              } else {
+                return (
+                  <AddToCartButton 
+                    productId={product.id}
+                    quantity={quantity}
+                    availableStock={availableStock}
+                  />
+                );
+              }
+            })()}
 
             <div className="flex items-center gap-4 text-sm text-white">
               <div className="flex items-center gap-2">

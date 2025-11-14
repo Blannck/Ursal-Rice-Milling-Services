@@ -8,6 +8,9 @@ import { requireActiveUser } from "@/lib/guard";
 import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function page() {
   const user = await stackServerApp.getUser();
   

@@ -126,16 +126,6 @@ export default function AdminSidebar({ user, app }: Props) {
             collapsed={collapsed}
           />
         </div>
-        <div className="px-2 mb-3">
-          <NavItem
-            href="/admin/customer-orders"
-            label="Orders"
-            icon={ClipboardList}
-            active={pathname.startsWith("/orders")}
-            collapsed={collapsed}
-          />
-        </div>
-
         {/* Admin Section */}
         <div
           className={cn(
@@ -144,6 +134,16 @@ export default function AdminSidebar({ user, app }: Props) {
           )}
         >
           {!collapsed && "ADMIN"}
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/customer-orders"
+            label="Manage Orders"
+            icon={ClipboardList}
+            active={pathname.startsWith("/admin/customer-orders")}
+            collapsed={collapsed}
+          />
         </div>
         
         <div className="px-2 mb-3">
@@ -182,16 +182,6 @@ export default function AdminSidebar({ user, app }: Props) {
             label="Purchase Orders"
             icon={FileText}
             active={pathname.startsWith("/admin/purchase-orders")}
-            collapsed={collapsed}
-          />
-        </div>
-        
-        <div className="px-2 mb-3">
-          <NavItem
-            href="/admin/orders"
-            label="Fulfill Orders"
-            icon={Package}
-            active={pathname.startsWith("/admin/orders")}
             collapsed={collapsed}
           />
         </div>

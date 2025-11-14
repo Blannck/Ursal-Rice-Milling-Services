@@ -129,22 +129,25 @@ const remindBackorder = async (backorderId: string) => {
       return;
     }
 
-    // ✅ show message and keep item in list
-    alert("Sent reminder to supplier");
+    // ✅ show detailed message about notifications sent
+    const notifications = data?.data?.notifications;
+    let message = "Reminder sent successfully!\n\n";
+    
+    if (notifications) {
+      message += notifications.emailSent 
+        ? "✅ Email sent to supplier\n" 
+        : "⚠️ Email not sent (check configuration)\n";
+      
+      message += notifications.smsSent 
+        ? "✅ SMS sent to supplier" 
+        : "⚠️ SMS not sent (check configuration or phone number)";
+    }
+    
+    alert(message);
 
-    // ✅ update the local list instead of refetching (so it stays visible)
-    setBackorders((prev) =>
-      prev.map((b) =>
-        b.id === backorderId
-          ? {
-              ...b,
-              status: "Reminded",
-              expectedDate:
-                data?.data?.backorder?.expectedDate ?? b.expectedDate,
-            }
-          : b
-      )
-    );
+    // ✅ Refetch backorders to get updated status from server
+    // This allows the remind button to be used again after refresh
+    await fetchBackorders();
   } catch (e) {
     console.error("Failed to remind supplier", e);
     alert("Something went wrong");
@@ -822,9 +825,51 @@ const handleSubmitReturn = async () => {
     </div>
   )}
 </CardContent>
-
-
               </Card>
+
+              {/* Back Orders - Show when status is Partial or when backorders exist */}
+              {(purchaseOrder.status === "Partial" || backorders.length > 0) && (
+                <Card className="h-full flex flex-col bg-custom-white border-transparent shadow-md rounded-2xl">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-black text-lg">Back Orders</CardTitle>
+                    <CardDescription className="text-black">Items pending from supplier</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3 flex-1">
+                    {backorders.length === 0 ? (
+                      <p className="text-sm text-gray-500 italic">No back orders</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {backorders.map((bo) => (
+                          <div key={bo.id} className="p-3 bg-white rounded-lg border border-gray-200">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex-1">
+                                <p className="font-medium text-black">{bo.purchaseOrderItem?.product?.name || "Unknown Product"}</p>
+                                <p className="text-sm text-gray-600">Quantity: {bo.quantity}</p>
+                                {bo.expectedDate && (
+                                  <p className="text-sm text-gray-600">
+                                    Expected: {formatDate(bo.expectedDate)}
+                                  </p>
+                                )}
+                              </div>
+                              <Badge variant={bo.status === "Reminded" ? "default" : "secondary"}>
+                                {bo.status}
+                              </Badge>
+                            </div>
+                            <Button
+                              onClick={() => remindBackorder(bo.id)}
+                              disabled={reminding[bo.id]}
+                              className="w-full bg-custom-orange hover:bg-custom-orange/50 text-white rounded-lg text-sm"
+                              size="sm"
+                            >
+                              {reminding[bo.id] ? "Sending..." : bo.status === "Reminded" ? "Remind Again" : "Remind Supplier"}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
 

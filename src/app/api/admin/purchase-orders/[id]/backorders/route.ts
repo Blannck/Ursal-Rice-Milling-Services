@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const statusParam = searchParams.get("status"); // e.g. "Open,Reminded"
     const statuses = statusParam
       ? statusParam.split(",").map(s => s.trim())
-      : ["Waiting", "Reminded"]; // default
+      : ["Open", "Reminded"]; // default
 
     const backorders = await prisma.backorder.findMany({
       where: {

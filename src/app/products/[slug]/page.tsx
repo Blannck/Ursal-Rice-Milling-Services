@@ -5,6 +5,9 @@ import ProductCard from "./ProductCard";
 import { notFound, redirect } from "next/navigation";
 import { requireActiveUser } from "@/lib/guard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({
   params,
 }: {

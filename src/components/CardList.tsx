@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Grid3X3, List, ShoppingCart } from "lucide-react";
+import { Search, Filter, Grid3X3, List, ShoppingCart, Package, Plus, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -30,11 +30,32 @@ export default function CardList({ products }: CardListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   // Get unique categories for filter dropdown
   const categories = Array.from(
     new Set(products?.userProducts?.map((product) => product.category) || [])
   );
+
+  const getQuantity = (productId: string) => quantities[productId] || 10;
+
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity >= 1) {
+      setQuantities(prev => ({ ...prev, [productId]: newQuantity }));
+    }
+  };
+
+  const incrementQuantity = (productId: string) => {
+    const current = getQuantity(productId);
+    updateQuantity(productId, current + 1);
+  };
+
+  const decrementQuantity = (productId: string) => {
+    const current = getQuantity(productId);
+    if (current > 1) {
+      updateQuantity(productId, current - 1);
+    }
+  };
 
   // Filter and sort products
   const filteredProducts = products?.userProducts
@@ -68,6 +89,30 @@ export default function CardList({ products }: CardListProps) {
     const slug = `${product.id}--${slugifiedName}`;
     const productUrl = `/products/${slug}`;
     router.push(productUrl);
+  };
+
+  const getStockStatus = (stockOnHand: number, stockAllocated: number) => {
+    const availableStock = stockOnHand - stockAllocated;
+    
+    if (availableStock <= 0) {
+      return {
+        label: "Out of Stock",
+        color: "bg-red-100 text-red-700 border-red-200",
+        available: 0,
+      };
+    } else if (availableStock <= 10) {
+      return {
+        label: `Low Stock: ${availableStock} left`,
+        color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+        available: availableStock,
+      };
+    } else {
+      return {
+        label: `In Stock: ${availableStock} available`,
+        color: "bg-green-100 text-green-700 border-green-200",
+        available: availableStock,
+      };
+    }
   };
 
   return (
@@ -204,6 +249,23 @@ export default function CardList({ products }: CardListProps) {
                     >
                       {product.category}
                     </Badge>
+
+                    {/* Stock Status Badge */}
+                    {(() => {
+                      const stockStatus = getStockStatus(
+                        product.stockOnHand,
+                        product.stockAllocated
+                      );
+                      return (
+                        <Badge
+                          variant="outline"
+                          className={`absolute top-3 right-3 ${stockStatus.color} font-medium flex items-center gap-1`}
+                        >
+                          <Package className="h-3 w-3" />
+                          {stockStatus.available}
+                        </Badge>
+                      );
+                    })()}
                   </div>
 
                   {/* Product Info */}
@@ -231,15 +293,82 @@ export default function CardList({ products }: CardListProps) {
                           ₱{product.price.toLocaleString()}
                         </div>
                       </div>
+
+                      {/* Stock Availability Text */}
+                      {(() => {
+                        const stockStatus = getStockStatus(
+                          product.stockOnHand,
+                          product.stockAllocated
+                        );
+                        return (
+                          <div className={`flex items-center gap-2 text-sm font-medium ${
+                            stockStatus.available <= 0 ? 'text-red-600' :
+                            stockStatus.available <= 10 ? 'text-yellow-600' :
+                            'text-green-600'
+                          }`}>
+                            <Package className="h-4 w-4" />
+                            <span>{stockStatus.label}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
 
-                    {/* Add to Cart Button */}
-                    <div className={`${viewMode === "list" ? "mt-4" : "mt-6"}`}>
+                    {/* Quantity Selector and Add to Cart */}
+                    <div className={`${viewMode === "list" ? "mt-4" : "mt-6"} space-y-3`}>
+                      {/* Quantity Selector */}
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center justify-center gap-3"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 w-9 p-0"
+                          onClick={() => decrementQuantity(product.id)}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <div className="flex flex-col items-center">
+                          <Input
+                            type="number"
+                            min="1"
+                            value={getQuantity(product.id)}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (!isNaN(value) && value >= 1) {
+                                updateQuantity(product.id, value);
+                              }
+                            }}
+                            className="w-20 h-9 text-center"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <span className="text-xs text-muted-foreground mt-1">Quantity</span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 w-9 p-0"
+                          onClick={() => incrementQuantity(product.id)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      {/* Add to Cart Button */}
                       <div
                         onClick={(e) => e.stopPropagation()}
                         className="w-full"
                       >
-                        <AddToCartButton productId={product.id} />
+                        {(() => {
+                          const availableStock = product.stockOnHand - product.stockAllocated;
+                          return (
+                            <AddToCartButton 
+                              productId={product.id}
+                              quantity={getQuantity(product.id)}
+                              availableStock={availableStock}
+                            />
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

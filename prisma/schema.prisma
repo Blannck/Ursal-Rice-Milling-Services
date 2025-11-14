@@ -68,12 +68,14 @@ model PriceHistory {
 }
 
 model Order {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  email     String
-  total     Float
-  status    String   @default("Completed")
-  createdAt DateTime @default(now())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String
+  email          String
+  total          Float
+  status         String   @default("completed")
+  shipmentStatus String   @default("Processing Order") // "Processing Order", "In Transit", "Delivered"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   items OrderItem[]
 }
