@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model CartItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String  @db.ObjectId
+  quantity  Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id                 String                 @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String
+  name               String
+  description        String?
+  category           String
+  price              Float
+  imageUrl           String?
+  downloadUrl        String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  isHidden           Boolean                @default(false)
+  supplierId         String?                @db.ObjectId
+  supplier           Supplier?              @relation(fields: [supplierId], references: [id])
+  stockOnHand        Int                    @default(0)
+  stockOnOrder       Int                    @default(0)
+  stockAllocated     Int                    @default(0)
+  reorderPoint       Int                    @default(0)
+  isMilledRice       Boolean                @default(false)
+  millingYieldRate   Float?                 // Percentage of unmilled rice that becomes milled rice
+  CartItem           CartItem[]
+  OrderItem          OrderItem[]
+  purchaseOrderItems PurchaseOrderItem[]
+  InventoryTxn       InventoryTransaction[]
+  inventoryItems     InventoryItem[]
+  priceHistory       PriceHistory[]
+}
+
+model PriceHistory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String   @db.ObjectId
+  
+  oldPrice  Float
+  newPrice  Float
+  changedBy String   // User ID who changed the price
+  reason    String?  // Optional reason for price change
+  
+  createdAt DateTime @default(now())
+  
+  @@index([productId])
+  @@index([createdAt])
+}
+
+model Order {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String
+  email             String
+  total             Float
+  status            String         @default("processing") // "processing", "partial", "completed", "cancelled"
+  shipmentStatus    String         @default("Processing Order") // "Processing Order", "In Transit", "Delivered"
+  fulfillmentStatus String         @default("pending") // "pending", "partial", "fulfilled"
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime?      @updatedAt
+
+  items       OrderItem[]
+  deliveries  Delivery[]
+}
+
+model OrderItem {
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String
+  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId        String  @db.ObjectId
+  order            Order   @relation(fields: [orderId], references: [id])
+  orderId          String  @db.ObjectId
+  quantity         Int     // Total quantity ordered
+  quantityFulfilled Int?   @default(0) // Quantity fulfilled so far
+  quantityPending  Int?    // Quantity still pending (backorder)
+  price            Float
+  
+  deliveryItems DeliveryItem[]
+}
+
+model Delivery {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  order           Order    @relation(fields: [orderId], references: [id])
+  orderId         String   @db.ObjectId
+  deliveryNumber  Int      // 1 for first delivery, 2 for second, etc.
+  status          String   @default("pending") // "pending", "fulfilled"
+  shipmentStatus  String   @default("Processing Order") // "Processing Order", "In Transit", "Delivered"
+  fulfilledAt     DateTime?
+  fulfilledBy     String?  // Admin user ID who fulfilled
+  note            String?
+  createdAt       DateTime @default(now())
+  
+  items DeliveryItem[]
+  
+  @@index([orderId])
+}
+
+model DeliveryItem {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  delivery   Delivery  @relation(fields: [deliveryId], references: [id])
+  deliveryId String    @db.ObjectId
+  orderItem  OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItemId String   @db.ObjectId
+  quantity   Int       // Quantity in this specific delivery
+  
+  @@index([deliveryId])
+  @@index([orderItemId])
+}
+
+model AppUser {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?
+  displayName   String?
+  authMethod    String?
+  status        UserStatus @default(ACTIVE)
+  blockedAt     DateTime?
+  blockReason   String?
+  deactivatedAt DateTime?
+  lastActiveAt  DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model Supplier {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  note           String?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  products       Product[]
+  purchaseOrders PurchaseOrder[]
+
+  @@index([name])
+}
+
+model PurchaseOrder {
+  id         String              @id @default(auto()) @map("_id") @db.ObjectId
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  supplierId String              @db.ObjectId
+  orderDate  DateTime            @default(now())
+  status     String              @default("Pending")
+  items      PurchaseOrderItem[]
+  note       String?
+  paymentType String             @default("ONE_TIME") // ONE_TIME | MONTHLY
+  monthlyTerms Int?              // 3, 6, or 12 months
+  dueDate     DateTime?          // Due date for payment
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  attachments PurchaseOrderAttachment[]
+  returns     PurchaseReturn[]
+}
+
+model PurchaseOrderItem {
+  id              String               @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrder   PurchaseOrder        @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String               @db.ObjectId
+  product         Product?             @relation(fields: [productId], references: [id])
+  productId       String               @db.ObjectId
+  orderedQty      Int
+  receivedQty     Int                  @default(0)
+  returnedQty     Int                  @default(0)
+  price           Float
+  lineStatus      String               @default("Pending")
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  backorders      Backorder[]
+  returnItems     PurchaseReturnItem[]
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+}
+
+model PurchaseOrderAttachment {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String        @db.ObjectId
+  type            String // INVOICE | RECEIPT | OTHER
+  fileName        String
+  fileUrl         String
+  uploadedAt      DateTime      @default(now())
+  note            String?
+}
+
+model Backorder {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrderItem   PurchaseOrderItem @relation(fields: [purchaseOrderItemId], references: [id])
+  purchaseOrderItemId String            @db.ObjectId
+  quantity            Int
+  expectedDate        DateTime?
+  status              String            @default("Open")
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([purchaseOrderItemId])
+}
+
+model PurchaseReturn {
+  id              String               @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrder   PurchaseOrder        @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String               @db.ObjectId
+  reason          String?
+  createdAt       DateTime             @default(now())
+  items           PurchaseReturnItem[]
+}
+
+model PurchaseReturnItem {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseReturn      PurchaseReturn    @relation(fields: [purchaseReturnId], references: [id])
+  purchaseReturnId    String            @db.ObjectId
+  purchaseOrderItem   PurchaseOrderItem @relation(fields: [purchaseOrderItemId], references: [id])
+  purchaseOrderItemId String            @db.ObjectId
+  quantity            Int
+  note                String?
+  createdAt           DateTime          @default(now())
+}
+
+model InventoryTransaction {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  product             Product  @relation(fields: [productId], references: [id])
+  productId           String   @db.ObjectId
+  kind                String // STOCK_IN | STOCK_OUT | RETURN_IN | RETURN_OUT | ADJUSTMENT | PO_ON_ORDER | MILLING_IN | MILLING_OUT
+  purchaseOrderId     String?  @db.ObjectId
+  purchaseOrderItemId String?  @db.ObjectId
+  purchaseReturnId    String?  @db.ObjectId
+  quantity            Int
+  unitPrice           Float?
+  note                String?
+  location            StorageLocation? @relation(fields: [locationId], references: [id])
+  locationId          String?          @db.ObjectId
+  createdBy           String?
+  createdAt           DateTime @default(now())
+
+  @@index([productId])
+  @@index([purchaseOrderId])
+  @@index([locationId])
+  @@index([kind])
+}
+
+model StorageLocation {
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name        String                 @unique
+  code        String                 @unique
+  type        String // WAREHOUSE | SHELF | BIN | ZONE
+  description String?
+  capacity    Int?
+  parentId    String?                @db.ObjectId
+  parent      StorageLocation?       @relation("LocationHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children    StorageLocation[]      @relation("LocationHierarchy")
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  
+  inventoryItems InventoryItem[]
+  transactions   InventoryTransaction[]
+
+  @@index([type])
+  @@index([parentId])
+}
+
+model InventoryItem {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  product    Product         @relation(fields: [productId], references: [id])
+  productId  String          @db.ObjectId
+  location   StorageLocation @relation(fields: [locationId], references: [id])
+  locationId String          @db.ObjectId
+  quantity   Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([productId, locationId])
+  @@index([productId])
+  @@index([locationId])
+}
+
+model Finance {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  totalPayables Float           @default(0)
+  accountBalance Float          @default(0)
+  transactions  FinanceTransaction[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model FinanceTransaction {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  finance       Finance   @relation(fields: [financeId], references: [id])
+  financeId     String    @db.ObjectId
+  type          String    // PAYABLE | PAYMENT | SALE
+  amount        Float
+  description   String?
+  orderId       String?   @db.ObjectId
+  purchaseOrderId String? @db.ObjectId
+  createdAt     DateTime  @default(now())
+
+  @@index([financeId])
+  @@index([type])
+}
