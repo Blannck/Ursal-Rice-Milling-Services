@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Grid3X3, List, ShoppingCart, Package, Plus, Minus } from "lucide-react";
+import { Search, Filter, ShoppingCart, Package, Plus, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -29,7 +29,6 @@ export default function CardList({ products }: CardListProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("name");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   // Get unique categories for filter dropdown
@@ -177,66 +176,30 @@ export default function CardList({ products }: CardListProps) {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* View Toggle */}
-            <div className="flex items-center gap-2  rounded-lg p-1">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className="h-8 w-8 p-0"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                className="h-8 w-8 p-0"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
 
         {/* Products Grid/List */}
         {filteredProducts && filteredProducts.length > 0 ? (
           <div
-            className={
-              viewMode === "grid"
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                : "space-y-4"
-            }
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {filteredProducts.map((product) => (
               <Card
                 key={product.id}
-                className={`group cursor-pointer min-h-80 bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl    ${
-                  viewMode === "list" ? "flex flex-row overflow-hidden" : ""
-                }`}
+                className="group cursor-pointer bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl min-h-80"
                 onClick={() => handleProductClick(product)}
               >
                 <CardContent
-                  className={`p-0 ${  
-                    viewMode === "list" ? "flex flex-row w-full" : ""
-                  }`}
+                  className="p-0 flex flex-col"
                 >
                   {/* Product Image */}
                   <div
-                    className={`relative overflow-hidden ${
-                      viewMode === "list"
-                        ? "w-64 h-40 flex-shrink-0" // Wider than tall for list view
-                        : "aspect-[16/9] w-full" // Landscape ratio for grid view
-                    } bg-gray-100 rounded-t-xl ${
-                      viewMode === "list" ? "rounded-l-xl rounded-tr-none" : ""
-                    }`}
+                    className="relative overflow-hidden w-full h-full bg-gray-100 rounded-lg "
                   >
                     <img
-                      src={
-                        product.imageUrl ||
-                        "https://images.unsplash.com/photo-1643622357625-c013987d90e7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2670"
-                      }
+                      src= "/sack.png"
+                      
                       alt={product.name}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
@@ -270,11 +233,7 @@ export default function CardList({ products }: CardListProps) {
 
                   {/* Product Info */}
                   <div
-                    className={`p-6 ${
-                      viewMode === "list"
-                        ? "flex-1 flex flex-col justify-between"
-                        : ""
-                    }`}
+                    className="p-6 flex flex-col flex-1"
                   >
                     <div className="space-y-3">
                       <div>
@@ -295,26 +254,11 @@ export default function CardList({ products }: CardListProps) {
                       </div>
 
                       {/* Stock Availability Text */}
-                      {(() => {
-                        const stockStatus = getStockStatus(
-                          product.stockOnHand,
-                          product.stockAllocated
-                        );
-                        return (
-                          <div className={`flex items-center gap-2 text-sm font-medium ${
-                            stockStatus.available <= 0 ? 'text-red-600' :
-                            stockStatus.available <= 10 ? 'text-yellow-600' :
-                            'text-green-600'
-                          }`}>
-                            <Package className="h-4 w-4" />
-                            <span>{stockStatus.label}</span>
-                          </div>
-                        );
-                      })()}
+                     
                     </div>
 
                     {/* Quantity Selector and Add to Cart */}
-                    <div className={`${viewMode === "list" ? "mt-4" : "mt-6"} space-y-3`}>
+                    <div className="mt-6 space-y-3">
                       {/* Quantity Selector */}
                       <div
                         onClick={(e) => e.stopPropagation()}
@@ -342,7 +286,7 @@ export default function CardList({ products }: CardListProps) {
                             className="w-20 h-9 text-center"
                             onClick={(e) => e.stopPropagation()}
                           />
-                          <span className="text-xs text-muted-foreground mt-1">Quantity</span>
+                         
                         </div>
                         <Button
                           variant="outline"
@@ -357,7 +301,7 @@ export default function CardList({ products }: CardListProps) {
                       {/* Add to Cart Button */}
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full"
+                        className="w-full flex justify-center "
                       >
                         {(() => {
                           const availableStock = product.stockOnHand - product.stockAllocated;
@@ -366,10 +310,27 @@ export default function CardList({ products }: CardListProps) {
                               productId={product.id}
                               quantity={getQuantity(product.id)}
                               availableStock={availableStock}
+                              
                             />
                           );
                         })()}
                       </div>
+                        {(() => {
+                        const stockStatus = getStockStatus(
+                          product.stockOnHand,
+                          product.stockAllocated
+                        );
+                        return (
+                          <div className={`flex items-center justify-center gap-2 text-sm font-medium ${
+                            stockStatus.available <= 0 ? 'text-red-600' :
+                            stockStatus.available <= 10 ? 'text-yellow-600' :
+                            'text-green-600'
+                          }`}>
+                            
+                            <span>{stockStatus.label}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </CardContent>

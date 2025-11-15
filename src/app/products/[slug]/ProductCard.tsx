@@ -69,19 +69,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Product Image */}
           <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">
-              {product.imageUrl ? (
+              { (
                 <div className="w-full min-h-[250px] aspect-[16/9] overflow-hidden">
 
                   <img
-                    src={product.imageUrl}
+                    src={"/sack.png"}
                     alt={product.name}
                     className="block w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                 </div>
-              ) : (
-                <div className="w-full aspect-[16/9] bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                  <Download className="h-16 w-16 text-white" />
-                </div>
+             
               )}
             </CardHeader>
           </Card>
@@ -236,14 +233,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               }
             })()}
 
-            <div className="flex items-center gap-4 text-sm text-white">
-              <div className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                <span>Instant Download</span>
-              </div>
-              <div className="h-4 w-px bg-border" />
-            
-            </div>
+           
           </div>
           
         </div>

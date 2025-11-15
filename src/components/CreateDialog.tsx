@@ -126,7 +126,7 @@ export default function CreateDialog() {
             value={formData.description}
             onChange={(e) => handleChange("description", e.target.value)}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <Label htmlFor="price">Price</Label>
               <Input
@@ -137,9 +137,6 @@ export default function CreateDialog() {
                 onChange={(e) => handleChange("price", Number(e.target.value))}
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="reorderPoint">Reorder Point</Label>
               <Input
@@ -155,6 +152,8 @@ export default function CreateDialog() {
               </p>
             </div>
           </div>
+
+          
 
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -51,19 +51,9 @@ export default function InvoiceView({
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Print Button */}
-          <div className="mb-4 flex justify-end print:hidden">
-            <Button
-              onClick={() => window.print()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download/Print Invoice
-            </Button>
-          </div>
-
+      <div className="min-h-screen bg-transparent py-8">
+        <div className="max-w-4xl mx-auto px-4 mt-20 ">
+          
           {/* Invoice Card */}
           <Card className="bg-white shadow-lg print:shadow-none">
             <CardContent className="p-8">
@@ -180,6 +170,17 @@ export default function InvoiceView({
               </div>
             </CardContent>
           </Card>
+          {/* Print Button */}
+          <div className="mb-4 flex mt-5 justify-end print:hidden">
+            <Button
+              onClick={() => window.print()}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download/Print Invoice
+            </Button>
+          </div>
+
         </div>
       </div>
 

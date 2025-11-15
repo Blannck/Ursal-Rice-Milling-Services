@@ -208,7 +208,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
                           <div className="w-16 h-16 rounded-lg overflow-hidden border ">
                             <img
                               src={
-                                product.imageUrl ?? "/placeholder-product.jpg"
+                                "/sack.png"
                               }
                               alt={product.name}
                               className="w-full h-full object-cover"

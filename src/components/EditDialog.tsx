@@ -161,7 +161,7 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
             onChange={(e) => handleChange("description", e.target.value)}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <Label htmlFor="price">Price</Label>
               <Input
@@ -170,6 +170,17 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
                 placeholder="Enter price"
                 value={formData.price}
                 onChange={(e) => handleChange("price", Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="reorderPoint">Reorder Point</Label>
+              <Input
+                id="reorderPoint"
+                type="number"
+                min="0"
+                placeholder="Minimum stock level"
+                value={formData.reorderPoint}
+                onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
               />
             </div>
           </div>
@@ -198,19 +209,7 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="reorderPoint">Reorder Point</Label>
-              <Input
-                id="reorderPoint"
-                type="number"
-                min="0"
-                placeholder="Minimum stock level"
-                value={formData.reorderPoint}
-                onChange={(e) => handleChange("reorderPoint", Number(e.target.value))}
-              />
-            </div>
-          </div>
+         
 
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

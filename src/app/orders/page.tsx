@@ -162,7 +162,7 @@ export default async function OrdersPage() {
                           <div className="w-20 h-20 rounded-xl overflow-hidden  flex-shrink-0 border">
                             <img
                               src={
-                                product.imageUrl || "/placeholder-product.jpg"
+                                 "/sack.png"
                               }
                               alt={product.name}
                               className="w-full h-full object-cover"
@@ -255,7 +255,7 @@ export default async function OrdersPage() {
                                     <Button
                                       asChild
                                       variant="default"
-                                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    
                                     >
                                       <Link href={`/orders/${order.id}`} className="flex items-center gap-2">
                                         <Package className="h-4 w-4" />

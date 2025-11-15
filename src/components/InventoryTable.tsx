@@ -285,7 +285,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg overflow-hidden">
                               <img
-                                src={product.imageUrl || "https://images.unsplash.com/photo-1643622357625-c013987d90e7?auto=format&fit=crop&q=80&w=2670"}
+                                src={ "/sack.png"}
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                               />
@@ -391,7 +391,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
 
                     <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-xl">
                       <img
-                        src={product.imageUrl || "/rice1.jpg"}
+                        src={"/sack.png"}
                         alt={product.name}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                       />

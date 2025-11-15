@@ -373,7 +373,7 @@ export  default async function HomePage() {
               </p>
             </div>
             <Link  href="/products">
-            <Button variant="outline" className="hidden md:flex text-white border-white hover:bg-white/10">
+            <Button variant="outline" className="hidden md:flex text-white border-white hover:bg-custom-orange/90">
               View All Products
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -389,9 +389,9 @@ export  default async function HomePage() {
               >
                 <CardContent className="p-0">
                   {/* Product Image */}
-                  <div className="relative aspect-[16/10] overflow-hidden">
+                  <div className="relative w-full h-full overflow-hidden">
                     <img
-                      src={product.imageUrl ?? "/rice1.jpg"}
+                      src={"/sack.png"}
                       alt={product.name}
                       className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
@@ -424,7 +424,7 @@ export  default async function HomePage() {
                       <div className="text-3xl font-bold ">
                         ₱{product.price.toLocaleString()}
                       </div>
-                      <Button className="bg-custom-orange hover:bg-custom-orange/700  px-6 py-2 rounded-xl font-semibold">
+                      <Button className="bg-custom-orange hover:bg-custom-orange/90  px-6 py-2 rounded-xl font-semibold">
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         Add to Cart
                       </Button>
