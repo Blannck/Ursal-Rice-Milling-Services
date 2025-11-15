@@ -283,9 +283,9 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       </div>
 
       {/* Filters */}
-      <Card className="w-fit h-fit ">
-        <CardContent className="pt-6">
-          <div className="flex gap-4 items-center">
+      <Card className="w-fit h-20 ">
+        <CardContent className="flex items-center">
+          <div className="flex gap-2 items-center">
             <Calendar className="w-4 h-4 text-black" />
             <div className="flex-1">
               <Select value={dateRange} onValueChange={(value) => setDateRange(value as DateRange)}>
