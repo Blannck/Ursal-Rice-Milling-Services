@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CreateLocationDialog } from "@/components/CreateLocationDialog";
 import { EditLocationDialog } from "@/components/EditLocationDialog";
@@ -70,6 +71,9 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
   const searchParams = useSearchParams();
   const [searchLocation, setSearchLocation] = React.useState("");
   const [searchInventory, setSearchInventory] = React.useState("");
+  const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
+  const [locationFilter, setLocationFilter] = React.useState<string>("all");
+  const [codeFilter, setCodeFilter] = React.useState<string>("all");
   const [editingLocation, setEditingLocation] = React.useState<Location | null>(null);
   const [deletingLocation, setDeletingLocation] = React.useState<string | null>(null);
   const [syncingInventory, setSyncingInventory] = React.useState(false);
@@ -83,18 +87,40 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
   }, [searchParams, router]);
 
   // Filter locations
-  const filteredLocations = initialLocations.filter(
-    (loc) =>
+  const filteredLocations = initialLocations.filter((loc) => {
+    const matchesSearch = 
       loc.name.toLowerCase().includes(searchLocation.toLowerCase()) ||
-      loc.code.toLowerCase().includes(searchLocation.toLowerCase())
-  );
+      loc.code.toLowerCase().includes(searchLocation.toLowerCase());
+    const matchesCode = codeFilter === "all" || loc.code === codeFilter;
+    return matchesSearch && matchesCode;
+  });
 
   // Filter inventory items
-  const filteredInventory = initialInventoryItems.filter(
-    (item) =>
-      item.product.name.toLowerCase().includes(searchInventory.toLowerCase()) ||
-      item.location.name.toLowerCase().includes(searchInventory.toLowerCase())
-  );
+  const filteredInventory = initialInventoryItems.filter((item) => {
+    const searchValue = searchInventory.toLowerCase().trim();
+    const matchesSearch = 
+      item.product.name.toLowerCase().includes(searchValue) ||
+      item.location.name.toLowerCase().includes(searchValue) ||
+      item.product.category.toLowerCase().includes(searchValue);
+    
+    const matchesCategory = categoryFilter === "all" || item.product.category === categoryFilter;
+    const matchesLocation = locationFilter === "all" || item.location.id === locationFilter;
+    
+    return matchesSearch && matchesCategory && matchesLocation;
+  });
+
+  // Get unique categories and locations for filters
+  const uniqueCategories = Array.from(new Set(initialInventoryItems.map(item => item.product.category))).sort();
+  const locationMap = new Map<string, { id: string; name: string }>();
+  initialInventoryItems.forEach(item => {
+    if (!locationMap.has(item.location.id)) {
+      locationMap.set(item.location.id, { id: item.location.id, name: item.location.name });
+    }
+  });
+  const uniqueLocations = Array.from(locationMap.values());
+  
+  // Get unique location codes for filter
+  const uniqueCodes = Array.from(new Set(initialLocations.map(loc => loc.code))).sort();
 
   // Calculate inventory summary
   const totalLocations = initialLocations.length;
@@ -356,25 +382,47 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
         <TabsContent value="unmilled" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex mb-5 items-center justify-between">
-                <div>
-                  <CardTitle>Unmilled Rice Inventory</CardTitle>
-                  <CardDescription className="text-black">View and manage unmilled rice products</CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
-                    <Input
-                      placeholder="Search products or locations..."
-                      className="pl-8 w-[300px]"
-                      value={searchInventory}
-                      onChange={(e) => setSearchInventory(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <CardTitle>Unmilled Rice Inventory</CardTitle>
+              <CardDescription className="text-black">View and manage unmilled rice products</CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="flex items-center gap-2 flex-wrap mb-4 mt-4">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
+                  <Input
+                    placeholder="Search products or locations..."
+                    className="pl-8 w-[300px]"
+                    value={searchInventory}
+                    onChange={(e) => setSearchInventory(e.target.value)}
+                  />
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {Array.from(uniqueLocations).map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {renderInventoryTable(filteredInventory.filter(item => !item.product.isMilledRice))}
             </CardContent>
           </Card>
@@ -383,25 +431,47 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
         <TabsContent value="milled" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex mb-5 items-center justify-between">
-                <div>
-                  <CardTitle>Milled Rice Inventory</CardTitle>
-                  <CardDescription className="text-black">View and manage milled rice products</CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search products or locations..."
-                      className="pl-8 w-[300px]"
-                      value={searchInventory}
-                      onChange={(e) => setSearchInventory(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <CardTitle>Milled Rice Inventory</CardTitle>
+              <CardDescription className="text-black">View and manage milled rice products</CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="flex items-center gap-2 flex-wrap mb-4 mt-4">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
+                  <Input
+                    placeholder="Search products or locations..."
+                    className="pl-8 w-[300px]"
+                    value={searchInventory}
+                    onChange={(e) => setSearchInventory(e.target.value)}
+                  />
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {Array.from(uniqueLocations).map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {renderInventoryTable(filteredInventory.filter(item => item.product.isMilledRice))}
             </CardContent>
           </Card>
@@ -409,26 +479,35 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
 
         <TabsContent value="locations" className="space-y-4">
           <Card>
-            <CardHeader className="mb-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Storage Locations</CardTitle>
-                  <CardDescription className="text-black ">Manage warehouses, zones, shelves, and bins</CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search locations..."
-                      className="pl-8 w-[300px]"
-                      value={searchLocation}
-                      onChange={(e) => setSearchLocation(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+            <CardHeader>
+              <CardTitle>Storage Locations</CardTitle>
+              <CardDescription className="text-black">Manage warehouses, zones, shelves, and bins</CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="flex items-center gap-2 flex-wrap mb-4 mt-4">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
+                  <Input
+                    placeholder="Search locations..."
+                    className="pl-8 w-[300px]"
+                    value={searchLocation}
+                    onChange={(e) => setSearchLocation(e.target.value)}
+                  />
+                </div>
+                <Select value={codeFilter} onValueChange={setCodeFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Code" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Codes</SelectItem>
+                    {uniqueCodes.map((code) => (
+                      <SelectItem key={code} value={code}>
+                        {code}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>

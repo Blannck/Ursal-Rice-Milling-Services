@@ -32,7 +32,7 @@ export default async function AdminOrdersPage() {
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
   });
 

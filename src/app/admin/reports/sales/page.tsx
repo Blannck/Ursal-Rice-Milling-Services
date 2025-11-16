@@ -10,11 +10,12 @@ async function getSalesReportData() {
   // Ensure user is admin
   await assertAdmin();
 
-  // Fetch all completed and fulfilled orders with items
+  // Fetch all orders (excluding cancelled) with items for sales reporting
+  // Include: processing, partial, completed, and fulfilled orders
   const orders = await prisma.order.findMany({
     where: {
       status: {
-        in: ["Completed", "Fulfilled"],
+        not: "cancelled",
       },
     },
     include: {

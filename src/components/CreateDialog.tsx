@@ -31,7 +31,7 @@ export default function CreateDialog() {
     category: "",
     userId: "",
     imageUrl: "",
-    isMilledRice: true // Always create milled rice products
+    isMilledRice: false // Always create unmilled rice products by default
   });
 
   const handleChange = (field: string, value: string | number | boolean) => {
@@ -62,7 +62,7 @@ export default function CreateDialog() {
         category: "",
         userId: "",
         imageUrl: "",
-        isMilledRice: true
+        isMilledRice: false
       });
 
       // Force a page refresh to show the new product with its image

@@ -96,11 +96,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <div className="flex justify-between">
                   <span className="text-black">Stock Availability</span>
                   <span className={`font-semibold ${
-                    (product.stockOnHand - product.stockAllocated) <= 0 ? 'text-red-600' :
-                    (product.stockOnHand - product.stockAllocated) <= 10 ? 'text-yellow-600' :
+                    Math.round((product.stockOnHand - product.stockAllocated) / 50) <= 0 ? 'text-red-600' :
+                    Math.round((product.stockOnHand - product.stockAllocated) / 50) <= 10 ? 'text-yellow-600' :
                     'text-green-600'
                   }`}>
-                    {product.stockOnHand - product.stockAllocated} available
+                    {Math.round((product.stockOnHand - product.stockAllocated) / 50)} {Math.round((product.stockOnHand - product.stockAllocated) / 50) === 1 ? 'sack' : 'sacks'} available
                   </span>
                 </div>
                 
@@ -131,7 +131,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {product.category}
               </Badge>
               {(() => {
-                const availableStock = product.stockOnHand - product.stockAllocated;
+                const availableStockKg = product.stockOnHand - product.stockAllocated;
+                const availableStock = Math.round(availableStockKg / 50);
+                const unit = availableStock === 1 ? 'sack' : 'sacks';
                 return (
                   <Badge
                     variant="outline"
@@ -143,8 +145,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                   >
                     <Package className="h-3 w-3" />
                     {availableStock <= 0 ? 'Out of Stock' :
-                     availableStock <= 10 ? `${availableStock} left` :
-                     `${availableStock} available`}
+                     availableStock <= 10 ? `${availableStock} ${unit} left` :
+                     `${availableStock} ${unit} available`}
                   </Badge>
                 );
               })()}
@@ -207,7 +209,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* Add to Cart Button */}
             {(() => {
-              const availableStock = product.stockOnHand - product.stockAllocated;
+              const availableStockKg = product.stockOnHand - product.stockAllocated;
+              const availableStock = Math.round(availableStockKg / 50);
+              const unit = availableStock === 1 ? 'sack' : 'sacks';
               if (availableStock <= 10 && availableStock > 0) {
                 return (
                   <>
@@ -218,7 +222,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     />
                     <div className="flex items-center gap-2 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <AlertCircle className="h-4 w-4" />
-                      <span>Hurry! Only {availableStock} left in stock</span>
+                      <span>Hurry! Only {availableStock} {unit} left in stock</span>
                     </div>
                   </>
                 );

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -52,6 +53,7 @@ export default function PayablesTable({
   const [selectedPO, setSelectedPO] = useState<PayableOrder | null>(null);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handlePayment = async (paymentType: "FULL" | "MONTHLY") => {
     if (!selectedPO) return;
@@ -94,8 +96,35 @@ export default function PayablesTable({
     }
   };
 
+  // Filter payables based on search query
+  const filteredPayables = payables.filter((payable) => {
+    const searchValue = searchQuery.toLowerCase().trim();
+    
+    // Search in various formats for PO ID
+    const poId = payable.id.toLowerCase();
+    const fullRef = `po #${payable.id}`.toLowerCase();
+    const fullRefNoSpace = `po#${payable.id}`.toLowerCase();
+    
+    // Check if search matches PO reference, supplier, or payment type
+    return (
+      poId.includes(searchValue) ||
+      fullRef.includes(searchValue) ||
+      fullRefNoSpace.includes(searchValue) ||
+      payable.supplier.toLowerCase().includes(searchValue) ||
+      payable.paymentType.toLowerCase().includes(searchValue)
+    );
+  });
+
   return (
     <>
+      <div className="mb-4">
+        <Input
+          placeholder="Search by supplier, PO #, or payment type..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -111,14 +140,14 @@ export default function PayablesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {payables.length === 0 ? (
+          {filteredPayables.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-gray-500">
-                No pending payables
+              <TableCell colSpan={9} className="text-center text-gray-500">
+                {searchQuery ? "No payables match your search" : "No pending payables"}
               </TableCell>
             </TableRow>
           ) : (
-            payables.map((payable) => (
+            filteredPayables.map((payable) => (
               <TableRow key={payable.id}>
                 <TableCell>
                   <a

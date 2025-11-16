@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -24,8 +25,9 @@ import {
   ArrowLeft,
   FileText,
   Download,
+  Search,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type Product = {
   id: string;
@@ -85,10 +87,23 @@ type Order = {
 
 export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [updatingShipment, setUpdatingShipment] = useState(false);
   const [fulfillingDelivery, setFulfillingDelivery] = useState<string | null>(null);
   const [errorDialog, setErrorDialog] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Auto-open order if orderId is in URL
+  useEffect(() => {
+    const orderId = searchParams.get("orderId");
+    if (orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+      }
+    }
+  }, [searchParams, orders]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -216,6 +231,21 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       setUpdatingShipment(false);
     }
   };
+
+  // Filter orders based on search query
+  const filteredOrders = orders.filter((order) => {
+    const searchValue = searchQuery.toLowerCase().trim();
+    const orderId = order.id.toLowerCase();
+    const fullRef = `order #${order.id}`.toLowerCase();
+    const fullRefNoSpace = `order#${order.id}`.toLowerCase();
+    
+    return (
+      orderId.includes(searchValue) ||
+      fullRef.includes(searchValue) ||
+      fullRefNoSpace.includes(searchValue) ||
+      order.email.toLowerCase().includes(searchValue)
+    );
+  });
 
   if (selectedOrder) {
     const currentStep = getShipmentStatusStep(selectedOrder.shipmentStatus || "Processing Order");
@@ -636,19 +666,29 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
           <p className="text-white">View and update order shipment status</p>
         </div>
 
-      {orders.length === 0 ? (
+        {/* Search Filter */}
+        <div className="mb-4">
+          <Input
+            placeholder="Search by Order # or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-sm"
+          />
+        </div>
+
+      {filteredOrders.length === 0 ? (
         <Card className="text-center py-16">
           <CardContent>
             <Package className="h-16 w-16 mx-auto text-black mb-6" />
-            <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
+            <h3 className="text-xl font-semibold mb-2">{searchQuery ? "No orders found" : "No orders yet"}</h3>
             <p className="text-black max-w-sm mx-auto">
-              Customer orders will appear here
+              {searchQuery ? "Try a different search term" : "Customer orders will appear here"}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => (
+          {filteredOrders.map((order) => (
             <Card
               key={order.id}
               className="cursor-pointer hover:shadow-md border transition-shadow"

@@ -21,6 +21,9 @@ type Product = {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  stockOnHand: number;
+  stockAllocated: number;
+  isMilledRice: boolean;
   priceHistory?: {
     id: string;
     productId: string;
@@ -44,6 +47,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
     );
   }
+
+  // Calculate available stock in sacks (50kg = 1 sack)
+  const availableStockKg = product.stockOnHand - product.stockAllocated;
+  const availableStock = availableStockKg > 0 ? Math.round(availableStockKg / 50) : 0;
 
   return (
     <div className=" max-w-7xl">
@@ -80,11 +87,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-black">Type</span>
-                  <span className="font-medium">Digital Download</span>
+                  <span className="font-medium">{product.isMilledRice ? 'Milled Rice' : 'Unmilled Rice'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-black">Delivery</span>
-                  <span className="font-medium">Instant</span>
+                  <span className="text-black">Unit</span>
+                  <span className="font-medium">Per Sack (50kg)</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-black">Updated</span>
@@ -122,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   ₱{product.price.toFixed(2)}
                 </span>
                 <span className="text-sm text-white">
-                  Digital Download
+                  per sack
                 </span>
               </div>
             </div>
@@ -139,15 +146,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Purchase Section */}
           <div className="space-y-4 pt-4">
-            <AddToCartButton productId={product.id} />
+            <AddToCartButton productId={product.id} availableStock={availableStock} />
 
             <div className="flex items-center gap-4 text-sm text-white">
               <div className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                <span>Instant Download</span>
+                <span>
+                  {availableStock > 0 
+                    ? `${availableStock} sack${availableStock !== 1 ? 's' : ''} available` 
+                    : 'Out of Stock'}
+                </span>
               </div>
               <div className="h-4 w-px bg-border" />
-              <span>Digital Product</span>
+              <span>Rice Product</span>
             </div>
           </div>
           

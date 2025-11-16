@@ -108,18 +108,31 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
   // Calculate statistics
   const stats = useMemo(() => {
     const totalOrders = filteredOrders.length;
-    const grossSales = filteredOrders.reduce((sum, order) => sum + order.total, 0);
     
-    // For now, Net Sales = Gross Sales (no returns/discounts implemented yet)
-    const netSales = grossSales;
+    // Calculate gross sales and net sales based on category filter
+    let grossSales = 0;
+    let netSales = 0;
+    
+    filteredOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        // If category filter is active, only include items from that category
+        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+          const itemRevenue = item.quantity * item.price;
+          grossSales += itemRevenue;
+          // Net sales = Gross sales (no returns/discounts for customer orders)
+          netSales += itemRevenue;
+        }
+      });
+    });
     
     const averageOrderValue = totalOrders > 0 ? grossSales / totalOrders : 0;
 
-    // Order status breakdown
-    const completedOrders = filteredOrders.filter((o) => o.status === "Completed").length;
-    const fulfilledOrders = filteredOrders.filter((o) => o.status === "Fulfilled").length;
+    // Order status breakdown (lowercase status values)
+    const completedOrders = filteredOrders.filter((o) => o.status === "completed").length;
+    const processingOrders = filteredOrders.filter((o) => o.status === "processing").length;
+    const partialOrders = filteredOrders.filter((o) => o.status === "partial").length;
 
-    // Calculate growth (compare with previous period)
+    // Calculate growth (compare with previous period) - category aware
     const now = new Date();
     let previousPeriodStart: Date;
     let previousPeriodEnd: Date;
@@ -151,30 +164,42 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       return isWithinInterval(orderDate, { start: previousPeriodStart, end: previousPeriodEnd });
     });
 
-    const previousGrossSales = previousOrders.reduce((sum, order) => sum + order.total, 0);
+    // Calculate previous period sales with category filter
+    let previousGrossSales = 0;
+    previousOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+          previousGrossSales += item.quantity * item.price;
+        }
+      });
+    });
+    
     const growthRate = previousGrossSales > 0 
       ? ((grossSales - previousGrossSales) / previousGrossSales) * 100 
       : 0;
 
-    // Top products
+    // Top products - category aware
     const productSales = new Map<string, { name: string; category: string; quantity: number; revenue: number; isMilledRice: boolean }>();
     
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
-        const existing = productSales.get(item.product.id);
-        const revenue = item.quantity * item.price;
-        
-        if (existing) {
-          existing.quantity += item.quantity;
-          existing.revenue += revenue;
-        } else {
-          productSales.set(item.product.id, {
-            name: item.product.name,
-            category: item.product.category,
-            quantity: item.quantity,
-            revenue,
-            isMilledRice: item.product.isMilledRice,
-          });
+        // Apply category filter
+        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+          const existing = productSales.get(item.product.id);
+          const revenue = item.quantity * item.price;
+          
+          if (existing) {
+            existing.quantity += item.quantity;
+            existing.revenue += revenue;
+          } else {
+            productSales.set(item.product.id, {
+              name: item.product.name,
+              category: item.product.category,
+              quantity: item.quantity,
+              revenue,
+              isMilledRice: item.product.isMilledRice,
+            });
+          }
         }
       });
     });
@@ -183,31 +208,19 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10);
 
-    // Revenue by category
+    // Revenue by category - apply category filter
     const categoryRevenue = new Map<string, number>();
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
-        const category = item.product.category;
-        const revenue = item.quantity * item.price;
-        categoryRevenue.set(category, (categoryRevenue.get(category) || 0) + revenue);
-      });
-    });
-
-    // Revenue by rice type (milled vs unmilled)
-    let milledRevenue = 0;
-    let unmilledRevenue = 0;
-    filteredOrders.forEach((order) => {
-      order.items.forEach((item) => {
-        const revenue = item.quantity * item.price;
-        if (item.product.isMilledRice) {
-          milledRevenue += revenue;
-        } else {
-          unmilledRevenue += revenue;
+        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+          const category = item.product.category;
+          const revenue = item.quantity * item.price;
+          categoryRevenue.set(category, (categoryRevenue.get(category) || 0) + revenue);
         }
       });
     });
 
-    // Daily revenue trend (last 30 days for visualization)
+    // Daily revenue trend (last 30 days for visualization) - category aware
     const dailyRevenue: { date: string; revenue: number; orders: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const date = subDays(now, i);
@@ -217,9 +230,19 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         return format(orderDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
       });
       
+      // Calculate revenue for this day with category filter
+      let dayRevenue = 0;
+      dayOrders.forEach((order) => {
+        order.items.forEach((item) => {
+          if (categoryFilter === "all" || item.product.category === categoryFilter) {
+            dayRevenue += item.quantity * item.price;
+          }
+        });
+      });
+      
       dailyRevenue.push({
         date: dateStr,
-        revenue: dayOrders.reduce((sum, order) => sum + order.total, 0),
+        revenue: dayRevenue,
         orders: dayOrders.length,
       });
     }
@@ -230,15 +253,16 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       netSales,
       averageOrderValue,
       completedOrders,
-      fulfilledOrders,
+      processingOrders,
+      partialOrders,
       growthRate,
       topProducts,
-      categoryRevenue: Array.from(categoryRevenue.entries()).map(([category, revenue]) => ({ category, revenue })),
-      milledRevenue,
-      unmilledRevenue,
+      categoryRevenue: Array.from(categoryRevenue.entries())
+        .map(([category, revenue]) => ({ category, revenue }))
+        .sort((a, b) => b.revenue - a.revenue),
       dailyRevenue,
     };
-  }, [filteredOrders, orders, dateRange]);
+  }, [filteredOrders, orders, dateRange, categoryFilter]);
 
   // Export to CSV
   const handleExport = () => {
@@ -284,7 +308,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
 
       {/* Filters */}
       <Card className="w-fit h-20 ">
-        <CardContent className="flex items-center">
+        <CardContent className="flex items-center gap-4">
           <div className="flex gap-2 items-center">
             <Calendar className="w-4 h-4 text-black" />
             <div className="flex-1">
@@ -298,6 +322,25 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
                   <SelectItem value="month">This Month</SelectItem>
                   <SelectItem value="year">This Year</SelectItem>
                   <SelectItem value="all">All Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="flex gap-2 items-center">
+            <Package className="w-4 h-4 text-black" />
+            <div className="flex-1">
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -333,7 +376,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       title: "Net Sales",
       icon: <TrendingUp className="h-4 w-4 text-black" />,
       value: `₱${stats.netSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      footer: <div className="text-xs text-black mt-2">Same as gross (no returns/discounts)</div>,
+      footer: <div className="text-xs text-black mt-2">Gross Sales - Returns - Discounts</div>,
     },
     {
       title: "Total Orders",
@@ -341,7 +384,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       value: stats.totalOrders,
       footer: (
         <div className="text-xs text-black mt-2">
-          {stats.completedOrders} completed, {stats.fulfilledOrders} Fulfilled
+          {stats.completedOrders} completed, {stats.processingOrders} processing, {stats.partialOrders} partial
         </div>
       ),
     },
@@ -381,59 +424,102 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       <Card>
         <CardHeader className="mb-5">
           <CardTitle>Revenue Trend (Last 30 Days)</CardTitle>
+          <p className="text-sm text-muted-foreground">Daily sales performance overview</p>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart className="bg-white text-black border border-black" data={stats.dailyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip 
-                formatter={(value: number) => `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+          <ResponsiveContainer width="100%" height={500}>
+            <LineChart 
+              data={stats.dailyRevenue}
+              margin={{ top: 10, right: 30, left: 10, bottom: 65 }}
+            >
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis 
+                dataKey="date" 
+                stroke="#374151"
+                style={{ fontSize: '14px', fontWeight: '500' }}
+                angle={-45}
+                textAnchor="end"
+                height={100}
+                tick={{ fill: '#374151' }}
+                interval={0}
               />
-              <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#8884d8" name="Revenue (₱)" />
+              <YAxis 
+                stroke="#374151"
+                style={{ fontSize: '14px', fontWeight: '500' }}
+                tickFormatter={(value) => value >= 1000 ? `₱${(value / 1000).toFixed(0)}k` : `₱${value}`}
+                tick={{ fill: '#374151' }}
+                axisLine={false}
+                width={80}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#ffffff', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  padding: '12px'
+                }}
+                labelStyle={{ color: '#111827', fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}
+                itemStyle={{ color: '#3b82f6', fontWeight: '500', fontSize: '14px' }}
+                formatter={(value: number) => [`₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Revenue']}
+                labelFormatter={(label) => `${label}`}
+              />
+              <Legend 
+                wrapperStyle={{ paddingTop: '10px' }}
+                iconType="line"
+                formatter={(value) => <span style={{ color: '#374151', fontWeight: '500', fontSize: '15px' }}>{value}</span>}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="#3b82f6" 
+                strokeWidth={3}
+                name="Daily Revenue" 
+                dot={{ fill: '#3b82f6', strokeWidth: 2, r: 5, stroke: '#fff' }}
+                activeDot={{ r: 7, stroke: '#3b82f6', strokeWidth: 2, fill: '#fff' }}
+                fill="url(#colorRevenue)"
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Rice Type Revenue Breakdown */}
+      {/* Revenue by Category Breakdown */}
       <Card>
         <CardHeader className="mb-5">
-          <CardTitle>Revenue by Rice Type</CardTitle>
-          <p className="text-sm text-black">Milled vs Unmilled Rice Sales</p>
+          <CardTitle>Revenue by Category</CardTitle>
+          <p className="text-sm text-black">Sales breakdown by product category</p>
         </CardHeader>
-        <CardContent >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border bg-white rounded-lg p-4  ">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  Milled Rice
-                </h3>
-                <Badge variant="default">
-                  {((stats.milledRevenue / stats.grossSales) * 100).toFixed(1)}%
-                </Badge>
-              </div>
-              <p className="text-3xl font-bold">
-                ₱{stats.milledRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
+        <CardContent>
+          {stats.categoryRevenue.length === 0 ? (
+            <div className="text-center text-black py-8">
+              No sales data available for the selected filters
             </div>
-            
-            <div className="border bg-white rounded-lg p-4 ">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  Unmilled Rice
-                </h3>
-                <Badge variant="default">
-                  {((stats.unmilledRevenue / stats.grossSales) * 100).toFixed(1)}%
-                </Badge>
-              </div>
-              <p className="text-3xl font-bold">
-                ₱{stats.unmilledRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {stats.categoryRevenue.map(({ category, revenue }) => (
+                <div key={category} className="border bg-white rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-lg flex items-center gap-2">
+                      {category}
+                    </h3>
+                    <Badge variant="default">
+                      {stats.grossSales > 0 ? ((revenue / stats.grossSales) * 100).toFixed(1) : '0.0'}%
+                    </Badge>
+                  </div>
+                  <p className="text-3xl font-bold">
+                    ₱{revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -475,7 +561,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>{product.category}</TableCell>
-                    <TableCell className="text-right">{product.quantity} kg</TableCell>
+                    <TableCell className="text-right">{(product.quantity / 50).toFixed(2)} sacks</TableCell>
                     <TableCell className="text-right">
                       ₱{product.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </TableCell>

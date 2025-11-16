@@ -52,26 +52,59 @@ export function AssignInventoryDialog({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [inventoryItems, setInventoryItems] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     productId: "",
-    locationId: "",
+    sourceLocationId: "",
+    targetLocationId: "",
     quantity: "",
     notes: "",
+    isNewStock: true, // New stock vs moving existing stock
   });
 
   const selectedProduct = products.find((p) => p.id === formData.productId);
+
+  // Fetch inventory items when product is selected
+  useEffect(() => {
+    if (formData.productId) {
+      fetch(`/api/admin/inventory?productId=${formData.productId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setInventoryItems(data.items || []);
+          }
+        })
+        .catch(console.error);
+    } else {
+      setInventoryItems([]);
+    }
+  }, [formData.productId]);
+
+  const selectedSourceItem = inventoryItems.find(
+    (item) => item.locationId === formData.sourceLocationId
+  );
+  const availableQuantity = selectedSourceItem?.quantity || 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const payload = {
-        productId: formData.productId,
-        locationId: formData.locationId,
-        quantity: parseInt(formData.quantity),
-        notes: formData.notes || undefined,
-      };
+      const payload = formData.isNewStock
+        ? {
+            productId: formData.productId,
+            locationId: formData.targetLocationId,
+            quantity: parseInt(formData.quantity),
+            notes: formData.notes || undefined,
+          }
+        : {
+            productId: formData.productId,
+            sourceLocationId: formData.sourceLocationId,
+            targetLocationId: formData.targetLocationId,
+            quantity: parseInt(formData.quantity),
+            notes: formData.notes || undefined,
+            isTransfer: true,
+          };
 
       const response = await fetch("/api/admin/inventory", {
         method: "POST",
@@ -89,9 +122,11 @@ export function AssignInventoryDialog({
       setOpen(false);
       setFormData({
         productId: "",
-        locationId: "",
+        sourceLocationId: "",
+        targetLocationId: "",
         quantity: "",
         notes: "",
+        isNewStock: true,
       });
       router.refresh();
     } catch (error) {
@@ -117,7 +152,7 @@ export function AssignInventoryDialog({
           <DialogHeader>
             <DialogTitle>Assign Product to Location</DialogTitle>
             <DialogDescription>
-              Assign a product to a storage location with quantity.
+              Add new stock or move existing inventory between locations.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -127,7 +162,7 @@ export function AssignInventoryDialog({
               </Label>
               <Select
                 value={formData.productId}
-                onValueChange={(value) => setFormData({ ...formData, productId: value })}
+                onValueChange={(value) => setFormData({ ...formData, productId: value, sourceLocationId: "", targetLocationId: "" })}
                 required
               >
                 <SelectTrigger>
@@ -144,23 +179,77 @@ export function AssignInventoryDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="location">
-                Storage Location <span className="text-red-500">*</span>
+              <Label>Operation Type</Label>
+              <Select
+                value={formData.isNewStock ? "new" : "move"}
+                onValueChange={(value) => 
+                  setFormData({ 
+                    ...formData, 
+                    isNewStock: value === "new",
+                    sourceLocationId: "",
+                    targetLocationId: "",
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">Add New Stock</SelectItem>
+                  <SelectItem value="move">Move Existing Stock</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {!formData.isNewStock && (
+              <div className="grid gap-2">
+                <Label htmlFor="sourceLocation">
+                  From Location <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.sourceLocationId}
+                  onValueChange={(value) => setFormData({ ...formData, sourceLocationId: value })}
+                  required={!formData.isNewStock}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select source location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {inventoryItems.map((item) => (
+                      <SelectItem key={item.locationId} value={item.locationId}>
+                        {item.location.name} ({item.location.code}) - {item.quantity} units available
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedSourceItem && (
+                  <p className="text-sm text-muted-foreground">
+                    Available: {availableQuantity} units
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="targetLocation">
+                {formData.isNewStock ? "Storage Location" : "To Location"} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={formData.locationId}
-                onValueChange={(value) => setFormData({ ...formData, locationId: value })}
+                value={formData.targetLocationId}
+                onValueChange={(value) => setFormData({ ...formData, targetLocationId: value })}
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a location" />
+                  <SelectValue placeholder="Select target location" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location.id} value={location.id}>
-                      {location.name} ({location.code}) - {location.type}
-                    </SelectItem>
-                  ))}
+                  {locations
+                    .filter((loc) => loc.id !== formData.sourceLocationId)
+                    .map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name} ({location.code}) - {location.type}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -173,14 +262,15 @@ export function AssignInventoryDialog({
                 id="quantity"
                 type="number"
                 min="1"
+                max={!formData.isNewStock ? availableQuantity : undefined}
                 placeholder="e.g., 100"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 required
               />
-              {selectedProduct && (
+              {!formData.isNewStock && formData.sourceLocationId && (
                 <p className="text-sm text-muted-foreground">
-                  Available stock: {selectedProduct.stockOnHand} units
+                  Maximum: {availableQuantity} units
                 </p>
               )}
             </div>

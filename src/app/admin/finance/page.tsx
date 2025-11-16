@@ -65,7 +65,7 @@ export default function FinancePage() {
 
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
-        <DataTable columns={columns} data={transactions} />
+        <DataTable columns={columns} data={transactions} searchKey="purchaseOrderId" />
       </Card>
 
       <Card className="p-6 mt-6">

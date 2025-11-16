@@ -83,7 +83,7 @@ export default function AddToCartButton({
             <DialogDescription className="pt-2">
               {availableStock !== undefined && availableStock > 0 ? (
                 <>
-                  Only <span className="font-semibold text-yellow-600">{availableStock} units</span> are currently available in stock.
+                  Only <span className="font-semibold text-yellow-600">{availableStock} sack{availableStock !== 1 ? 's' : ''}</span> are currently available in stock.
                   Your order may experience delays as we restock this item.
                 </>
               ) : (

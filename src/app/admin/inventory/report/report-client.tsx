@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Package,
   DollarSign,
@@ -28,6 +29,7 @@ import {
   TrendingUp,
   Download,
   Filter,
+  Search,
 } from "lucide-react";
 
 type InventoryItem = {
@@ -96,6 +98,8 @@ export default function InventoryReportClient({
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [riceTypeFilter, setRiceTypeFilter] = useState<string>("all"); // New filter for milled/unmilled
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tableCategoryFilter, setTableCategoryFilter] = useState<string>("all");
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -152,8 +156,8 @@ export default function InventoryReportClient({
     return Array.from(stockMap.values());
   }, [inventoryItems]);
 
-  // Filter data
-  const filteredData = useMemo(() => {
+  // Filter data for page-level stats (using top filters only)
+  const baseFilteredData = useMemo(() => {
     return productStockData.filter((item) => {
       const matchesCategory = categoryFilter === "all" || item.product.category === categoryFilter;
       const matchesRiceType = riceTypeFilter === "all" || 
@@ -167,21 +171,36 @@ export default function InventoryReportClient({
             inv.locationId === locationFilter
           )
         );
+      
       return matchesCategory && matchesRiceType && matchesLocation;
     });
   }, [productStockData, categoryFilter, riceTypeFilter, locationFilter, inventoryItems]);
 
+  // Filter data for table only (using table-specific filters)
+  const tableFilteredData = useMemo(() => {
+    return baseFilteredData.filter((item) => {
+      const matchesTableCategory = tableCategoryFilter === "all" || item.product.category === tableCategoryFilter;
+      const searchValue = searchQuery.toLowerCase().trim();
+      const matchesSearch = searchValue === "" ||
+        item.product.name.toLowerCase().includes(searchValue) ||
+        item.product.category.toLowerCase().includes(searchValue) ||
+        item.locations.some(loc => loc.toLowerCase().includes(searchValue));
+      
+      return matchesTableCategory && matchesSearch;
+    });
+  }, [baseFilteredData, tableCategoryFilter, searchQuery]);
+
   // Calculate summary statistics
   const stats = useMemo(() => {
-    const totalProducts = filteredData.length;
-    const totalStockUnits = filteredData.reduce((sum, item) => sum + item.totalQuantity, 0);
-    const totalStockValue = filteredData.reduce((sum, item) => sum + item.stockValue, 0);
-    const lowStockCount = filteredData.filter((item) => item.status === "low" || item.status === "critical").length;
+    const totalProducts = baseFilteredData.length;
+    const totalStockUnits = baseFilteredData.reduce((sum, item) => sum + item.totalQuantity, 0);
+    const totalStockValue = baseFilteredData.reduce((sum, item) => sum + item.stockValue, 0);
+    const lowStockCount = baseFilteredData.filter((item) => item.status === "low" || item.status === "critical").length;
     const activeLocations = locations.filter((loc) => loc._count.inventoryItems > 0).length;
 
     // Milled vs Unmilled breakdown
-    const milledItems = filteredData.filter((item) => item.product.isMilledRice);
-    const unmilledItems = filteredData.filter((item) => !item.product.isMilledRice);
+    const milledItems = baseFilteredData.filter((item) => item.product.isMilledRice);
+    const unmilledItems = baseFilteredData.filter((item) => !item.product.isMilledRice);
 
     const riceTypeBreakdown = [
       {
@@ -200,7 +219,7 @@ export default function InventoryReportClient({
 
     // Category breakdown
     const categoryBreakdown = categories.map((category) => {
-      const categoryItems = filteredData.filter((item) => item.product.category === category);
+      const categoryItems = baseFilteredData.filter((item) => item.product.category === category);
       return {
         category,
         productCount: categoryItems.length,
@@ -218,12 +237,12 @@ export default function InventoryReportClient({
       riceTypeBreakdown,
       categoryBreakdown,
     };
-  }, [filteredData, categories, locations]);
+  }, [baseFilteredData, categories, locations]);
 
   // Export to CSV
   const handleExport = () => {
     const headers = ["Product Name", "Rice Type", "Category", "Total Quantity", "Unit Price", "Stock Value", "Status", "Locations"];
-    const rows = filteredData.map((item) => [
+    const rows = baseFilteredData.map((item) => [
       item.product.name,
       item.product.isMilledRice ? "Milled" : "Unmilled",
       item.product.category,
@@ -459,10 +478,34 @@ export default function InventoryReportClient({
 
       {/* Detailed Stock Table */}
       <Card>
-        <CardHeader className="mb-5">
+        <CardHeader>
           <CardTitle>Detailed Stock Levels</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="flex items-center gap-2 flex-wrap mb-4 mt-4">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
+              <Input
+                placeholder="Search products or locations..."
+                className="pl-8 w-[300px]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Select value={tableCategoryFilter} onValueChange={setTableCategoryFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -477,14 +520,14 @@ export default function InventoryReportClient({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.length === 0 ? (
+              {tableFilteredData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center text-muted-foreground">
                     No inventory items found
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredData.map((item) => (
+                tableFilteredData.map((item) => (
                   <TableRow key={item.product.id}>
                     <TableCell className="font-medium">{item.product.name}</TableCell>
                     <TableCell>

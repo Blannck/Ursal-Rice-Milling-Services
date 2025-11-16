@@ -65,24 +65,16 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Assign product to location (create or update inventory item)
+// POST - Assign product to location (create or update inventory item) or transfer between locations
 export async function POST(request: Request) {
   try {
     await assertAdmin();
 
     const body = await request.json();
-    const { productId, locationId, quantity, notes } = body;
-
-    // Validation
-    if (!productId || !locationId) {
-      return NextResponse.json(
-        { success: false, error: "Product ID and Location ID are required" },
-        { status: 400 }
-      );
-    }
+    const { productId, locationId, sourceLocationId, targetLocationId, quantity, notes, isTransfer } = body;
 
     const qty = parseInt(quantity);
-    if (isNaN(qty) || qty < 0) {
+    if (isNaN(qty) || qty <= 0) {
       return NextResponse.json(
         { success: false, error: "Valid quantity is required" },
         { status: 400 }
@@ -101,9 +93,117 @@ export async function POST(request: Request) {
       );
     }
 
+    // Handle inventory transfer between locations
+    if (isTransfer) {
+      if (!sourceLocationId || !targetLocationId) {
+        return NextResponse.json(
+          { success: false, error: "Source and target locations are required for transfer" },
+          { status: 400 }
+        );
+      }
+
+      return await prisma.$transaction(async (tx) => {
+        // Get source inventory
+        const sourceItem = await tx.inventoryItem.findUnique({
+          where: {
+            productId_locationId: {
+              productId,
+              locationId: sourceLocationId,
+            },
+          },
+          include: { location: true },
+        });
+
+        if (!sourceItem || sourceItem.quantity < qty) {
+          throw new Error(`Insufficient quantity at source location. Available: ${sourceItem?.quantity || 0}, Requested: ${qty}`);
+        }
+
+        // Decrease quantity at source location
+        if (sourceItem.quantity === qty) {
+          // Remove item if transferring all quantity
+          await tx.inventoryItem.delete({
+            where: { id: sourceItem.id },
+          });
+        } else {
+          // Decrease quantity
+          await tx.inventoryItem.update({
+            where: { id: sourceItem.id },
+            data: { quantity: sourceItem.quantity - qty },
+          });
+        }
+
+        // Record STOCK_OUT transaction from source
+        await tx.inventoryTransaction.create({
+          data: {
+            productId,
+            locationId: sourceLocationId,
+            kind: "STOCK_OUT",
+            quantity: qty,
+            note: notes || `Transferred ${qty} units to another location`,
+          },
+        });
+
+        // Increase quantity at target location (or create new item)
+        const targetItem = await tx.inventoryItem.findUnique({
+          where: {
+            productId_locationId: {
+              productId,
+              locationId: targetLocationId,
+            },
+          },
+          include: { location: true },
+        });
+
+        let updatedTargetItem;
+        if (targetItem) {
+          updatedTargetItem = await tx.inventoryItem.update({
+            where: { id: targetItem.id },
+            data: { quantity: targetItem.quantity + qty },
+            include: { product: true, location: true },
+          });
+        } else {
+          updatedTargetItem = await tx.inventoryItem.create({
+            data: {
+              productId,
+              locationId: targetLocationId,
+              quantity: qty,
+            },
+            include: { product: true, location: true },
+          });
+        }
+
+        // Record STOCK_IN transaction at target
+        await tx.inventoryTransaction.create({
+          data: {
+            productId,
+            locationId: targetLocationId,
+            kind: "STOCK_IN",
+            quantity: qty,
+            note: notes || `Transferred ${qty} units from ${sourceItem.location.name}`,
+          },
+        });
+
+        return NextResponse.json({
+          success: true,
+          inventoryItem: updatedTargetItem,
+          message: `Transferred ${qty} units from ${sourceItem.location.name} to ${updatedTargetItem.location.name}`,
+        });
+      });
+    }
+
+    // Handle new stock assignment (original behavior)
+    const targetLocation = locationId;
+    
+    if (!targetLocation) {
+      return NextResponse.json(
+        { success: false, error: "Location ID is required" },
+        { status: 400 }
+      );
+    }
+
     // Check if location exists
     const location = await prisma.storageLocation.findUnique({
-      where: { id: locationId },
+      where: { id: targetLocation },
     });
 
     if (!location) {
@@ -118,7 +218,7 @@ export async function POST(request: Request) {
       where: {
         productId_locationId: {
           productId,
-          locationId,
+          locationId: targetLocation,
         },
       },
     });
@@ -144,7 +244,7 @@ export async function POST(request: Request) {
       await prisma.inventoryTransaction.create({
         data: {
           productId,
-          locationId,
+          locationId: targetLocation,
           kind: "STOCK_IN",
           quantity: qty,
           note: notes || `Added ${qty} units to existing inventory`,
@@ -155,7 +255,7 @@ export async function POST(request: Request) {
       inventoryItem = await prisma.inventoryItem.create({
         data: {
           productId,
-          locationId,
+          locationId: targetLocation,
           quantity: qty,
         },
         include: {
@@ -168,7 +268,7 @@ export async function POST(request: Request) {
       await prisma.inventoryTransaction.create({
         data: {
           productId,
-          locationId,
+          locationId: targetLocation,
           kind: "STOCK_IN",
           quantity: qty,
           note: notes || `Initial stock assignment: ${qty} units`,

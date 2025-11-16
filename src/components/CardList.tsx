@@ -93,9 +93,9 @@ export default function CardList({ products }: CardListProps) {
   const getStockStatus = (stockOnHand: number, stockAllocated: number, isMilledRice: boolean) => {
     const availableStockKg = stockOnHand - stockAllocated;
     
-    // For milled rice, convert kg to sacks (50kg per sack)
-    const availableStock = isMilledRice ? Math.floor(availableStockKg / 50) : availableStockKg;
-    const unit = isMilledRice ? 'sack' : 'kg';
+    // Always show stock in sacks (50kg per sack), prevent negative values
+    const availableStock = availableStockKg > 0 ? Math.round(availableStockKg / 50) : 0;
+    const unit = 'sack';
     const plural = availableStock !== 1 ? 's' : '';
     
     if (availableStock <= 0) {
@@ -314,8 +314,8 @@ export default function CardList({ products }: CardListProps) {
                       >
                         {(() => {
                           const availableStockKg = product.stockOnHand - product.stockAllocated;
-                          // For milled rice, show stock in sacks (50kg per sack)
-                          const availableStock = product.isMilledRice ? Math.floor(availableStockKg / 50) : availableStockKg;
+                          // Always show stock in sacks (50kg per sack), prevent negative values
+                          const availableStock = availableStockKg > 0 ? Math.round(availableStockKg / 50) : 0;
                           return (
                             <AddToCartButton 
                               productId={product.id}
