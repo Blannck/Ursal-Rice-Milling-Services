@@ -237,15 +237,15 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
 
         {/* Order Details Card */}
         <Card>
-          <CardHeader className="border-b">
-            <div className="flex items-center justify-between">
+          <CardHeader className="border-b ">
+            <div className="flex items-center mb-5 justify-between">
               <div className="space-y-2">
                 <CardTitle className="text-2xl flex items-center gap-2">
                   <Package className="h-6 w-6" />
                   Order #{selectedOrder.id.slice(-8).toUpperCase()}
                 </CardTitle>
                 <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-black">
                     <Calendar className="h-4 w-4" />
                     {formatDate(selectedOrder.createdAt)}
                   </div>
@@ -262,7 +262,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
               </div>
               <div className="text-right">
                 <div className="text-3xl font-bold">₱{selectedOrder.total.toFixed(2)}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-black">
                   {selectedOrder.items.length} item{selectedOrder.items.length !== 1 ? "s" : ""}
                 </div>
               </div>
@@ -273,14 +273,14 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
             {/* Customer Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b">
               <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
                   <User className="h-4 w-4" />
                   Customer ID
                 </p>
                 <p className="font-medium">{selectedOrder.userId.slice(0, 16)}...</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
                   <Mail className="h-4 w-4" />
                   Email
                 </p>
@@ -300,7 +300,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                     const deliveryShipmentStep = getShipmentStatusStep(delivery.shipmentStatus);
                     
                     return (
-                      <Card key={delivery.id} className={delivery.status === 'fulfilled' ? 'bg-green-50/50' : ''}>
+                      <Card key={delivery.id} className={delivery.status === 'fulfilled' ? 'bg-green-50/50' : 'bg-white'}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
@@ -323,10 +323,10 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                                 </Badge>
                               </h4>
                               {delivery.note && (
-                                <p className="text-sm text-muted-foreground mt-1">{delivery.note}</p>
+                                <p className="text-sm text-black mt-1">{delivery.note}</p>
                               )}
                               {delivery.fulfilledAt && (
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-xs text-black mt-1">
                                   Fulfilled: {formatDate(new Date(delivery.fulfilledAt))}
                                 </p>
                               )}
@@ -337,7 +337,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                           <div className="space-y-2 mb-3">
                             {delivery.items.map((item) => (
                               <div key={item.id} className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">
+                                <span className="text-black">
                                   {item.orderItem.product.name}
                                 </span>
                                 <span className="font-medium">
@@ -349,8 +349,8 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
 
                           {/* Shipment Status Timeline for this delivery */}
                           {delivery.status === 'pending' && (
-                            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                              <p className="text-xs font-medium text-muted-foreground mb-2">Delivery Shipment Status</p>
+                            <div className="mb-4 p-3 bg-transparent border rounded-lg">
+                              <p className="text-xs font-medium text-black mb-2">Delivery Shipment Status</p>
                               <div className="flex items-center justify-between relative mb-4">
                                 {/* Progress Line */}
                                 <div className="absolute top-3 left-0 right-0 h-0.5 bg-gray-200 -z-10">
@@ -501,7 +501,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                       <div className="flex gap-4">
                         <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border">
                           <img
-                            src={product.imageUrl || "/placeholder-product.jpg"}
+                            src={"/sack.png"}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
@@ -510,7 +510,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-lg mb-1">{product.name}</h4>
                           {product.description && (
-                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                            <p className="text-sm text-black mb-2 line-clamp-2">
                               {product.description}
                             </p>
                           )}
@@ -518,21 +518,21 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                             <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
                               {product.category}
                             </span>
-                            <span className="text-muted-foreground">
-                              Ordered: <span className="font-medium text-foreground">{quantity} {product.isMilledRice ? 'sacks' : 'units'}</span>
+                            <span className="text-black">
+                              Ordered: <span className="font-medium text-black">{quantity} {product.isMilledRice ? 'sacks' : 'units'}</span>
                             </span>
-                            <span className={`font-medium ${fulfilled > 0 ? 'text-green-600' : 'text-muted-foreground'}`}>
+                            <span className={`font-medium ${fulfilled > 0 ? 'text-green-600' : 'text-black'}`}>
                               Fulfilled: {fulfilled}
                             </span>
-                            <span className={`font-medium ${pending > 0 ? 'text-orange-600' : 'text-muted-foreground'}`}>
+                            <span className={`font-medium ${pending > 0 ? 'text-orange-600' : 'text-black'}`}>
                               Pending: {pending}
                             </span>
-                            <span className="text-muted-foreground">
-                              Price: <span className="font-semibold text-foreground">₱{price.toFixed(2)}</span>
+                            <span className="text-black">
+                              Price: <span className="font-semibold text-black">₱{price.toFixed(2)}</span>
                             </span>
                             {quantity > 1 && (
-                              <span className="text-muted-foreground">
-                                Subtotal: <span className="font-semibold text-foreground">₱{subtotal.toFixed(2)}</span>
+                              <span className="text-black">
+                                Subtotal: <span className="font-semibold text-black">₱{subtotal.toFixed(2)}</span>
                               </span>
                             )}
                           </div>
@@ -541,10 +541,10 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                           {quantity > 0 && (
                             <div className="mt-3">
                               <div className="flex justify-between text-xs mb-1">
-                                <span className="text-muted-foreground">Fulfillment Progress</span>
+                                <span className="text-black">Fulfillment Progress</span>
                                 <span className="font-medium">{fulfillmentPercent.toFixed(0)}%</span>
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="w-full bg-white border rounded-full h-2">
                                 <div 
                                   className={`h-2 rounded-full transition-all ${ 
                                     fulfillmentPercent === 100 ? 'bg-green-600' : 
@@ -633,15 +633,15 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       <div className="space-y-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Manage Orders</h1>
-          <p className="text-muted-foreground">View and update order shipment status</p>
+          <p className="text-white">View and update order shipment status</p>
         </div>
 
       {orders.length === 0 ? (
         <Card className="text-center py-16">
           <CardContent>
-            <Package className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+            <Package className="h-16 w-16 mx-auto text-black mb-6" />
             <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
-            <p className="text-muted-foreground max-w-sm mx-auto">
+            <p className="text-black max-w-sm mx-auto">
               Customer orders will appear here
             </p>
           </CardContent>
@@ -651,14 +651,14 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
           {orders.map((order) => (
             <Card
               key={order.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
+              className="cursor-pointer hover:shadow-md border transition-shadow"
               onClick={() => setSelectedOrder(order)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2 flex-1">
                     <div className="flex items-center gap-3">
-                      <Package className="h-5 w-5 text-muted-foreground" />
+                      <Package className="h-5 w-5 text-black" />
                       <span className="font-semibold text-lg">
                         Order #{order.id.slice(-8).toUpperCase()}
                       </span>
@@ -673,7 +673,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                         {order.shipmentStatus || "Processing Order"}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-6 text-sm text-black">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-4 w-4" />
                         {formatDate(order.createdAt)}
