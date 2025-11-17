@@ -559,7 +559,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                               )}
                               <Button
                                 onClick={() => handleFulfillDelivery(selectedOrder.id, delivery.id)}
-                                disabled={fulfillingDelivery === delivery.id || delivery.shipmentStatus !== 'Delivered' || delivery.status === 'fulfilled'}
+                                disabled={fulfillingDelivery === delivery.id || delivery.shipmentStatus !== 'Delivered'}
                                 size="sm"
                                 className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                               >
