@@ -43,6 +43,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const supplier = purchaseOrder.supplier;
     const product = backorder.purchaseOrderItem.product;
 
+    if (!product) {
+      return NextResponse.json({ ok: false, error: "Product not found" }, { status: 404 });
+    }
+
     // Update backorder status
     const rec = await prisma.backorder.update({
       where: { id: params.id },
