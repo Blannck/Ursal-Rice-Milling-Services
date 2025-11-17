@@ -3,16 +3,15 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Setting up unmilled rice products...\n');
+  console.log('Setting up unmilled rice categories...\n');
 
-  // Option 1: Create new unmilled rice products
-  console.log('Creating example unmilled rice products...');
+  // Option 1: Create new unmilled rice categories
+  console.log('Creating example unmilled rice categories...');
   
-  const unmilledProducts = [
+  const unmilledCategories = [
     {
       name: 'Unmilled Rice - Premium',
       description: 'Premium quality unmilled rice',
-      category: 'Premium',
       price: 40, // Price per kg
       isMilledRice: false,
       millingYieldRate: 66.67, // 75 kg unmilled = 50 kg milled (50/75 * 100)
@@ -21,7 +20,6 @@ async function main() {
     {
       name: 'Unmilled Rice - Ordinary',
       description: 'Standard quality unmilled rice',
-      category: 'Ordinary',
       price: 35, // Price per kg
       isMilledRice: false,
       millingYieldRate: 66.67,
@@ -29,41 +27,41 @@ async function main() {
     },
   ];
 
-  for (const product of unmilledProducts) {
-    const existing = await prisma.product.findFirst({
-      where: { name: product.name },
+  for (const category of unmilledCategories) {
+    const existing = await prisma.category.findFirst({
+      where: { name: category.name },
     });
 
     if (existing) {
-      console.log(`✓ Product "${product.name}" already exists`);
+      console.log(`✓ Category "${category.name}" already exists`);
     } else {
-      const created = await prisma.product.create({
-        data: product,
+      const created = await prisma.category.create({
+        data: category,
       });
-      console.log(`✓ Created unmilled rice product: ${created.name}`);
+      console.log(`✓ Created unmilled rice category: ${created.name}`);
     }
   }
 
-  // Show all products after setup
-  console.log('\n=== ALL PRODUCTS ===');
-  const allProducts = await prisma.product.findMany({
+  // Show all categories after setup
+  console.log('\n=== ALL CATEGORIES ===');
+  const allCategories = await prisma.category.findMany({
     where: { isHidden: false },
     select: {
       name: true,
-      category: true,
+      description: true,
       isMilledRice: true,
       price: true,
     },
     orderBy: { name: 'asc' },
   });
 
-  allProducts.forEach((p) => {
-    console.log(`- ${p.name} (${p.category}) - ${p.isMilledRice ? 'MILLED' : 'UNMILLED'} - ₱${p.price}/kg`);
+  allCategories.forEach((p) => {
+    console.log(`- ${p.name} (${p.description || 'N/A'}) - ${p.isMilledRice ? 'MILLED' : 'UNMILLED'} - ₱${p.price}/kg`);
   });
 
   console.log('\n✅ Setup complete!');
   console.log('\nNext steps:');
-  console.log('1. Add inventory for the unmilled rice products using "Assign Inventory" in the admin panel');
+  console.log('1. Add inventory for the unmilled rice categories using "Assign Inventory" in the admin panel');
   console.log('2. Once unmilled rice inventory is added, you can use the "Mill Rice" operation');
 }
 
