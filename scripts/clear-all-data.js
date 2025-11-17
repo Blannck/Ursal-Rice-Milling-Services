@@ -21,9 +21,17 @@ async function clearAllData() {
     let totalDeleted = 0;
     
     for (const collectionName of collectionNames) {
-      // Skip AppUser collection to preserve admin
+      // For AppUser, only delete non-admin users
       if (collectionName === 'AppUser') {
-        console.log(`⊘ Skipped ${collectionName} (preserved)`);
+        try {
+          const result = await db.collection(collectionName).deleteMany({
+            email: { $ne: 'adminpower@gmail.com' }
+          });
+          console.log(`✓ Deleted ${result.deletedCount} non-admin users from ${collectionName}`);
+          totalDeleted += result.deletedCount;
+        } catch (err) {
+          console.log(`⚠ Error deleting from ${collectionName}: ${err.message}`);
+        }
         continue;
       }
       
@@ -37,7 +45,7 @@ async function clearAllData() {
     }
     
     console.log(`\n✓ Data deletion completed! Total: ${totalDeleted} documents deleted`);
-    console.log('✓ AppUser collection preserved (admin user retained)');
+    console.log('✓ Admin user (adminpower@gmail.com) preserved in AppUser');
     
   } catch (error) {
     console.error('Operation failed:', error);

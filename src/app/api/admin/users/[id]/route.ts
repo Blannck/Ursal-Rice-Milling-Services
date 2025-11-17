@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/admin";
 import { stackServerApp } from "@/lib/stack";
 
+export const dynamic = 'force-dynamic';
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
 try {
