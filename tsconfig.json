@@ -16,15 +16,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "paths": {
       "@/*": [
         "./src/*"
       ]
-    }
-    /* Do NOT hardcode a "types": [...] array here.
-       Next injects types via next-env.d.ts */,
+    },
     "esModuleInterop": true,
     "plugins": [
       {
