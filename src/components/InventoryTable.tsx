@@ -138,7 +138,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold ">Manage Products</h1>
-              <p className=" mt-1">Manage your product categories</p>
+              <p className=" mt-1">Manage and edit your products</p>
             </div>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
                 <div className="relative  bg-white flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
                   <Input
-                    placeholder="Search categories..."
+                    placeholder="Search products..."
                     className="pl-10  focus:border-blue-500 focus:ring-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
