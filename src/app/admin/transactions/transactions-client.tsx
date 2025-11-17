@@ -225,7 +225,7 @@ export default function TransactionsClient({
       new Date(t.createdAt).toLocaleString(),
       t.kind,
       t.category?.name || "Unknown",
-      t.category?.category || "-",
+      "-",
       t.quantity,
       t.location?.name || "-",
       t.unitPrice || 0,
@@ -501,7 +501,7 @@ export default function TransactionsClient({
                                 {transaction.category?.name || "Unknown Category"}
                               </p>
                               <p className="text-xs text-black">
-                                {transaction.category?.category || "-"}
+                                ID: {transaction.category?.id || "-"}
                               </p>
                             </div>
                           </TableCell>
