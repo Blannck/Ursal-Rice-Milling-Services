@@ -26,7 +26,6 @@ interface InvoiceViewProps {
       price: number;
       category: {
         name: string;
-        category: string;
       };
     }>;
   };
