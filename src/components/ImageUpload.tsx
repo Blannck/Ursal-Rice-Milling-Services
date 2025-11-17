@@ -49,10 +49,6 @@ export default function ImageUpload({ endpoint, onChange, value }: ImageUploadPr
           if (res && res[0]?.url) {
             console.log("Image uploaded successfully, calling onChange with URL:", res[0].url);
             onChange(res[0].url);
-          } else if (res && res[0]?.fileUrl) {
-            // Fallback for older versions
-            console.log("Image uploaded successfully (fileUrl), calling onChange:", res[0].fileUrl);
-            onChange(res[0].fileUrl);
           } else {
             // If it's not there, log everything so you can inspect
             console.error("UploadThing response did not include URL:", res);
