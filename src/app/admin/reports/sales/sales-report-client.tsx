@@ -424,13 +424,14 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       <Card>
         <CardHeader className="mb-5">
           <CardTitle>Revenue Trend (Last 30 Days)</CardTitle>
-          <p className="text-sm text-muted-foreground">Daily sales performance overview</p>
+          <p className="text-sm text-black">Daily sales performance overview</p>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={500}>
             <LineChart 
               data={stats.dailyRevenue}
-              margin={{ top: 10, right: 30, left: 10, bottom: 65 }}
+              margin={{ top: 30, right: 30, left: 10, bottom: 20 }}
+              className="bg-white border"
             >
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">

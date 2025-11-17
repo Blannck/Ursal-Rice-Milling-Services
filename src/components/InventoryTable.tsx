@@ -126,7 +126,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
   const handleProductClick = (product: any) => {
     const slugifiedName = product.name.toLowerCase().replace(/\s+/g, "-");
     const slug = `${product.id}--${slugifiedName}`;
-    const productUrl = `/products/${slug}`;
+    const productUrl = `/admin/products/${slug}`;
     router.push(productUrl);
   };
 

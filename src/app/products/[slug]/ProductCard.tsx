@@ -220,7 +220,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                       quantity={quantity}
                       availableStock={availableStock}
                     />
-                    <div className="flex items-center gap-2 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 text-sm text-white  ">
                       <AlertCircle className="h-4 w-4" />
                       <span>Hurry! Only {availableStock} {unit} left in stock</span>
                     </div>
@@ -241,8 +241,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           
         </div>
-       
+        
     </div>
+    <Link  href="/products">
+                      <Button className="mt-5" variant="outline" size="lg">
+                        Back
+                      </Button>
+                    </Link>
     </div>
   );
 }

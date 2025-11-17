@@ -922,13 +922,13 @@ const handleSubmitReturn = async () => {
                 <div>
                   <label className="text-sm text-black">Created</label>
                   <p className="text-sm text-black">
-                    {new Date(purchaseOrder.createdAt).toLocaleString()}
+                    {formatDate(purchaseOrder.createdAt).toLocaleString()}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm text-black">Last Updated</label>
-                  <p className="text-sm text-gray-600">
-                    {new Date(purchaseOrder.updatedAt).toLocaleString()}
+                  <p className="text-sm text-black">
+                    {formatDate(purchaseOrder.updatedAt).toLocaleString()}
                   </p>
                 </div>
               </CardContent>

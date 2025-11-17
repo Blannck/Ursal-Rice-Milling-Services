@@ -213,9 +213,9 @@ export function MillingOperationDialog({ products, locations, inventoryItems }: 
           </div>
 
           {parseInt(formData.quantity) > 0 && (
-            <div className="rounded-lg bg-secondary p-3">
+            <div className="rounded-lg bg-white border p-3">
               <p className="text-sm font-medium">Milling Summary</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-black">
                 Input: {inputQty} kg unmilled rice<br />
                 Output: {expectedSacks} sack{expectedSacks !== 1 ? 's' : ''} ({expectedOutput} kg milled rice)<br />
                 <span className="text-xs">Conversion: 75 kg unmilled = 1 sack (50 kg) milled</span>
