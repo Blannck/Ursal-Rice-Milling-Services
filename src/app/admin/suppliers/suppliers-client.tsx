@@ -174,7 +174,10 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
         body: JSON.stringify(payload),
       });
       const j = await res.json();
-      if (!res.ok || !j.ok) return alert(j.error || "Create failed");
+      if (!res.ok || !j.ok) {
+        toast.error(j.error || "Create failed");
+        return;
+      }
       
       toast.success("Supplier created successfully!", {
         duration: 3000,
@@ -189,7 +192,10 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
         body: JSON.stringify(payload),
       });
       const j = await res.json();
-      if (!res.ok || !j.ok) return alert(j.error || "Update failed");
+      if (!res.ok || !j.ok) {
+        toast.error(j.error || "Update failed");
+        return;
+      }
       
       // Show success message
       if (selectedCategories.length > 0) {
@@ -223,9 +229,10 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
     });
     const j = await res.json();
     if (!res.ok || !j.ok) {
-      alert(j.error || "Failed to toggle status");
+      toast.error(j.error || "Failed to toggle status");
       return;
     }
+    toast.success("Supplier status updated successfully");
     router.refresh();
   }
 

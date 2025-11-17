@@ -30,6 +30,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { showToast } from "@/lib/toast";
 
 type Category = {
   id: string;
@@ -197,7 +198,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       const data = await response.json();
 
       if (response.ok) {
-        alert(`Delivery fulfilled successfully! Order status: ${data.orderStatus}`);
+        showToast.success(`Delivery fulfilled successfully! Order status: ${data.orderStatus}`);
         // Update the selected order's deliveries and statuses
         if (selectedOrder?.id === orderId) {
           const updatedDeliveries = selectedOrder.deliveries.map(d => 

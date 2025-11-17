@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Power, Ban, Eye, MoreHorizontal } from "lucide-react";
+import { showToast } from "@/lib/toast";
 import {
   Table,
   TableBody,
@@ -79,9 +80,10 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
     const res = await fetch(`/api/admin/users/deactivate/${id}`, { method: "POST" });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      alert(`Failed to toggle deactivate${j?.error ? ": " + j.error : ""}`);
+      showToast.error(`Failed to toggle deactivate${j?.error ? ": " + j.error : ""}`);
       return;
     }
+    showToast.success("User status updated successfully");
     location.reload();
   }
 
@@ -90,9 +92,10 @@ export default function ClientUserTable({ users }: { users: UserRow[] }) {
     const res = await fetch(`/api/admin/users/block/${id}`, { method: "POST" });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      alert(`Failed to toggle block${j?.error ? ": " + j.error : ""}`);
+      showToast.error(`Failed to toggle block${j?.error ? ": " + j.error : ""}`);
       return;
     }
+    showToast.success("User block status updated successfully");
     location.reload();
   }
 

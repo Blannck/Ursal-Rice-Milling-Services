@@ -235,7 +235,7 @@ export default function CardList({ categories }: CardListProps) {
                           className={`absolute top-3 right-3 ${stockStatus.color} font-medium flex items-center gap-1`}
                         >
                           <Package className="h-3 w-3" />
-                          {stockStatus.available}
+                          {stockStatus.available > 0 ? stockStatus.available : 'Out of Stock'}
                         </Badge>
                       );
                     })()}

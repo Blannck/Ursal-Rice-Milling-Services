@@ -66,7 +66,7 @@ export default function PayPalCheckout({ total, selectedCartItemIds }: PayPalChe
         throw new Error(errorText || "Payment processing failed");
       }
 
-      alert("Payment processed successfully!");
+      toast.success("Payment processed successfully!");
     } catch (error) {
       console.error("Payment failed:", error);
       setPaypalError("Payment failed. Please try again.");

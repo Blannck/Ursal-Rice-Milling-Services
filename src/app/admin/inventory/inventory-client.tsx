@@ -154,7 +154,7 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
       router.refresh();
     } catch (error) {
       console.error("Error deleting location:", error);
-      alert("Failed to delete location");
+      toast.error("Failed to delete location");
     } finally {
       setDeletingLocation(null);
     }

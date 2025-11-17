@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
 import {
   Table,
   TableBody,
@@ -110,13 +111,14 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
       const result = await toggleCategoryVisibility(categoryId);
 
       if (result.success) {
+        showToast.success("Category visibility updated successfully");
         router.refresh();
       } else {
-        alert(result.error || "Failed to update category visibility");
+        showToast.error(result.error || "Failed to update category visibility");
       }
     } catch (error) {
       console.error("Error toggling visibility:", error);
-      alert("An error occurred while updating category visibility");
+      showToast.error("An error occurred while updating category visibility");
     } finally {
       setLoadingStates((prev) => ({ ...prev, [categoryId]: false }));
     }

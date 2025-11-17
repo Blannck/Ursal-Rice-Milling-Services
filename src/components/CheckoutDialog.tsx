@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { showToast } from "@/lib/toast";
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -73,7 +74,7 @@ export default function CheckoutDialog({
 
   const handleNext = () => {
     if (!customerName.trim() || !customerPhone.trim() || !deliveryAddress.trim()) {
-      alert("Please fill in all required fields");
+      showToast.warning("Please fill in all required fields");
       return;
     }
 

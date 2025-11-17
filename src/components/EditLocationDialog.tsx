@@ -95,7 +95,7 @@ export function EditLocationDialog({
       const data = await response.json();
 
       if (!data.success) {
-        alert(data.error || "Failed to update storage location");
+        showToast.error(data.error || "Failed to update storage location");
         return;
       }
 
@@ -103,7 +103,7 @@ export function EditLocationDialog({
       router.refresh();
     } catch (error) {
       console.error("Error updating location:", error);
-      alert("Failed to update storage location");
+      showToast.error("Failed to update storage location");
     } finally {
       setLoading(false);
     }

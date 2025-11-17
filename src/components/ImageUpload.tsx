@@ -3,6 +3,7 @@ import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { UploadDropzone } from "@uploadthing/react";
 import { XIcon } from "lucide-react";
 import React from "react";
+import { showToast } from "@/lib/toast";
 
 interface ImageUploadProps {
   onChange: (url: string) => void;
@@ -49,15 +50,16 @@ export default function ImageUpload({ endpoint, onChange, value }: ImageUploadPr
           if (res && res[0]?.url) {
             console.log("Image uploaded successfully, calling onChange with URL:", res[0].url);
             onChange(res[0].url);
+            showToast.success("Image uploaded successfully");
           } else {
             // If it's not there, log everything so you can inspect
             console.error("UploadThing response did not include URL:", res);
-            alert("Upload completed but no URL was returned. Check console for details.");
+            showToast.error("Upload completed but no URL was returned. Check console for details.");
           }
         }}
         onUploadError={(error: Error) => {
           console.error("UploadThing error:", error);
-          alert(`Upload error: ${error.message}`);
+          showToast.error(`Upload error: ${error.message}`);
         }}
       />
     </div>

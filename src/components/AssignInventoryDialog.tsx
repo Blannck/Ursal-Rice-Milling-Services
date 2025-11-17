@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
 import {
   Dialog,
   DialogContent,
@@ -105,10 +106,11 @@ export function AssignInventoryDialog({
       const data = await response.json();
 
       if (!data.success) {
-        alert(data.error || "Failed to assign inventory");
+        showToast.error(data.error || "Failed to assign inventory");
         return;
       }
 
+      showToast.success("Inventory moved successfully");
       setOpen(false);
       setFormData({
         categoryId: "",
@@ -120,7 +122,7 @@ export function AssignInventoryDialog({
       router.refresh();
     } catch (error) {
       console.error("Error assigning inventory:", error);
-      alert("Failed to assign inventory");
+      showToast.error("Failed to assign inventory");
     } finally {
       setLoading(false);
     }

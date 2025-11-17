@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { showToast } from "@/lib/toast";
 import {
   Card,
   CardContent,
@@ -124,7 +125,7 @@ const remindBackorder = async (backorderId: string) => {
     const data = await res.json().catch(() => null);
     if (!res.ok || !data?.ok) {
       console.error("Failed to remind supplier:", data);
-      alert(data?.error || "Failed to remind supplier");
+      showToast.error(data?.error || "Failed to remind supplier");
       return;
     }
 
@@ -142,14 +143,14 @@ const remindBackorder = async (backorderId: string) => {
         : "⚠️ SMS not sent (check configuration or phone number)";
     }
     
-    alert(message);
+    showToast.success(message);
 
     // ✅ Refetch backorders to get updated status from server
     // This allows the remind button to be used again after refresh
     await fetchBackorders();
   } catch (e) {
     console.error("Failed to remind supplier", e);
-    alert("Something went wrong");
+    showToast.error("Something went wrong");
   } finally {
     setReminding((p) => ({ ...p, [backorderId]: false }));
   }
@@ -241,7 +242,7 @@ useEffect(() => {
 
 const handleUploadAttachment = async () => {
   if (!fileToUpload) {
-    alert("Choose an image first");
+    showToast.warning("Choose an image first");
     return;
   }
   try {
@@ -259,16 +260,17 @@ const handleUploadAttachment = async () => {
     const data = await res.json();
     if (!res.ok || !data?.ok) {
       console.error("Upload failed:", data);
-      alert(data?.error || "Failed to upload attachment");
+      showToast.error(data?.error || "Failed to upload attachment");
       return;
     }
 
+    showToast.success("Attachment uploaded successfully");
     setFileToUpload(null);
     setAttNote("");
     await fetchAttachments();
   } catch (e) {
     console.error(e);
-    alert("Something went wrong while uploading");
+    showToast.error("Something went wrong while uploading");
   } finally {
     setUploading(false);
   }
@@ -323,10 +325,14 @@ const handleUploadAttachment = async () => {
   }
 
 const handleReceive = async (itemId: string, qty: number) => {
-  if (!qty || qty <= 0) return alert("Enter a valid quantity");
+  if (!qty || qty <= 0) {
+    showToast.warning("Enter a valid quantity");
+    return;
+  }
   
   if (!selectedLocationId) {
-    return alert("Please select a warehouse location first");
+    showToast.warning("Please select a warehouse location first");
+    return;
   }
 
   try {
@@ -349,9 +355,11 @@ const handleReceive = async (itemId: string, qty: number) => {
 
     if (!res.ok || !data?.ok) {
       console.error("Receive failed:", data);
-      alert(data?.error || "Failed to receive items.");
+      showToast.error(data?.error || "Failed to receive items.");
       return;
     }
+
+    showToast.success("Items received successfully");
 
     // ✅ Instantly update received quantity
     setPurchaseOrder((prev) => {
@@ -368,11 +376,9 @@ const handleReceive = async (itemId: string, qty: number) => {
     if (data.data.backorders) {
       setBackorders(data.data.backorders);
     }
-
-    alert("Items received.");
   } catch (err) {
     console.error("Error receiving item:", err);
-    alert("Something went wrong while receiving.");
+    showToast.error("Something went wrong while receiving.");
   }
 };
 
@@ -388,7 +394,7 @@ const handleSubmitReturn = async () => {
 
   const hasQty = items.some(i => i.quantity > 0);
   if (!hasQty) {
-    alert("Set at least one return quantity");
+    showToast.warning("Set at least one return quantity");
     return;
   }
 
@@ -405,17 +411,17 @@ const handleSubmitReturn = async () => {
     const data = await res.json();
     if (!res.ok || !data?.ok) {
       console.error("Return failed:", data);
-      alert(data?.error || "Failed to create purchase return");
+      showToast.error(data?.error || "Failed to create purchase return");
       return;
     }
 
+    showToast.success("Return submitted successfully");
     setReturnReason("");
     setReturnQty({});
     await fetchPurchaseOrder();
-    alert("Return submitted");
   } catch (e) {
     console.error(e);
-    alert("Something went wrong while submitting the return");
+    showToast.error("Something went wrong while submitting the return");
   }
 };
 

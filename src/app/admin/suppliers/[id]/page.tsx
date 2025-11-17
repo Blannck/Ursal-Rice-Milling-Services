@@ -67,7 +67,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
 
       {/* recent items */}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Recent Categories</h2>
+        <h2 className="text-xl font-semibold">Recent Products</h2>
         <div className="overflow-hidden rounded-xl border-transparent bg-white text-black">
           <table className="w-full text-sm">
             <thead className="bg-custom-green text-white">
@@ -88,7 +88,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
               {!items.length && (
                 <tr>
                   <td className="px-3 py-8 text-center text-black" colSpan={3}>
-                    No categories yet for this supplier
+                    No products yet for this supplier
                   </td>
                 </tr>
               )}

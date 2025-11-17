@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { showToast } from "@/lib/toast";
 import {
   Select,
   SelectContent,
@@ -103,11 +104,11 @@ export default function CreatePurchaseOrderPage() {
         console.log("Active suppliers loaded:", activeSuppliers.length); // Debug log
       } else {
         console.error("Suppliers API response:", suppliersData);
-        alert(suppliersData.error || "Failed to fetch suppliers");
+        showToast.error(suppliersData.error || "Failed to fetch suppliers");
       }
     } catch (error) {
       console.error("Error fetching suppliers:", error);
-      alert("Failed to fetch suppliers");
+      showToast.error("Failed to fetch suppliers");
     } finally {
       setLoading(false);
     }
@@ -207,7 +208,7 @@ export default function CreatePurchaseOrderPage() {
     e.preventDefault();
     
     if (!selectedSupplierId || orderItems.length === 0) {
-      alert("Please select a supplier and add at least one item");
+      showToast.warning("Please select a supplier and add at least one item");
       return;
     }
     
@@ -245,13 +246,14 @@ export default function CreatePurchaseOrderPage() {
       
      const data = await response.json();
 if (data?.ok || data?.success) {
+  showToast.success("Purchase order created successfully");
   router.push("/admin/purchase-orders?justCreated=1");
 } else {
-  alert(data.error || "Failed to create purchase order");
+  showToast.error(data.error || "Failed to create purchase order");
 }
     } catch (error) {
       console.error("Error creating purchase order:", error);
-      alert("Failed to create purchase order");
+      showToast.error("Failed to create purchase order");
     } finally {
       setSubmitting(false);
     }

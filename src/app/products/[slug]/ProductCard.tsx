@@ -63,7 +63,7 @@ export default function ProductCard({ category }: ProductCardProps) {
   return (
     <div className=" max-w-7xl">
       <div className="flex bg-black/50 pt-5 pl-5 rounded-t-lg justify-start">
-       <Link href="/products">
+       <Link href="/admin/products">
         <Button className="mb-5" variant="outline" size="lg">
           Back
         </Button>

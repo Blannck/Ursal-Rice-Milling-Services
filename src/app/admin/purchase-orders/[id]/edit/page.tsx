@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { showToast } from "@/lib/toast";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "@/components/ui/card";
@@ -221,7 +222,7 @@ export default function PurchaseOrderEditPage() {
   async function onSave() {
     if (!order) return;
     if (items.length === 0) {
-      alert("Add at least one item");
+      showToast.warning("Add at least one item");
       return;
     }
 
@@ -246,11 +247,12 @@ export default function PurchaseOrderEditPage() {
         throw new Error(err?.error || "Failed to update purchase order");
       }
 
+      showToast.success("Purchase order updated successfully");
       // go back to detail page
       router.push(`/admin/purchase-orders/${order.id}`);
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Failed to save");
+      showToast.error(err.message || "Failed to save");
     } finally {
       setSaving(false);
     }

@@ -64,7 +64,7 @@ export function CreateLocationDialog({ locations = [] }: CreateLocationDialogPro
       const data = await response.json();
 
       if (!data.success) {
-        alert(data.error || "Failed to create storage location");
+        showToast.error(data.error || "Failed to create storage location");
         return;
       }
 
@@ -80,7 +80,7 @@ export function CreateLocationDialog({ locations = [] }: CreateLocationDialogPro
       router.refresh();
     } catch (error) {
       console.error("Error creating location:", error);
-      alert("Failed to create storage location");
+      showToast.error("Failed to create storage location");
     } finally {
       setLoading(false);
     }
