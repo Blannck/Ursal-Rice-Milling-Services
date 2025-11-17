@@ -36,7 +36,7 @@ async function repairPurchaseReturns() {
         locationId: null,
       },
       include: {
-        product: true,
+        category: true,
       },
       orderBy: {
         createdAt: 'asc',
@@ -57,7 +57,7 @@ async function repairPurchaseReturns() {
     // Step 2: Process each broken transaction
     for (const transaction of brokenTransactions) {
       console.log(`\n🔄 Processing transaction ${transaction.id}`);
-      console.log(`   Product: ${transaction.product?.name || 'Unknown'}`);
+      console.log(`   Category: ${transaction.category?.name || 'Unknown'}`);
       console.log(`   Quantity: ${transaction.quantity}`);
 
       try {
@@ -65,10 +65,10 @@ async function repairPurchaseReturns() {
           let remainingToDeduct = transaction.quantity;
           const locationsUpdated: Array<{ locationName: string; deducted: number }> = [];
 
-          // Get inventory items for this product (LIFO: newest first)
+          // Get inventory items for this category (LIFO: newest first)
           const inventoryItems = await tx.inventoryItem.findMany({
             where: {
-              productId: transaction.productId,
+              categoryId: transaction.categoryId,
               quantity: { gt: 0 },
             },
             include: { location: true },
@@ -76,7 +76,7 @@ async function repairPurchaseReturns() {
           });
 
           if (inventoryItems.length === 0) {
-            console.log(`   ⚠️  WARNING: No inventory available for ${transaction.product?.name}`);
+            console.log(`   ⚠️  WARNING: No inventory available for ${transaction.category?.name}`);
             console.log(`   Skipping this transaction (may need manual adjustment)`);
             totalFailed++;
             return;
@@ -85,7 +85,7 @@ async function repairPurchaseReturns() {
           // Check if we have enough total stock
           const totalAvailable = inventoryItems.reduce((sum, inv) => sum + inv.quantity, 0);
           if (totalAvailable < remainingToDeduct) {
-            console.log(`   ⚠️  WARNING: Insufficient stock for ${transaction.product?.name}`);
+            console.log(`   ⚠️  WARNING: Insufficient stock for ${transaction.category?.name}`);
             console.log(`   Available: ${totalAvailable}, Needed: ${remainingToDeduct}`);
             console.log(`   Skipping this transaction (may need manual adjustment)`);
             totalFailed++;
@@ -137,7 +137,7 @@ async function repairPurchaseReturns() {
               
               await tx.inventoryTransaction.create({
                 data: {
-                  productId: transaction.productId,
+                  categoryId: transaction.categoryId,
                   locationId: invItem.locationId,
                   kind: 'RETURN_OUT',
                   quantity: loc.deducted,
@@ -153,7 +153,7 @@ async function repairPurchaseReturns() {
 
           results.push({
             transactionId: transaction.id,
-            productName: transaction.product?.name || 'Unknown',
+            productName: transaction.category?.name || 'Unknown',
             quantity: transaction.quantity,
             locationsUpdated,
           });
