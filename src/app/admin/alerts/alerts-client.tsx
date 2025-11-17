@@ -312,7 +312,7 @@ export default function AlertsClient({
         All Stock Levels Healthy!
       </h3>
       <p className="text-black">
-        No categories are currently below their reorder points.
+        No products are currently below their reorder points.
       </p>
     </CardContent>
   </Card>

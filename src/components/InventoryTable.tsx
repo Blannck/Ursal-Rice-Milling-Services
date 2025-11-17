@@ -461,7 +461,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
               <div className=" rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <Package className="h-10 w-10 text-black" />
               </div>
-              <h3 className="text-xl font-semibold  mb-2">No categories found</h3>
+              <h3 className="text-xl font-semibold  mb-2">No products found</h3>
               <p className="text-gray-500 mb-6">
                 Try adjusting your search or filter criteria.
               </p>

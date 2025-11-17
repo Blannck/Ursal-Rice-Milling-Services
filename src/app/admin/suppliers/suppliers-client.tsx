@@ -423,7 +423,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                     </div>
                   ) : filteredCategories.length === 0 ? (
                     <div className="p-4 text-center text-sm text-black">
-                      {categorySearch ? "No categories found" : "No categories available"}
+                      {categorySearch ? "No products found" : "No products available"}
                     </div>
                   ) : (
                     filteredCategories.map((category) => {
