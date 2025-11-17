@@ -26,13 +26,13 @@ import {
   HandshakeIcon,
   Grid,
 } from "lucide-react";
-import { getProducts } from "@/actions/product.aciton";
+import { getCategories } from "@/actions/product.aciton";
 import CardList from "./CardList";
 import Link from "next/link";
 import { link } from "fs";
 
-// Mock data matching your product schema
-const mockProducts = [
+// Mock data matching your category schema
+const mockCategories = [
   {
     id: "clx1a2b3c4d5e6f7g8h9i0j1",
     name: "React E-commerce Starter Kit",
@@ -119,7 +119,7 @@ const mockProducts = [
   },
 ];
 
-const productCategories = [
+const categoryCategories = [
   {
     value: "code",
     label: "Code Projects",
@@ -153,12 +153,12 @@ const productCategories = [
 ];
 
 export  default async function HomePage() {
-  const productsResult = await getProducts();
-  const products = productsResult?.userProducts?.slice(0, 3) ?? [];
+  const categoriesResult = await getCategories();
+  const categories = categoriesResult?.userCategories?.slice(0, 3) ?? [];
   
 
-  const featuredProducts = mockProducts.slice(0, 3);
-  const popularProducts = mockProducts.slice(3, 6);
+  const featuredCategories = mockCategories.slice(0, 3);
+  const popularCategories = mockCategories.slice(3, 6);
 
   return (
     <div className="min-h-screen">
@@ -183,7 +183,7 @@ export  default async function HomePage() {
 
    
     <div className="flex flex-col sm:flex-row justify-start  mb-20 gap-4">
-      <Link href="/products">
+      <Link href="/categories">
         <Button
           variant="default"
           size="lg"
@@ -249,7 +249,7 @@ export  default async function HomePage() {
               </div>
               <h3 className="text-4xl font-semibold text-custom-green mb-4">Premium Quality</h3>
               <p className="text-black text-lg">
-                We ensure the highest quality standards for all our rice products
+                We ensure the highest quality standards for all our rice categories
               </p>
             </div>
 
@@ -304,7 +304,7 @@ export  default async function HomePage() {
               Each grain is polished to a smooth, premium finish — ensuring perfect taste, texture, 
               and appearance every time.
             </p>
-           <Link className="" href="/products">
+           <Link className="" href="/categories">
         <Button
           variant="default"
           size="lg"
@@ -331,7 +331,7 @@ export  default async function HomePage() {
               Using modern equipment, we ensure efficient cleaning, husking, whitening, and grading — delivering 
               high-quality, market-ready rice with maximum yield and minimal waste.
             </p>
-           <Link href="/products">
+           <Link href="/categories">
         <Button
           variant="default"
           size="lg"
@@ -360,7 +360,7 @@ export  default async function HomePage() {
 
     
 
-      {/* Featured Products Section */}
+      {/* Featured Categories Section */}
       <section className="py-20 bg-custom-brown shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
@@ -381,18 +381,18 @@ export  default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8">
-            {products.map((product) => (
+            {categories.map((category) => (
 
-              <Link href={`/products/${product.id}`}>  <Card
-                key={product.id}
+              <Link href={`/products/${category.id}`}>  <Card
+                key={category.id}
                 className="group cursor-pointer  border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform   overflow-hidden"
               >
                 <CardContent className="p-0">
-                  {/* Product Image */}
+                  {/* Category Image */}
                   <div className="relative w-full h-full overflow-hidden">
                     <img
                       src={"/sack.png"}
-                      alt={product.name}
+                      alt={category.name}
                       className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -403,7 +403,7 @@ export  default async function HomePage() {
                                             variant="secondary"
                                             className="absolute top-5 left-4  border-0 font-semibold"
                                           >
-                                            {product.category}
+                                            {category.name}
                                           </Badge>
                       
                     {/* Featured Badge */}
@@ -413,16 +413,16 @@ export  default async function HomePage() {
                     </div>
                   </div>
 
-                  {/* Product Info */}
+                  {/* Category Info */}
                   <div className="p-6 group-hover:text-custom-orange transition-colors duration-300">
                     <h3 className="font-bold text-xl  mb-3  transition-colors line-clamp-2">
-                      {product.name}
+                      {category.name}
                     </h3>
-                    <p className=" mb-4 line-clamp-2">{product.description}</p>
+                    <p className=" mb-4 line-clamp-2">{category.description}</p>
 
                     <div className="flex items-center justify-between">
                       <div className="text-3xl font-bold ">
-                        ₱{product.price.toLocaleString()}
+                        ₱{category.price.toLocaleString()}
                       </div>
                       <Button className="bg-custom-orange hover:bg-custom-orange/90  px-6 py-2 rounded-xl font-semibold">
                         <ShoppingCart className="h-4 w-4 mr-2" />
@@ -440,7 +440,7 @@ export  default async function HomePage() {
           <div className="text-center mt-12 md:hidden">
             <Link href="/products">
               <Button variant="outline" size="lg">
-                View All Products
+                View All Categories
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -456,13 +456,13 @@ export  default async function HomePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mx-auto rounded-2xl  p-8 md:p-12 text-center  border border-transparent">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Ready to Experience Our Premium Rice Products?
+          Ready to Experience Our Premium Rice Categories?
         </h2>
         <p className="text-lg md:text-xl text-white/90 mb-6 max-w-3xl mx-auto">
-          Join our growing family of satisfied customers and discover the difference of quality rice products.
+          Join our growing family of satisfied customers and discover the difference of quality rice categories.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/products">
+          <Link href="/categories">
             <Button size="lg" variant="default">
               Shop Now
               <ShoppingCart className="ml-2 h-5 w-5" />

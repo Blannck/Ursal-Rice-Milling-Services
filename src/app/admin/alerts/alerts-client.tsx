@@ -51,10 +51,9 @@ type Supplier = {
   phone: string | null;
 };
 
-type Product = {
+type Category = {
   id: string;
   name: string;
-  category: string;
   stockOnHand: number;
   stockOnOrder: number;
   stockAllocated: number;
@@ -67,10 +66,10 @@ type Product = {
 };
 
 export default function AlertsClient({
-  products,
+  categories,
   suppliers,
 }: {
-  products: Product[];
+  categories: Category[];
   suppliers: Supplier[];
 }) {
   const router = useRouter();
@@ -79,86 +78,80 @@ export default function AlertsClient({
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [supplierFilter, setSupplierFilter] = useState<string>("ALL");
 
-  // Calculate severity for each product
-  const getAlertSeverity = (product: Product) => {
-    const currentStock = product.actualStock ?? product.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Calculate severity for each category
+  const getAlertSeverity = (category: Category) => {
+    const currentStock = category.actualStock ?? category.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
     
     if (currentStock === 0) {
       return "CRITICAL"; // Out of stock
     }
-    const percentOfReorder = (currentStock / product.reorderPoint) * 100;
+    const percentOfReorder = (currentStock / category.reorderPoint) * 100;
     if (percentOfReorder <= 50) {
       return "HIGH"; // Less than 50% of reorder point
     }
     return "MEDIUM"; // At or slightly below reorder point
   };
 
-  // Get products with severity
-  const productsWithSeverity = useMemo(() => {
-    return products.map((product) => {
-      const currentStock = product.actualStock ?? product.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Get categories with severity
+  const categoriesWithSeverity = useMemo(() => {
+    return categories.map((category) => {
+      const currentStock = category.actualStock ?? category.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
       
       return {
-        ...product,
+        ...category,
         actualStock: currentStock,
-        severity: getAlertSeverity(product),
+        severity: getAlertSeverity(category),
         suggestedReorderQty: Math.max(
-          product.reorderPoint * 2 - currentStock - product.stockOnOrder,
-          product.reorderPoint
+          category.reorderPoint * 2 - currentStock - category.stockOnOrder,
+          category.reorderPoint
         ),
       };
     });
-  }, [products]);
+  }, [categories]);
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const totalAlerts = productsWithSeverity.length;
-    const critical = productsWithSeverity.filter((p) => p.severity === "CRITICAL").length;
-    const high = productsWithSeverity.filter((p) => p.severity === "HIGH").length;
-    const medium = productsWithSeverity.filter((p) => p.severity === "MEDIUM").length;
-    const totalValueAtRisk = productsWithSeverity.reduce(
+    const totalAlerts = categoriesWithSeverity.length;
+    const critical = categoriesWithSeverity.filter((p) => p.severity === "CRITICAL").length;
+    const high = categoriesWithSeverity.filter((p) => p.severity === "HIGH").length;
+    const medium = categoriesWithSeverity.filter((p) => p.severity === "MEDIUM").length;
+    const totalValueAtRisk = categoriesWithSeverity.reduce(
       (sum, p) => sum + p.price * (p.actualStock || 0),
       0
     );
 
     return { totalAlerts, critical, high, medium, totalValueAtRisk };
-  }, [productsWithSeverity]);
+  }, [categoriesWithSeverity]);
 
-  // Get unique categories
-  const categories = useMemo(() => {
-    const cats = new Set(products.map((p) => p.category));
-    return Array.from(cats).sort();
-  }, [products]);
+  // Get unique category names (removed since categories don't have a category field anymore)
+  const categoryNames = useMemo(() => {
+    return Array.from(new Set(categories.map((p) => p.name))).sort();
+  }, [categories]);
 
-  // Filter products
-  const filteredProducts = useMemo(() => {
-    return productsWithSeverity.filter((product) => {
+  // Filter categories
+  const filteredCategories = useMemo(() => {
+    return categoriesWithSeverity.filter((category) => {
       // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
-        if (!product.name.toLowerCase().includes(searchLower)) {
+        if (!category.name.toLowerCase().includes(searchLower)) {
           return false;
         }
       }
 
       // Severity filter
-      if (severityFilter !== "ALL" && product.severity !== severityFilter) {
-        return false;
-      }
-
-      // Category filter
-      if (categoryFilter !== "ALL" && product.category !== categoryFilter) {
+      if (severityFilter !== "ALL" && category.severity !== severityFilter) {
         return false;
       }
 
       // Supplier filter
-      if (supplierFilter !== "ALL" && product.supplierId !== supplierFilter) {
+      if (supplierFilter !== "ALL" && category.supplierId !== supplierFilter) {
         return false;
       }
 
       return true;
     });
-  }, [productsWithSeverity, searchTerm, severityFilter, categoryFilter, supplierFilter]);
+  }, [categoriesWithSeverity, searchTerm, severityFilter, categoryFilter, supplierFilter]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -201,9 +194,9 @@ export default function AlertsClient({
     }
   };
 
-  const handleCreatePO = (product: Product) => {
-    // Navigate to create PO page with pre-filled product
-    router.push(`/admin/purchase-orders/create?productId=${product.id}`);
+  const handleCreatePO = (category: Category) => {
+    // Navigate to create PO page with pre-filled category
+    router.push(`/admin/purchase-orders/create?categoryId=${category.id}`);
   };
 
   const clearFilters = () => {
@@ -239,7 +232,7 @@ export default function AlertsClient({
     <CardContent className="p-0">
       <div className="text-2xl font-bold text-left">{stats.totalAlerts}</div>
       <p className="text-xs text-black mt-1 text-left">
-        Products below reorder point
+        Categories below reorder point
       </p>
     </CardContent>
   </Card>
@@ -319,7 +312,7 @@ export default function AlertsClient({
         All Stock Levels Healthy!
       </h3>
       <p className="text-black">
-        No products are currently below their reorder points.
+        No categories are currently below their reorder points.
       </p>
     </CardContent>
   </Card>
@@ -341,7 +334,7 @@ export default function AlertsClient({
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search products..."
+                    placeholder="Search categories..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-9"
@@ -368,7 +361,7 @@ export default function AlertsClient({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ALL">All Categories</SelectItem>
-                    {categories.filter(cat => cat && cat.trim()).map((category) => (
+                    {categoryNames.filter(cat => cat && cat.trim()).map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -394,7 +387,7 @@ export default function AlertsClient({
 
               <div className="flex items-center justify-between mt-4">
                 <p className="text-sm text-black">
-                  Showing {filteredProducts.length} of {stats.totalAlerts} alerts
+                  Showing {filteredCategories.length} of {stats.totalAlerts} alerts
                 </p>
                 <Button onClick={clearFilters} variant="ghost" size="sm">
                   Clear Filters
@@ -406,10 +399,10 @@ export default function AlertsClient({
           {/* Alerts Table */}
           <Card>
             <CardHeader className="mb-5 ">
-              <CardTitle>Low Stock Products</CardTitle>
+              <CardTitle>Low Stock Categories</CardTitle>
             </CardHeader>
             <CardContent>
-              {filteredProducts.length === 0 ? (
+              {filteredCategories.length === 0 ? (
                 <div className="text-center py-12 text-black">
                   <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">No alerts match your filters</p>
@@ -422,7 +415,7 @@ export default function AlertsClient({
                       <TableHeader className="sticky top-0 bg-custom-green">
                         <TableRow>
                           <TableHead className=" text-white">Severity</TableHead>
-                          <TableHead className=" text-white">Product</TableHead>
+                          <TableHead className=" text-white">Category</TableHead>
                           <TableHead className=" text-white text-center">Current Stock</TableHead>
                           <TableHead className="text-white text-center">Reorder Point</TableHead>
                           <TableHead className="text-white text-center">On Order</TableHead>
@@ -432,44 +425,41 @@ export default function AlertsClient({
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredProducts.map((product) => (
-                          <TableRow key={product.id}>
+                        {filteredCategories.map((category) => (
+                          <TableRow key={category.id}>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                {getSeverityIcon(product.severity)}
-                                <Badge className={getSeverityColor(product.severity)}>
-                                  {product.severity}
+                                {getSeverityIcon(category.severity)}
+                                <Badge className={getSeverityColor(category.severity)}>
+                                  {category.severity}
                                 </Badge>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium">{product.name}</p>
-                                <p className="text-xs text-black">
-                                  {product.category}
-                                </p>
+                                <p className="font-medium">{category.name}</p>
                               </div>
                             </TableCell>
                             <TableCell className="text-center">
                               <span
                                 className={`font-semibold ${
-                                  (product.actualStock || 0) === 0
+                                  (category.actualStock || 0) === 0
                                     ? "text-red-600"
-                                    : (product.actualStock || 0) <= product.reorderPoint * 0.5
+                                    : (category.actualStock || 0) <= category.reorderPoint * 0.5
                                     ? "text-orange-600"
                                     : "text-yellow-600"
                                 }`}
                               >
-                                {product.actualStock || 0}
+                                {category.actualStock || 0}
                               </span>
                             </TableCell>
                             <TableCell className="text-center">
-                              <span className="font-medium">{product.reorderPoint}</span>
+                              <span className="font-medium">{category.reorderPoint}</span>
                             </TableCell>
                             <TableCell className="text-center">
-                              {product.stockOnOrder > 0 ? (
+                              {category.stockOnOrder > 0 ? (
                                 <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                                  {product.stockOnOrder}
+                                  {category.stockOnOrder}
                                 </Badge>
                               ) : (
                                 <span className="text-black">-</span>
@@ -477,11 +467,11 @@ export default function AlertsClient({
                             </TableCell>
                             <TableCell className="text-center">
                               <span className="font-semibold text-black">
-                                {product.suggestedReorderQty}
+                                {category.suggestedReorderQty}
                               </span>
                             </TableCell>
                             <TableCell>
-                              <div className="flex flex-col gap-1">{product.inventoryItems.slice(0, 2).map((item) => (
+                              <div className="flex flex-col gap-1">{category.inventoryItems.slice(0, 2).map((item) => (
                                   <div key={item.id} className="flex items-center gap-1 text-xs">
                                     <Badge className={`${getLocationColor(item.location.type)} text-xs`}>
                                       {item.location.type}
@@ -490,9 +480,9 @@ export default function AlertsClient({
                                     <span className="text-black">({item.quantity})</span>
                                   </div>
                                 ))}
-                                {product.inventoryItems.length > 2 && (
+                                {category.inventoryItems.length > 2 && (
                                   <span className="text-xs text-black">
-                                    +{product.inventoryItems.length - 2} more
+                                    +{category.inventoryItems.length - 2} more
                                   </span>
                                 )}
                               </div>
@@ -500,8 +490,8 @@ export default function AlertsClient({
                             <TableCell>
                               <Button
                                 size="sm"
-                                onClick={() => handleCreatePO(product)}
-                                disabled={!product.supplier}
+                                onClick={() => handleCreatePO(category)}
+                                disabled={!category.supplier}
                                 className="gap-1"
                               >
                                 <ShoppingCart className="h-3 w-3" />

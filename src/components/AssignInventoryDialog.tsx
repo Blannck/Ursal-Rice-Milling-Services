@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Package } from "lucide-react";
 
-interface Product {
+interface Category {
   id: string;
   name: string;
   category: string;
@@ -39,13 +39,13 @@ interface Location {
 }
 
 interface AssignInventoryDialogProps {
-  products: Product[];
+  categories: Category[];
   locations: Location[];
   trigger?: React.ReactNode;
 }
 
 export function AssignInventoryDialog({
-  products,
+  categories,
   locations,
   trigger,
 }: AssignInventoryDialogProps) {
@@ -54,18 +54,18 @@ export function AssignInventoryDialog({
   const [loading, setLoading] = useState(false);
   const [inventoryItems, setInventoryItems] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    productId: "",
+    categoryId: "",
     sourceLocationId: "",
     targetLocationId: "",
     quantity: "",
     notes: "",
   });
 
-  const selectedProduct = products.find((p) => p.id === formData.productId);
+  const selectedProduct = categories.find((p) => p.id === formData.categoryId);
 
   useEffect(() => {
-    if (formData.productId) {
-      fetch(`/api/admin/inventory?productId=${formData.productId}`)
+    if (formData.categoryId) {
+      fetch(`/api/admin/inventory?categoryId=${formData.categoryId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
@@ -76,7 +76,7 @@ export function AssignInventoryDialog({
     } else {
       setInventoryItems([]);
     }
-  }, [formData.productId]);
+  }, [formData.categoryId]);
 
   const selectedSourceItem = inventoryItems.find(
     (item) => item.locationId === formData.sourceLocationId
@@ -89,7 +89,7 @@ export function AssignInventoryDialog({
 
     try {
       const payload = {
-        productId: formData.productId,
+        categoryId: formData.categoryId,
         sourceLocationId: formData.sourceLocationId,
         targetLocationId: formData.targetLocationId,
         quantity: parseInt(formData.quantity),
@@ -112,7 +112,7 @@ export function AssignInventoryDialog({
 
       setOpen(false);
       setFormData({
-        productId: "",
+        categoryId: "",
         sourceLocationId: "",
         targetLocationId: "",
         quantity: "",
@@ -148,16 +148,16 @@ export function AssignInventoryDialog({
 
           <div className="grid gap-4 py-4">
 
-            {/* Product Select */}
+            {/* Category Select */}
             <div className="grid gap-2">
-              <Label htmlFor="product">
-                Product <span className="text-red-500">*</span>
+              <Label htmlFor="category">
+                Rice Category <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={formData.productId}
+                value={formData.categoryId}
                 onValueChange={(value) =>
                   setFormData({
-                    productId: value,
+                    categoryId: value,
                     sourceLocationId: "",
                     targetLocationId: "",
                     quantity: "",
@@ -167,12 +167,12 @@ export function AssignInventoryDialog({
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a product" />
+                  <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name} - {product.category} (Stock: {product.stockOnHand})
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name} (Stock: {category.stockOnHand})
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -7,49 +7,47 @@ type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' |
 export async function POST(req: Request) {
   try {
     const {
-      sourceProductId,
+      sourceCategoryId,
       sourceLocationId,
       targetLocationId,
       quantity,
     } = await req.json();
 
     // Validate inputs
-    if (!sourceProductId || !sourceLocationId || !targetLocationId || !quantity) {
+    if (!sourceCategoryId || !sourceLocationId || !targetLocationId || !quantity) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Get source product
-    const sourceProduct = await prisma.product.findUnique({ where: { id: sourceProductId } });
+    // Get source category
+    const sourceCategory = await prisma.category.findUnique({ where: { id: sourceCategoryId } });
 
-    if (!sourceProduct) {
-      return NextResponse.json({ error: "Source product not found" }, { status: 404 });
+    if (!sourceCategory) {
+      return NextResponse.json({ error: "Source category not found" }, { status: 404 });
     }
 
-    if (sourceProduct.isMilledRice) {
-      return NextResponse.json({ error: "Source product must be unmilled rice" }, { status: 400 });
+    if (sourceCategory.isMilledRice) {
+      return NextResponse.json({ error: "Source category must be unmilled rice" }, { status: 400 });
     }
 
-    // Create milled version of the product if it doesn't exist
-    let milledProduct = await prisma.product.findFirst({
+    // Create milled version of the category if it doesn't exist
+    let milledProduct = await prisma.category.findFirst({
       where: {
         isMilledRice: true,
-        name: `Milled ${sourceProduct.name}`
+        name: sourceCategory.name
       }
     });
 
     if (!milledProduct) {
-      milledProduct = await prisma.product.create({
+      milledProduct = await prisma.category.create({
         data: {
-          name: `Milled ${sourceProduct.name}`,
+          name: sourceCategory.name,
           isMilledRice: true,
-          description: `Milled version of ${sourceProduct.name}`,
-          price: sourceProduct.price,
+          price: sourceCategory.price,
           stockOnHand: 0,
-          userId: sourceProduct.userId, 
-          category: sourceProduct.category, 
+          userId: sourceCategory.userId,
           // Optional but useful fields to copy
-          supplierId: sourceProduct.supplierId,
-          reorderPoint: sourceProduct.reorderPoint
+          supplierId: sourceCategory.supplierId,
+          reorderPoint: sourceCategory.reorderPoint
         }
       });
     }
@@ -57,8 +55,8 @@ export async function POST(req: Request) {
     // Check if source has enough quantity
     const sourceInventory = await prisma.inventoryItem.findUnique({
       where: {
-        productId_locationId: {
-          productId: sourceProductId,
+        categoryId_locationId: {
+          categoryId: sourceCategoryId,
           locationId: sourceLocationId,
         },
       },
@@ -82,8 +80,8 @@ export async function POST(req: Request) {
       // 1. Reduce unmilled rice quantity (stock-out)
       await tx.inventoryItem.update({
         where: {
-          productId_locationId: {
-            productId: sourceProductId,
+          categoryId_locationId: {
+            categoryId: sourceCategoryId,
             locationId: sourceLocationId,
           },
         },
@@ -95,24 +93,24 @@ export async function POST(req: Request) {
       // Record stock-out transaction
       await tx.inventoryTransaction.create({
         data: {
-          productId: sourceProductId,
+          categoryId: sourceCategoryId,
           locationId: sourceLocationId,
           kind: "MILLING_OUT",
           quantity: -quantity,
-          note: `Stock out for milling - Output product: ${milledProduct.name}`,
+          note: `Stock out for milling - Output category: ${milledProduct.name}`,
         },
       });
 
       // 2. Increase milled rice quantity (stock-in)
       await tx.inventoryItem.upsert({
         where: {
-          productId_locationId: {
-            productId: milledProduct.id,
+          categoryId_locationId: {
+            categoryId: milledProduct.id,
             locationId: targetLocationId,
           },
         },
         create: {
-          productId: milledProduct.id,
+          categoryId: milledProduct.id,
           locationId: targetLocationId,
           quantity: milledQuantity,
         },
@@ -124,21 +122,21 @@ export async function POST(req: Request) {
       // Record stock-in transaction
       await tx.inventoryTransaction.create({
         data: {
-          productId: milledProduct.id,
+          categoryId: milledProduct.id,
           locationId: targetLocationId,
           kind: "MILLING_IN",
           quantity: milledQuantity,
-          note: `Stock in from milling - Input product: ${sourceProduct.name}`,
+          note: `Stock in from milling - Input category: ${sourceCategory.name}`,
         },
       });
 
-      // 3. Update product stock on hand
-      await tx.product.update({
-        where: { id: sourceProductId },
+      // 3. Update category stock on hand
+      await tx.category.update({
+        where: { id: sourceCategoryId },
         data: { stockOnHand: { decrement: quantity } },
       });
 
-      await tx.product.update({
+      await tx.category.update({
         where: { id: milledProduct.id },
         data: { stockOnHand: { increment: milledQuantity } },
       });

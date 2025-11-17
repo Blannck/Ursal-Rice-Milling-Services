@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       include: {
         items: {
           include: {
-            product: true,
+            category: true,
             backorders: true,
           },
         },
@@ -69,12 +69,12 @@ export async function POST(request: Request) {
       });
 
       if (!location) {
-        errors.push(`Location ${locationId} not found for item ${poItem.product?.name || poItemId}`);
+        errors.push(`Location ${locationId} not found for item ${poItem.category?.name || poItemId}`);
         continue;
       }
 
       try {
-        console.log(`\n📦 Processing receipt: ${poItem.product?.name || 'Unknown'}`);
+        console.log(`\n📦 Processing receipt: ${poItem.category?.name || 'Unknown'}`);
         console.log(`   Ordered: ${poItem.orderedQty}, Previously Received: ${poItem.receivedQty}, Now Receiving: ${quantity}`);
         
         // Update PO item receivedQty
@@ -103,8 +103,8 @@ export async function POST(request: Request) {
         // Update or create inventory item at location
         const existingInventoryItem = await prisma.inventoryItem.findUnique({
           where: {
-            productId_locationId: {
-              productId: poItem.productId,
+            categoryId_locationId: {
+              categoryId: poItem.categoryId,
               locationId: locationId,
             },
           },
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
           // Create new inventory item
           const newInventory = await prisma.inventoryItem.create({
             data: {
-              productId: poItem.productId,
+              categoryId: poItem.categoryId,
               locationId: locationId,
               quantity: quantity,
             },
@@ -131,21 +131,21 @@ export async function POST(request: Request) {
           console.log(`   📦 Created new inventory at ${location.name}: ${newInventory.quantity}`);
         }
 
-        // Update product stockOnHand
-        const updatedProduct = await prisma.product.update({
-          where: { id: poItem.productId },
+        // Update category stockOnHand
+        const updatedCategory = await prisma.category.update({
+          where: { id: poItem.categoryId },
           data: {
             stockOnHand: {
               increment: quantity,
             },
           },
         });
-        console.log(`   📊 Product stockOnHand updated: +${quantity} (New total: ${updatedProduct.stockOnHand})`);
+        console.log(`   📊 Category stockOnHand updated: +${quantity} (New total: ${updatedCategory.stockOnHand})`);
 
         // Create inventory transaction
         await prisma.inventoryTransaction.create({
           data: {
-            productId: poItem.productId,
+            categoryId: poItem.categoryId,
             locationId: locationId,
             kind: "STOCK_IN",
             quantity: quantity,
@@ -180,14 +180,14 @@ export async function POST(request: Request) {
 
         results.push({
           poItemId,
-          productName: poItem.product?.name || "Unknown Product",
+          categoryName: poItem.category?.name || "Unknown Category",
           quantity,
           location: location.name,
           success: true,
         });
       } catch (error: any) {
         console.error(`Error processing item ${poItemId}:`, error);
-        errors.push(`Failed to process ${poItem.product?.name || poItemId}: ${error.message}`);
+        errors.push(`Failed to process ${poItem.category?.name || poItemId}: ${error.message}`);
       }
     }
 

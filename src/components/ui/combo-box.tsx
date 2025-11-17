@@ -23,7 +23,7 @@ interface ComboboxProps {
   onChange: (value: string) => void;
 }
 
-const productCategories = [
+const categoryCategories = [
   { value: "-", label: "None" },
   { value: "Ordinary", label: "Ordinary" },
   { value: "Toner", label: "Toner" },
@@ -54,7 +54,7 @@ export function Combobox({ value, onChange }: ComboboxProps) {
           <CommandList className="text-black  bg-white">
             <CommandEmpty className="text-black">No category found.</CommandEmpty>
             <CommandGroup className="bg-white ">
-              {productCategories.map((cat) => (
+              {categoryCategories.map((cat) => (
                 <CommandItem
                   key={cat.value}
                   value={cat.value}

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { Wheat } from "lucide-react";
 
 interface MillingOperationDialogProps {
-  products: {
+  categories: {
     id: string;
     name: string;
     isMilledRice: boolean;
@@ -31,42 +31,42 @@ interface MillingOperationDialogProps {
   inventoryItems: {
     id: string;
     quantity: number;
-    product: { id: string; name: string; isMilledRice: boolean };
+    category: { id: string; name: string; isMilledRice: boolean };
     location: { id: string; name: string };
   }[];
 }
 
-export function MillingOperationDialog({ products, locations, inventoryItems }: MillingOperationDialogProps) {
+export function MillingOperationDialog({ categories, locations, inventoryItems }: MillingOperationDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    sourceProductId: "",
+    sourceCategoryId: "",
     sourceLocationId: "",
     targetLocationId: "",
     quantity: "",
   });
 
-  // Filter unmilled rice products
-  const unmilledProducts = products.filter(p => !p.isMilledRice);
+  // Filter unmilled rice categories
+  const unmilledCategories = categories.filter(p => !p.isMilledRice);
 
-  // Debug logging to check products
-  console.log("All products:", products);
-  console.log("Unmilled products:", unmilledProducts);
+  // Debug logging to check categories
+  console.log("All categories:", categories);
+  console.log("Unmilled categories:", unmilledCategories);
 
-  // Get available quantity for selected product/location
+  // Get available quantity for selected category/location
   const getAvailableQuantity = () => {
-    if (!formData.sourceProductId || !formData.sourceLocationId) return 0;
+    if (!formData.sourceCategoryId || !formData.sourceLocationId) return 0;
     const item = inventoryItems.find(
-      i => i.product.id === formData.sourceProductId && i.location.id === formData.sourceLocationId
+      i => i.category.id === formData.sourceCategoryId && i.location.id === formData.sourceLocationId
     );
     return item?.quantity || 0;
   };
 
-  // Get milling yield rate for selected products
+  // Get milling yield rate for selected categories
   const getYieldRate = () => {
-    const sourceProduct = products.find(p => p.id === formData.sourceProductId);
-    return sourceProduct?.millingYieldRate || 0;
+    const sourceCategory = categories.find(p => p.id === formData.sourceCategoryId);
+    return sourceCategory?.millingYieldRate || 0;
   };
 
   const handleSubmit = async () => {
@@ -87,7 +87,7 @@ export function MillingOperationDialog({ products, locations, inventoryItems }: 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          sourceProductId: formData.sourceProductId,
+          sourceCategoryId: formData.sourceCategoryId,
           sourceLocationId: formData.sourceLocationId,
           targetLocationId: formData.targetLocationId,
           quantity: qty,
@@ -136,16 +136,16 @@ export function MillingOperationDialog({ products, locations, inventoryItems }: 
           <div className="grid gap-2">
             <Label>Source (Unmilled) Rice</Label>
             <Select
-              value={formData.sourceProductId}
-              onValueChange={(value) => setFormData({ ...formData, sourceProductId: value })}
+              value={formData.sourceCategoryId}
+              onValueChange={(value) => setFormData({ ...formData, sourceCategoryId: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select unmilled rice" />
               </SelectTrigger>
               <SelectContent>
-                {unmilledProducts.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name}
+                {unmilledCategories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -232,7 +232,7 @@ export function MillingOperationDialog({ products, locations, inventoryItems }: 
             onClick={handleSubmit}
             disabled={
               loading ||
-              !formData.sourceProductId ||
+              !formData.sourceCategoryId ||
               !formData.sourceLocationId ||
               !formData.targetLocationId ||
               !formData.quantity ||

@@ -31,7 +31,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
     orders = await prisma.order.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { category: true } } },
     });
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -98,7 +98,7 @@ export default async function UserDetailsPage({ params }: { params: { id: string
                   <td className="px-3 py-2">{o.total.toFixed(2)}</td>
                   <td className="px-3 py-2">{o.status.toUpperCase()}</td>
                   <td className="px-3 py-2">
-                    {o.items.map((i: any) => `${i.quantity}× ${i.product.name}`).join(", ")}
+                    {o.items.map((i: any) => `${i.quantity}× ${i.category.name}`).join(", ")}
                   </td>
                 </tr>
               ))}

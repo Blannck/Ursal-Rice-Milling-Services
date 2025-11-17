@@ -14,12 +14,17 @@ interface InvoiceViewProps {
     status: string;
     total: number;
     createdAt: Date;
+    customerName?: string | null;
+    customerPhone?: string | null;
+    deliveryAddress?: string | null;
+    deliveryType?: string | null;
+    paymentMethod?: string | null;
     items: Array<{
       id: string;
-      productId: string;
+      categoryId: string;
       quantity: number;
       price: number;
-      product: {
+      category: {
         name: string;
         category: string;
       };
@@ -27,7 +32,7 @@ interface InvoiceViewProps {
   };
   stockOutTransactions: Array<{
     id: string;
-    productId: string;
+    categoryId: string;
     quantity: number;
     location: {
       name: string;
@@ -40,12 +45,12 @@ export default function InvoiceView({
   order,
   stockOutTransactions,
 }: InvoiceViewProps) {
-  // Group transactions by product
-  const transactionsByProduct = stockOutTransactions.reduce((acc, txn) => {
-    if (!acc[txn.productId]) {
-      acc[txn.productId] = [];
+  // Group transactions by category
+  const transactionsByCategory = stockOutTransactions.reduce((acc, txn) => {
+    if (!acc[txn.categoryId]) {
+      acc[txn.categoryId] = [];
     }
-    acc[txn.productId].push(txn);
+    acc[txn.categoryId].push(txn);
     return acc;
   }, {} as Record<string, typeof stockOutTransactions>);
 
@@ -88,19 +93,51 @@ export default function InvoiceView({
               </div>
 
               {/* Customer Info */}
-              <div className="mb-6">
-                <h2 className="text-sm font-semibold text-gray-600 mb-2">
-                  BILL TO:
-                </h2>
-                <p className="text-lg font-medium text-gray-900">
-                  {order.email}
-                </p>
-                <Badge
-                  variant="outline"
-                  className="mt-1 bg-green-50 text-green-700 border-green-200"
-                >
-                  {order.status.toUpperCase()}
-                </Badge>
+              <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-600 mb-2">
+                    BILL TO:
+                  </h2>
+                  {order.customerName && (
+                    <p className="text-lg font-medium text-gray-900">
+                      {order.customerName}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-700">
+                    {order.email}
+                  </p>
+                  {order.customerPhone && (
+                    <p className="text-sm text-gray-700">
+                      {order.customerPhone}
+                    </p>
+                  )}
+                  <Badge
+                    variant="outline"
+                    className="mt-2 bg-green-50 text-green-700 border-green-200"
+                  >
+                    {order.status.toUpperCase()}
+                  </Badge>
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-600 mb-2">
+                    DELIVERY DETAILS:
+                  </h2>
+                  {order.deliveryType && (
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium">Type:</span> {order.deliveryType}
+                    </p>
+                  )}
+                  {order.deliveryAddress && (
+                    <p className="text-sm text-gray-700 mt-1">
+                      <span className="font-medium">Address:</span> {order.deliveryAddress}
+                    </p>
+                  )}
+                  {order.paymentMethod && (
+                    <p className="text-sm text-gray-700 mt-1">
+                      <span className="font-medium">Payment:</span> {order.paymentMethod}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Items Table */}
@@ -128,10 +165,10 @@ export default function InvoiceView({
                         <td className="py-4">
                           <div>
                             <p className="font-medium text-gray-900">
-                              {item.product.name}
+                              {item.category.name}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {item.product.category}
+                              {item.category.description}
                             </p>
                           </div>
                         </td>

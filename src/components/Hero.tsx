@@ -25,8 +25,8 @@ const Hero7 = ({
   heading = "Where Excellence Meets Every Grain",
   description = "At Ursal Rice Milling Services, we elevate the rice milling process, ensuring each grain meets our highest standards. Pure, fresh, and full of flavor, our rice brings excellence to every meal.",
   button = {
-    text: "Browse Products",
-    url: "http://localhost:3000/products",
+    text: "Browse Categories",
+    url: "http://localhost:3000/categories",
   },
   reviews = {
     count: 100,

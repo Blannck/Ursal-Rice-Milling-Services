@@ -12,7 +12,7 @@ import MiniPriceChart from "@/components/MiniPriceChart";
 import Link from "next/link";
 
 // Mock type based on your schema
-type Product = {
+type Category = {
   id: string;
   name: string;
   description?: string;
@@ -28,7 +28,7 @@ type Product = {
   reorderPoint: number;
   priceHistory?: {
     id: string;
-    productId: string;
+    categoryId: string;
     oldPrice: number;
     newPrice: number;
     changedBy: string;
@@ -38,10 +38,10 @@ type Product = {
 };
 
 interface ProductCardProps {
-  product: Product | null; // Allow product to be null for error handling
+  category: Category | null; // Allow category to be null for error handling
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ category }: ProductCardProps) {
   const [quantity, setQuantity] = useState(10);
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
@@ -52,21 +52,26 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  if (!product) {
+  if (!category) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-black">Product data is not available.</p>
+        <p className="text-black">Category data is not available.</p>
       </div>
     );
   }
 
   return (
     <div className=" max-w-7xl">
+      <Link href="/products">
+        <Button className="mb-5" variant="outline" size="lg">
+          Back
+        </Button>
+      </Link>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8   lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
          
         {/* Left Column: Image and Details Card */}
         <div className="flex flex-col space-y-8">
-          {/* Product Image */}
+          {/* Category Image */}
           <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">
               { (
@@ -74,7 +79,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                   <img
                     src={"/sack.png"}
-                    alt={product.name}
+                    alt={category.name}
                     className="block w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                 </div>
@@ -83,55 +88,55 @@ export default function ProductCard({ product }: ProductCardProps) {
             </CardHeader>
           </Card>
 
-          {/* Product Details Card */}
+          {/* Category Details Card */}
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6">
               <h3 className="font-semibold mb-4">Product Details</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-black">Category</span>
-                  <span className="font-medium">{product.category}</span>
+                  <span className="text-black">Name</span>
+                  <span className="font-medium">{category.name}</span>
                 </div>
               
                 <div className="flex justify-between">
                   <span className="text-black">Stock Availability</span>
                   <span className={`font-semibold ${
-                    Math.round((product.stockOnHand - product.stockAllocated) / 50) <= 0 ? 'text-red-600' :
-                    Math.round((product.stockOnHand - product.stockAllocated) / 50) <= 10 ? 'text-yellow-600' :
+                    Math.round((category.stockOnHand - category.stockAllocated) / 50) <= 0 ? 'text-red-600' :
+                    Math.round((category.stockOnHand - category.stockAllocated) / 50) <= 10 ? 'text-yellow-600' :
                     'text-green-600'
                   }`}>
-                    {Math.round((product.stockOnHand - product.stockAllocated) / 50)} {Math.round((product.stockOnHand - product.stockAllocated) / 50) === 1 ? 'sack' : 'sacks'} available
+                    {Math.round((category.stockOnHand - category.stockAllocated) / 50)} {Math.round((category.stockOnHand - category.stockAllocated) / 50) === 1 ? 'sack' : 'sacks'} available
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span className="text-black">Updated</span>
                   <span className="font-medium">
-                    {formatDate(product.updatedAt)}
+                    {formatDate(category.updatedAt)}
                   </span>
                 </div>
               </div>
             </CardContent>
           </Card>
-          {product.priceHistory && product.priceHistory.length > 0 && (
+          {category.priceHistory && category.priceHistory.length > 0 && (
               <div className="mt-4">
                 <MiniPriceChart
-                  priceHistory={product.priceHistory}
-                  currentPrice={product.price}
+                  priceHistory={category.priceHistory}
+                  currentPrice={category.price}
                 />
               </div>
             )}
         </div>
 
-        {/* Right Column: Product Information */}
+        {/* Right Column: Category Information */}
         <div className="flex flex-col justify-start space-y-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="w-fit text-sm">
-                {product.category}
+                {category.name}
               </Badge>
               {(() => {
-                const availableStockKg = product.stockOnHand - product.stockAllocated;
+                const availableStockKg = category.stockOnHand - category.stockAllocated;
                 const availableStock = Math.round(availableStockKg / 50);
                 const unit = availableStock === 1 ? 'sack' : 'sacks';
                 return (
@@ -154,12 +159,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             <div className="space-y-3">
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
-                {product.name}
+                {category.name}
               </h1>
 
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold text-white">
-                  ₱{product.price.toFixed(2)}
+                  ₱{category.price.toFixed(2)}
                 </span>
             
               </div>
@@ -168,9 +173,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             {/* Price History Chart */}
             
 
-            {product.description && (
+            {category.description && (
               <p className="text-white text-lg leading-relaxed">
-                {product.description}
+                {category.description}
               </p>
             )}
           </div>
@@ -209,14 +214,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* Add to Cart Button */}
             {(() => {
-              const availableStockKg = product.stockOnHand - product.stockAllocated;
+              const availableStockKg = category.stockOnHand - category.stockAllocated;
               const availableStock = Math.round(availableStockKg / 50);
               const unit = availableStock === 1 ? 'sack' : 'sacks';
               if (availableStock <= 10 && availableStock > 0) {
                 return (
                   <>
                     <AddToCartButton 
-                      productId={product.id}
+                      categoryId={category.id}
                       quantity={quantity}
                       availableStock={availableStock}
                     />
@@ -229,7 +234,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               } else {
                 return (
                   <AddToCartButton 
-                    productId={product.id}
+                    categoryId={category.id}
                     quantity={quantity}
                     availableStock={availableStock}
                   />
@@ -243,11 +248,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
         
     </div>
-    <Link  href="/products">
-                      <Button className="mt-5" variant="outline" size="lg">
-                        Back
-                      </Button>
-                    </Link>
     </div>
   );
 }

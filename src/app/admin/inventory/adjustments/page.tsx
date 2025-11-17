@@ -4,8 +4,8 @@ import AdjustmentsClient from "./adjustments-client";
 
 // Inventory Adjustments - Manual stock corrections with audit trail
 export default async function AdjustmentsPage() {
-  // Fetch products with their inventory items
-  const products = await prisma.product.findMany({
+  // Fetch categories with their inventory items
+  const categories = await prisma.category.findMany({
     where: {
       isHidden: false,
     },
@@ -31,5 +31,5 @@ export default async function AdjustmentsPage() {
     },
   });
 
-  return <AdjustmentsClient products={products} locations={locations} />;
+  return <AdjustmentsClient categories={categories} locations={locations} />;
 }

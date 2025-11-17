@@ -15,7 +15,7 @@ async function getData() {
         supplier: true,
         items: {
           include: {
-            product: true,
+            category: true,
           },
         },
       },

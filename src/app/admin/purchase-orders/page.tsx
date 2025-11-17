@@ -36,7 +36,7 @@ interface PurchaseOrder {
   status: "Pending" | "Ordered" | "Received" | "Cancelled" | string;
   items: Array<{
     id: string;
-    product: { name: string };
+    category: { name: string };
     orderedQty: number;
     receivedQty: number;
     returnedQty: number;
@@ -310,7 +310,7 @@ export default function PurchaseOrdersPage() {
                         <div className="space-y-1">
                           {order.items.slice(0, 2).map((item, index) => (
                             <div key={index} className="text-sm">
-                              {item.product.name} (×{item.orderedQty})
+                              {item.category.name} (×{item.orderedQty})
                             </div>
                           ))}
                           {order.items.length > 2 && (
@@ -402,14 +402,16 @@ export default function PurchaseOrdersPage() {
                 {!loading && purchaseOrders.length === 0 && !error && (
                   <TableRow>
                     <TableCell
-                      colSpan={7}
+                      colSpan={10}
                       className="py-8 text-center text-black"
                     >
-                      No purchase orders found
-                      <div className="mt-2 text-sm text-black">
-                        {searchTerm || statusFilter !== "all"
-                          ? "Try adjusting your search or filter criteria"
-                          : "Create your first purchase order to get started"}
+                      <div className="flex flex-col items-center justify-center">
+                        <p className="font-medium">No purchase orders found</p>
+                        <div className="mt-2 text-sm text-black">
+                          {searchTerm || statusFilter !== "all"
+                            ? "Try adjusting your search or filter criteria"
+                            : "Create your first purchase order to get started"}
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

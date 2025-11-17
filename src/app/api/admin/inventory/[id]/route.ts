@@ -17,7 +17,7 @@ export async function GET(
     const item = await prisma.inventoryItem.findUnique({
       where: { id: params.id },
       include: {
-        product: {
+        category: {
           include: {
             supplier: true,
           },
@@ -86,7 +86,7 @@ export async function PUT(
       where: { id: params.id },
       data: { quantity: qty },
       include: {
-        product: true,
+        category: true,
         location: true,
       },
     });
@@ -101,7 +101,7 @@ export async function PUT(
 
     await prisma.inventoryTransaction.create({
       data: {
-        productId: item.productId,
+        categoryId: item.categoryId,
         locationId: item.locationId,
         kind: transactionKind,
         quantity: Math.abs(qty - currentItem.quantity),
@@ -152,7 +152,7 @@ export async function DELETE(
     // Create final transaction record
     await prisma.inventoryTransaction.create({
       data: {
-        productId: item.productId,
+        categoryId: item.categoryId,
         locationId: item.locationId,
         kind: "STOCK_OUT",
         quantity: 0,

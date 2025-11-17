@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { orderId, items } = body;
 
-    // items: [{ orderItemId, productId, quantity, locationId }]
+    // items: [{ orderItemId, categoryId, quantity, locationId }]
 
     if (!orderId || !items || items.length === 0) {
       return NextResponse.json(
@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
 
     // Validate all items have required fields
     for (const item of items) {
-      if (!item.orderItemId || !item.productId || !item.quantity || !item.locationId) {
+      if (!item.orderItemId || !item.categoryId || !item.quantity || !item.locationId) {
         return NextResponse.json(
-          { error: "Each item must have orderItemId, productId, quantity, and locationId" },
+          { error: "Each item must have orderItemId, categoryId, quantity, and locationId" },
           { status: 400 }
         );
       }
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         include: {
           items: {
             include: {
-              product: true,
+              category: true,
             },
           },
         },

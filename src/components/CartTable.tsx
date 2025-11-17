@@ -20,11 +20,12 @@ import RemoveFromCartButton from "./RemoveToCart";
 import { updateCartQuantity } from "@/actions/cart.action";
 import toast from "react-hot-toast";
 import PayPalCheckout from "./PaypalCheckout";
+import CheckoutDialog from "./CheckoutDialog";
 
 type CartItems = {
   id: string;
   quantity: number;
-  product: {
+  category: {
     id: string;
     name: string;
     category: string;
@@ -44,6 +45,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [checkingOut, setCheckingOut] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   
   // Debounce timer refs for each cart item
   const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
@@ -66,7 +68,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
   }
 
   const filteredItems = cartItems.filter((item) =>
-    item.product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const selectedCartItemIds = filteredItems
@@ -82,7 +84,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
     }, 0);
     const totalAmount = selectedItems.reduce((sum, item) => {
       const quantity = quantities[item.id] ?? item.quantity;
-      return sum + item.product.price * quantity;
+      return sum + item.category.price * quantity;
     }, 0);
 
     return {
@@ -135,6 +137,27 @@ export default function CartTable({ cartItems }: CartTableProps) {
     debouncedUpdate(id, newQuantity);
   };
 
+  const handleCheckout = async (customerData: {
+    customerName: string;
+    customerPhone: string;
+    deliveryAddress: string;
+    deliveryType: string;
+    paymentMethod?: string;
+  }) => {
+    try {
+      setCheckingOut(true);
+      const { createOrderFromCart } = await import("@/actions/order.action");
+      await createOrderFromCart(selectedCartItemIds, customerData);
+      toast.success("Order placed successfully!");
+      router.push("/orders");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to place order");
+      throw error;
+    } finally {
+      setCheckingOut(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-6 " >
      
@@ -180,8 +203,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
                   <TableRow>
                     <TableHead className="text-center w-16">Select</TableHead>
                     <TableHead className="w-20">Image</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Category</TableHead>
+                    <TableHead>Product Name</TableHead>
                     <TableHead>Price</TableHead>
                     <TableHead className="text-center">Quantity</TableHead>
                     <TableHead className="text-right">Total</TableHead>
@@ -190,9 +212,9 @@ export default function CartTable({ cartItems }: CartTableProps) {
                 </TableHeader>
                 <TableBody>
                   {filteredItems.map((item, index) => {
-                    const { product } = item;
+                    const { category } = item;
                     const quantity = quantities[item.id] ?? item.quantity;
-                    const total = (product.price * quantity).toFixed(2);
+                    const total = (category.price * quantity).toFixed(2);
                     const isSelected = selected[item.id] || false;
 
                     return (
@@ -210,26 +232,21 @@ export default function CartTable({ cartItems }: CartTableProps) {
                               src={
                                 "/sack.png"
                               }
-                              alt={product.name}
+                              alt={category.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <p className="font-semibold ">{product.name}</p>
+                            <p className="font-semibold ">{category.name}</p>
                             <p className="text-xs ">
-                              ID: {product.id.slice(0, 8)}...
+                              ID: {category.id.slice(0, 8)}...
                             </p>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs">
-                            {product.category}
-                          </Badge>
-                        </TableCell>
                         <TableCell className="font-semibold">
-                          ₱{product.price.toFixed(2)}
+                          ₱{category.price.toFixed(2)}
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-center items-center space-x-1">
@@ -317,7 +334,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
                   <>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="">Selected Products:</span>
+                        <span className="">Selected Categories:</span>
                         <span className="font-medium">
                           {selectedSummary.selectedCount}
                         </span>
@@ -344,30 +361,12 @@ export default function CartTable({ cartItems }: CartTableProps) {
 
                     {/* Simple Checkout Button */}
                     <Button
-                      onClick={async () => {
-                        try {
-                          setCheckingOut(true);
-                          const { createOrderFromCart } = await import("@/actions/order.action");
-                          await createOrderFromCart(selectedCartItemIds);
-                          toast.success("Order placed successfully!");
-                          router.push("/orders");
-                        } catch (error: any) {
-                          toast.error(error.message || "Failed to place order");
-                        } finally {
-                          setCheckingOut(false);
-                        }
-                      }}
+                      onClick={() => setShowCheckoutDialog(true)}
                       disabled={checkingOut}
-                      className="w-full bg-custom-orange hover:bg-custom-orange/80 text-white mb-2"
+                      className="w-full bg-custom-orange hover:bg-custom-orange/80 text-white"
                     >
                       {checkingOut ? "Processing..." : "Place Order"}
                     </Button>
-
-                    <PayPalCheckout
-
-                      total={selectedSummary.totalAmount}
-                      selectedCartItemIds={selectedCartItemIds}
-                    />
                   </>
                 ) : (
                   <div className="text-center py-8">
@@ -390,6 +389,13 @@ export default function CartTable({ cartItems }: CartTableProps) {
           </div>
         </div>
       </div>
+
+      <CheckoutDialog
+        open={showCheckoutDialog}
+        onClose={() => setShowCheckoutDialog(false)}
+        onConfirm={handleCheckout}
+        totalAmount={selectedSummary.totalAmount}
+      />
       </div>
     
   );

@@ -27,7 +27,7 @@ export default async function OrderDetailsPage({
     include: {
       items: {
         include: {
-          product: true,
+          category: true,
         },
       },
       deliveries: {
@@ -36,7 +36,7 @@ export default async function OrderDetailsPage({
             include: {
               orderItem: {
                 include: {
-                  product: true,
+                  category: true,
                 },
               },
             },
@@ -189,11 +189,11 @@ export default async function OrderDetailsPage({
                       {delivery.items.map((item) => (
                         <div key={item.id} className="flex justify-between text-sm">
                           <span className="text-gray-600">
-                            {item.orderItem.product.name}
+                            {item.orderItem.category.name}
                           </span>
                           <span className="font-medium">
                             {item.quantity}{' '}
-                            {item.orderItem.product.isMilledRice ? 'sacks' : 'units'}
+                            {item.orderItem.category.isMilledRice ? 'sacks' : 'units'}
                           </span>
                         </div>
                       ))}
@@ -388,22 +388,22 @@ export default async function OrderDetailsPage({
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border">
                         <img
                           src={"/sack.png"}
-                          alt={item.product.name}
+                          alt={item.category.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
 
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg mb-1">
-                          {item.product.name}
+                          {item.category.name}
                         </h3>
-                        {item.product.description && (
+                        {item.category.description && (
                           <p className="text-sm text-gray-600 mb-2">
-                            {item.product.description}
+                            {item.category.description}
                           </p>
                         )}
                         <div className="flex items-center gap-4 text-sm">
-                          <Badge variant="secondary">{item.product.category}</Badge>
+                          <Badge variant="secondary">{item.category.name}</Badge>
                           <span className="text-gray-600">
                             Quantity: <span className="font-semibold text-gray-900">{item.quantity}</span>
                           </span>

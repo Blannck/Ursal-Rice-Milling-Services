@@ -26,10 +26,12 @@ import {
   FileText,
   Download,
   Search,
+  MapPin,
+  CreditCard,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-type Product = {
+type Category = {
   id: string;
   name: string;
   category: string;
@@ -41,12 +43,12 @@ type Product = {
 
 type OrderItem = {
   id: string;
-  productId: string;
+  categoryId: string;
   quantity: number;
   quantityFulfilled: number | null;
   quantityPending: number | null;
   price: number;
-  product: Product;
+  category: Category;
 };
 
 type DeliveryItem = {
@@ -55,7 +57,7 @@ type DeliveryItem = {
   orderItemId: string;
   quantity: number;
   orderItem: {
-    product: Product;
+    category: Category;
   };
 };
 
@@ -80,6 +82,11 @@ type Order = {
   status: string;
   shipmentStatus: string | null;
   fulfillmentStatus: string;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  deliveryAddress?: string | null;
+  deliveryType?: string | null;
+  paymentMethod?: string | null;
   createdAt: Date;
   items: OrderItem[];
   deliveries: Delivery[];
@@ -231,7 +238,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       const data = await response.json();
 
       if (response.ok) {
-        // Update the selected order's delivery shipment status
+        // Update the selected order's delivery shipment status in local state
         if (selectedOrder?.id === orderId) {
           const updatedDeliveries = selectedOrder.deliveries.map(d => 
             d.id === deliveryId 
@@ -242,8 +249,6 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
             ...selectedOrder,
             deliveries: updatedDeliveries
           });
-        } else {
-          router.refresh();
         }
       } else {
         setErrorDialog({ open: true, message: data.error || "Failed to update shipment status" });
@@ -306,12 +311,13 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                   <Badge variant="outline" className={getStatusColor(selectedOrder.status)}>
                     {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                   </Badge>
-                  {selectedOrder.fulfillmentStatus && (
-                    <Badge variant="outline" className={getStatusColor(selectedOrder.fulfillmentStatus)}>
-                      {selectedOrder.fulfillmentStatus === 'fulfilled' ? '✓ Fulfilled' : 
-                       selectedOrder.fulfillmentStatus === 'partial' ? '◐ Partial' : '○ Pending Fulfillment'}
-                    </Badge>
-                  )}
+                  <Badge
+                    variant="outline"
+                    className={getShipmentStatusColor(selectedOrder.shipmentStatus || "Processing Order")}
+                  >
+                    <Truck className="h-3 w-3 mr-1" />
+                    {selectedOrder.shipmentStatus || "Processing Order"}
+                  </Badge>
                 </div>
               </div>
               <div className="text-right">
@@ -329,9 +335,9 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
               <div>
                 <p className="text-sm text-black flex items-center gap-1 mb-1">
                   <User className="h-4 w-4" />
-                  Customer ID
+                  Customer Name
                 </p>
-                <p className="font-medium">{selectedOrder.userId.slice(0, 16)}...</p>
+                <p className="font-medium">{selectedOrder.customerName || 'N/A'}</p>
               </div>
               <div>
                 <p className="text-sm text-black flex items-center gap-1 mb-1">
@@ -340,6 +346,36 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                 </p>
                 <p className="font-medium">{selectedOrder.email}</p>
               </div>
+              <div>
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
+                  <User className="h-4 w-4" />
+                  Phone Number
+                </p>
+                <p className="font-medium">{selectedOrder.customerPhone || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
+                  <Package className="h-4 w-4" />
+                  Delivery Type
+                </p>
+                <p className="font-medium">{selectedOrder.deliveryType || 'N/A'}</p>
+              </div>
+              <div className="md:col-span-2">
+                <p className="text-sm text-black flex items-center gap-1 mb-1">
+                  <MapPin className="h-4 w-4" />
+                  Delivery Address
+                </p>
+                <p className="font-medium">{selectedOrder.deliveryAddress || 'N/A'}</p>
+              </div>
+              {selectedOrder.paymentMethod && (
+                <div>
+                  <p className="text-sm text-black flex items-center gap-1 mb-1">
+                    <CreditCard className="h-4 w-4" />
+                    Payment Method
+                  </p>
+                  <p className="font-medium">{selectedOrder.paymentMethod}</p>
+                </div>
+              )}
             </div>
 
             {/* Deliveries Section */}
@@ -392,10 +428,10 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                             {delivery.items.map((item) => (
                               <div key={item.id} className="flex justify-between text-sm">
                                 <span className="text-black">
-                                  {item.orderItem.product.name}
+                                  {item.orderItem.category.name}
                                 </span>
                                 <span className="font-medium">
-                                  {item.quantity} {item.orderItem.product.isMilledRice ? 'sacks' : 'units'}
+                                  {item.quantity} {item.orderItem.category.isMilledRice ? 'sacks' : 'units'}
                                 </span>
                               </div>
                             ))}
@@ -523,7 +559,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                               )}
                               <Button
                                 onClick={() => handleFulfillDelivery(selectedOrder.id, delivery.id)}
-                                disabled={fulfillingDelivery === delivery.id || delivery.shipmentStatus !== 'Delivered'}
+                                disabled={fulfillingDelivery === delivery.id || delivery.shipmentStatus !== 'Delivered' || delivery.status === 'fulfilled'}
                                 size="sm"
                                 className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                               >
@@ -544,7 +580,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
               <h3 className="font-semibold mb-4">Order Items</h3>
               <div className="space-y-4">
                 {selectedOrder.items.map((item, index) => {
-                  const { product, quantity, quantityFulfilled, quantityPending, price } = item;
+                  const { category, quantity, quantityFulfilled, quantityPending, price } = item;
                   const subtotal = price * quantity;
                   const fulfilled = quantityFulfilled ?? 0;
                   const pending = quantityPending ?? quantity;
@@ -556,24 +592,24 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                         <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border">
                           <img
                             src={"/sack.png"}
-                            alt={product.name}
+                            alt={category.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-lg mb-1">{product.name}</h4>
-                          {product.description && (
+                          <h4 className="font-semibold text-lg mb-1">{category.name}</h4>
+                          {category.description && (
                             <p className="text-sm text-black mb-2 line-clamp-2">
-                              {product.description}
+                              {category.description}
                             </p>
                           )}
                           <div className="flex items-center gap-4 text-sm flex-wrap">
                             <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
-                              {product.category}
+                              {category.name}
                             </span>
                             <span className="text-black">
-                              Ordered: <span className="font-medium text-black">{quantity} {product.isMilledRice ? 'sacks' : 'units'}</span>
+                              Ordered: <span className="font-medium text-black">{quantity} {category.isMilledRice ? 'sacks' : 'units'}</span>
                             </span>
                             <span className={`font-medium ${fulfilled > 0 ? 'text-green-600' : 'text-black'}`}>
                               Fulfilled: {fulfilled}
@@ -612,14 +648,14 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                          {product.downloadUrl ? (
+                          {category.downloadUrl ? (
                             <Button
                               asChild
                               size="sm"
                               className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
                               <a
-                                href={product.downloadUrl}
+                                href={category.downloadUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2"

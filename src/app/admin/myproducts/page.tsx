@@ -1,9 +1,9 @@
-import { getProducts } from "@/actions/product.aciton";
+import { getCategories } from "@/actions/product.aciton";
 import InventoryTable from "@/components/InventoryTable";
 import { stackServerApp } from "@/lib/stack";
 import { notFound } from "next/navigation";
 
-async function AdminProductsPfga() {
+async function AdminCategoriesPfga() {
   const user = await stackServerApp.getUser();
 
   // Grab admin credentials from environment
@@ -16,7 +16,7 @@ async function AdminProductsPfga() {
 
   if (!isAdmin) return notFound();
 
-  const products = await getProducts();
+  const categories = await getCategories();
   
 
   return (
@@ -25,7 +25,7 @@ async function AdminProductsPfga() {
     <div className="mt-7 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-10 gap-6">
     <div className="lg:col-span-full">
        
-        <InventoryTable products={products} />
+        <InventoryTable categories={categories} />
       </div>
     </div>
     </div>
@@ -34,4 +34,4 @@ async function AdminProductsPfga() {
   );
 }
 
-export default AdminProductsPfga;
+export default AdminCategoriesPfga;

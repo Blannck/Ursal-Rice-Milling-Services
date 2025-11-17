@@ -16,14 +16,14 @@ import toast from "react-hot-toast";
 import { AlertTriangle } from "lucide-react";
 
 type AddToCartButtonProps = {
-  productId: string;
+  categoryId: string;
   quantity?: number;
   redirectTo?: string;
   availableStock?: number;
 };
 
 export default function AddToCartButton({
-  productId,
+  categoryId,
   quantity = 1,
   redirectTo = "/cart",
   availableStock,
@@ -42,7 +42,7 @@ export default function AddToCartButton({
     setIsLoading(true);
     setShowWarningModal(false);
     try {
-      await addToCart(productId, quantity);
+      await addToCart(categoryId, quantity);
       toast.success("Added to cart!", {
         duration: 2000,
       });

@@ -3,12 +3,12 @@ import { prisma } from "@/lib/prisma";
 import AlertsClient from "./alerts-client";
 
 export default async function ReorderAlertsPage() {
-  // Fetch ALL products with inventory items (we'll filter in JS based on actual stock)
-  const products = await prisma.product.findMany({
+  // Fetch ALL categories with inventory items (we'll filter in JS based on actual stock)
+  const categories = await prisma.category.findMany({
     where: {
       isHidden: false,
       reorderPoint: {
-        gt: 0, // Only products with a reorder point set
+        gt: 0, // Only categories with a reorder point set
       },
     },
     include: {
@@ -22,18 +22,18 @@ export default async function ReorderAlertsPage() {
   });
 
   // Calculate actual stock from inventory items and filter low stock
-  const lowStockProducts = products
-    .map((product) => {
-      const actualStock = product.inventoryItems.reduce(
+  const lowStockCategories = categories
+    .map((category) => {
+      const actualStock = category.inventoryItems.reduce(
         (sum, item) => sum + item.quantity,
         0
       );
       return {
-        ...product,
+        ...category,
         actualStock, // Add calculated stock
       };
     })
-    .filter((product) => product.actualStock <= product.reorderPoint)
+    .filter((category) => category.actualStock <= category.reorderPoint)
     .sort((a, b) => a.actualStock - b.actualStock); // Sort by actual stock (lowest first)
 
   // Fetch all suppliers for quick PO creation
@@ -47,8 +47,8 @@ export default async function ReorderAlertsPage() {
   });
 
   return (
-  < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
-  <AlertsClient products={lowStockProducts} suppliers={suppliers} />
-</div>
+    <div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5">
+      <AlertsClient categories={lowStockCategories} suppliers={suppliers} />
+    </div>
   )
 }

@@ -11,12 +11,14 @@ export async function GET(request: NextRequest) {
     const supplierId = searchParams.get("supplierId");
 
     // Build the query filter
-    const whereFilter: any = {};
+    const whereFilter: any = {
+      isMilledRice: false // Only show unmilled rice categories (added categories from inventory)
+    };
     if (supplierId) {
       whereFilter.supplierId = supplierId;
     }
 
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: whereFilter,
       include: {
         supplier: {
@@ -32,12 +34,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      products,
+      categories,
     });
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching categories:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch products" },
+      { success: false, error: "Failed to fetch categories" },
       { status: 500 }
     );
   }

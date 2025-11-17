@@ -16,54 +16,54 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import AddToCartButton from "./AddtoCartButton";
-import { getProducts } from "@/actions/product.aciton";
+import { getCategories } from "@/actions/product.aciton";
 
-type Products = Awaited<ReturnType<typeof getProducts>>;
+type Categories = Awaited<ReturnType<typeof getCategories>>;
 
 interface CardListProps {
-  products: Products;
+  categories: Categories;
 }
 
-export default function CardList({ products }: CardListProps) {
+export default function CardList({ categories }: CardListProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("name");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // Get unique categories for filter dropdown
-  const categories = Array.from(
-    new Set(products?.userProducts?.map((product) => product.category) || [])
+  // Get unique category names for filter dropdown
+  const categoryNames = Array.from(
+    new Set(categories?.userCategories?.map((category) => category.name) || [])
   );
 
-  const getQuantity = (productId: string) => quantities[productId] || 10;
+  const getQuantity = (categoryId: string) => quantities[categoryId] || 10;
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
+  const updateQuantity = (categoryId: string, newQuantity: number) => {
     if (newQuantity >= 1) {
-      setQuantities(prev => ({ ...prev, [productId]: newQuantity }));
+      setQuantities(prev => ({ ...prev, [categoryId]: newQuantity }));
     }
   };
 
-  const incrementQuantity = (productId: string) => {
-    const current = getQuantity(productId);
-    updateQuantity(productId, current + 1);
+  const incrementQuantity = (categoryId: string) => {
+    const current = getQuantity(categoryId);
+    updateQuantity(categoryId, current + 1);
   };
 
-  const decrementQuantity = (productId: string) => {
-    const current = getQuantity(productId);
+  const decrementQuantity = (categoryId: string) => {
+    const current = getQuantity(categoryId);
     if (current > 1) {
-      updateQuantity(productId, current - 1);
+      updateQuantity(categoryId, current - 1);
     }
   };
 
-  // Filter and sort products
-  const filteredProducts = products?.userProducts
-    ?.filter((product) => {
+  // Filter and sort categories
+  const filteredCategories = categories?.userCategories
+    ?.filter((category) => {
       const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        category.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedCategory === "all" || product.category === selectedCategory;
+        selectedCategory === "all" || category.name === selectedCategory;
       return matchesSearch && matchesCategory;
     })
     ?.sort((a, b) => {
@@ -83,11 +83,11 @@ export default function CardList({ products }: CardListProps) {
       }
     });
 
-  const handleProductClick = (product: any) => {
-    const slugifiedName = product.name.toLowerCase().replace(/\s+/g, "-");
-    const slug = `${product.id}--${slugifiedName}`;
-    const productUrl = `/products/${slug}`;
-    router.push(productUrl);
+  const handleCategoryClick = (category: any) => {
+    const slugifiedName = category.name.toLowerCase().replace(/\s+/g, "-");
+    const slug = `${category.id}--${slugifiedName}`;
+    const categoryUrl = `/products/${slug}`;
+    router.push(categoryUrl);
   };
 
   const getStockStatus = (stockOnHand: number, stockAllocated: number, isMilledRice: boolean) => {
@@ -129,7 +129,7 @@ export default function CardList({ products }: CardListProps) {
         <div className="mb-8">
           <h1 className="text-3xl font-bold  mb-2">All Products</h1>
           <p className="">
-            Discover our collection of {filteredProducts?.length ?? 0} digital
+            Discover our collection of {filteredCategories?.length ?? 0} our
             products
           </p>
         </div>
@@ -160,8 +160,8 @@ export default function CardList({ products }: CardListProps) {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.filter(cat => cat && cat.trim()).map((category) => (
+                  <SelectItem value="all">All Products</SelectItem>
+                  {categoryNames.filter(cat => cat && cat.trim()).map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
@@ -188,28 +188,28 @@ export default function CardList({ products }: CardListProps) {
           </div>
         </div>
 
-        {/* Products Grid/List */}
-        {filteredProducts && filteredProducts.length > 0 ? (
+        {/* Categories Grid/List */}
+        {filteredCategories && filteredCategories.length > 0 ? (
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6"
           >
-            {filteredProducts.map((product) => (
+            {filteredCategories.map((category) => (
               <Card
-                key={product.id}
+                key={category.id}
                 className="group cursor-pointer bg-custom-white text-black border-[1px] shadow-sm hover:shadow-xl min-h-80"
-                onClick={() => handleProductClick(product)}
+                onClick={() => handleCategoryClick(category)}
               >
                 <CardContent
                   className="p-0 flex flex-col"
                 >
-                  {/* Product Image */}
+                  {/* Category Image */}
                   <div
                     className="relative overflow-hidden w-full h-full bg-gray-100 rounded-lg "
                   >
                     <img
                       src= "/sack.png"
                       
-                      alt={product.name}
+                      alt={category.name}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -219,15 +219,15 @@ export default function CardList({ products }: CardListProps) {
                       variant="secondary"
                       className="absolute top-3 left-3 b border-0"
                     >
-                      {product.category}
+                      {category.name}
                     </Badge>
 
                     {/* Stock Status Badge */}
                     {(() => {
                       const stockStatus = getStockStatus(
-                        product.stockOnHand,
-                        product.stockAllocated,
-                        product.isMilledRice
+                        category.stockOnHand,
+                        category.stockAllocated,
+                        category.isMilledRice
                       );
                       return (
                         <Badge
@@ -241,25 +241,25 @@ export default function CardList({ products }: CardListProps) {
                     })()}
                   </div>
 
-                  {/* Product Info */}
+                  {/* Category Info */}
                   <div
                     className="p-6 flex flex-col flex-1"
                   >
                     <div className="space-y-3">
                       <div>
                         <h3 className="font-semibold text-lg  group-hover:text-black transition-colors line-clamp-2">
-                          {product.name}
+                          {category.name}
                         </h3>
-                        {product.description && (
+                        {category.description && (
                           <p className="text-sm  mt-1 line-clamp-2">
-                            {product.description}
+                            {category.description}
                           </p>
                         )}
                       </div>
 
                       <div className="flex items-center justify-between">
                         <div className="text-2xl font-bold ">
-                          ₱{product.price.toLocaleString()}
+                          ₱{category.price.toLocaleString()}
                         </div>
                       </div>
 
@@ -278,7 +278,7 @@ export default function CardList({ products }: CardListProps) {
                           variant="outline"
                           size="sm"
                           className="h-9 w-9 p-0"
-                          onClick={() => decrementQuantity(product.id)}
+                          onClick={() => decrementQuantity(category.id)}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
@@ -286,11 +286,11 @@ export default function CardList({ products }: CardListProps) {
                           <Input
                             type="number"
                             min="1"
-                            value={getQuantity(product.id)}
+                            value={getQuantity(category.id)}
                             onChange={(e) => {
                               const value = parseInt(e.target.value);
                               if (!isNaN(value) && value >= 1) {
-                                updateQuantity(product.id, value);
+                                updateQuantity(category.id, value);
                               }
                             }}
                             className="w-20 h-9 text-center"
@@ -302,7 +302,7 @@ export default function CardList({ products }: CardListProps) {
                           variant="outline"
                           size="sm"
                           className="h-9 w-9 p-0"
-                          onClick={() => incrementQuantity(product.id)}
+                          onClick={() => incrementQuantity(category.id)}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -314,13 +314,13 @@ export default function CardList({ products }: CardListProps) {
                         className="w-full flex justify-center "
                       >
                         {(() => {
-                          const availableStockKg = product.stockOnHand - product.stockAllocated;
+                          const availableStockKg = category.stockOnHand - category.stockAllocated;
                           // Always show stock in sacks (50kg per sack), prevent negative values
                           const availableStock = availableStockKg > 0 ? Math.round(availableStockKg / 50) : 0;
                           return (
                             <AddToCartButton 
-                              productId={product.id}
-                              quantity={getQuantity(product.id)}
+                              categoryId={category.id}
+                              quantity={getQuantity(category.id)}
                               availableStock={availableStock}
                               
                             />
@@ -329,9 +329,9 @@ export default function CardList({ products }: CardListProps) {
                       </div>
                         {(() => {
                         const stockStatus = getStockStatus(
-                          product.stockOnHand,
-                          product.stockAllocated,
-                          product.isMilledRice
+                          category.stockOnHand,
+                          category.stockAllocated,
+                          category.isMilledRice
                         );
                         return (
                           <div className={`flex items-center justify-center gap-2 text-sm font-medium ${

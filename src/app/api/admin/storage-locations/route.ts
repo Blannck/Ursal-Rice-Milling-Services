@@ -33,11 +33,10 @@ export async function GET(request: Request) {
         },
         inventoryItems: {
           include: {
-            product: {
+            category: {
               select: {
                 id: true,
                 name: true,
-                category: true,
               },
             },
           },

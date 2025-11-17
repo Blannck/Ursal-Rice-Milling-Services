@@ -18,25 +18,25 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       for (const it of items) {
         const poi = await tx.purchaseOrderItem.findUnique({ 
           where: { id: it.purchaseOrderItemId },
-          include: { product: true }
+          include: { category: true }
         })
         if (!poi) throw new Error("PO line not found")
-        if (!poi.product) throw new Error("Product not found for PO line")
+        if (!poi.category) throw new Error("Category not found for PO line")
         
         const maxReturnable = poi.receivedQty - poi.returnedQty
         const qty = Math.max(0, Math.min(maxReturnable, Number(it.quantity) || 0))
         if (qty <= 0) continue
 
-        console.log(`\n📤 Processing return for ${poi.product.name}: ${qty} units`)
+        console.log(`\n📤 Processing return for ${poi.category.name}: ${qty} units`)
 
         // ✅ DEDUCT FROM INVENTORY LOCATIONS (LIFO - Last In, First Out)
         // Returns should remove most recently received stock first
         let remainingToReturn = qty
 
-        // Get inventory items for this product (LIFO: newest first)
+        // Get inventory items for this category (LIFO: newest first)
         const inventoryItems = await tx.inventoryItem.findMany({
           where: {
-            productId: poi.productId,
+            categoryId: poi.categoryId,
             quantity: { gt: 0 },
           },
           include: { location: true },
@@ -44,14 +44,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         })
 
         if (inventoryItems.length === 0) {
-          throw new Error(`No inventory available to return for ${poi.product.name}`)
+          throw new Error(`No inventory available to return for ${poi.category.name}`)
         }
 
         // Check if we have enough total stock
         const totalAvailable = inventoryItems.reduce((sum, inv) => sum + inv.quantity, 0)
         if (totalAvailable < remainingToReturn) {
           throw new Error(
-            `Insufficient stock to return for ${poi.product.name}. Available: ${totalAvailable}, Needed: ${remainingToReturn}`
+            `Insufficient stock to return for ${poi.category.name}. Available: ${totalAvailable}, Needed: ${remainingToReturn}`
           )
         }
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           // Create RETURN_OUT transaction per location
           await tx.inventoryTransaction.create({
             data: {
-              productId: poi.productId,
+              categoryId: poi.categoryId,
               locationId: inventoryItem.locationId,
               kind: "RETURN_OUT",
               quantity: toDeduct,
@@ -102,13 +102,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           data: { returnedQty: { increment: qty } },
         })
 
-        // Update product stockOnHand
-        await tx.product.update({
-          where: { id: poi.productId },
+        // Update category stockOnHand
+        await tx.category.update({
+          where: { id: poi.categoryId },
           data: { stockOnHand: { decrement: qty } },
         })
 
-        console.log(`   📊 Product stockOnHand decreased by ${qty}`)
+        console.log(`   📊 Category stockOnHand decreased by ${qty}`)
         console.log(`   🎉 Return completed successfully!\n`)
       }
 

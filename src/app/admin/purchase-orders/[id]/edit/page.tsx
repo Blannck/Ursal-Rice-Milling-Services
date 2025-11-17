@@ -27,7 +27,7 @@ interface Supplier {
   email?: string;
 }
 
-interface Product {
+interface Category {
   id: ID;
   name: string;
   category: string;
@@ -37,8 +37,8 @@ interface Product {
 
 interface OrderItemRow {
   id?: ID; // optional for existing rows
-  productId: ID;
-  product: Product;
+  categoryId: ID;
+  category: Category;
   quantity: number;
   price: number;
 }
@@ -75,10 +75,10 @@ export default function PurchaseOrderEditPage() {
   const [note, setNote] = useState("");
 
   const [items, setItems] = useState<OrderItemRow[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // add item controls
-  const [newProductId, setNewProductId] = useState("");
+  const [newCategoryId, setNewProductId] = useState("");
   const [newQty, setNewQty] = useState<number>(1);
   const [newPrice, setNewPrice] = useState<string>("");
 
@@ -111,15 +111,15 @@ export default function PurchaseOrderEditPage() {
       setItems(
         po.items.map((it: any) => ({
       id: it.id,
-    productId: it.product.id,
-    product: it.product,
+    categoryId: it.category.id,
+    category: it.category,
     quantity: Number(it.orderedQty ?? it.quantity ?? 1),
-    price: Number(it.price ?? it.product?.price ?? 0),
+    price: Number(it.price ?? it.category?.price ?? 0),
         }))
       );
 
-      // fetch supplier products for adding/editing rows
-      await fetchSupplierProducts(po.supplierId);
+      // fetch supplier categories for adding/editing rows
+      await fetchSupplierCategories(po.supplierId);
     } catch (err) {
       console.error("Error fetching purchase order:", err);
       setOrder(null);
@@ -128,18 +128,18 @@ export default function PurchaseOrderEditPage() {
     }
   }
 
-  async function fetchSupplierProducts(supplierId: string) {
+  async function fetchSupplierCategories(supplierId: string) {
     try {
-      const res = await fetch(`/api/admin/products?supplierId=${supplierId}`);
+      const res = await fetch(`/api/admin/categories?supplierId=${supplierId}`);
       const data = await res.json();
-      const list: Product[] =
-        data?.products ??
-        data?.data?.products ??
+      const list: Category[] =
+        data?.categories ??
+        data?.data?.categories ??
         [];
-      setProducts(list);
+      setCategories(list);
     } catch (err) {
-      console.error("Error fetching products:", err);
-      setProducts([]);
+      console.error("Error fetching categories:", err);
+      setCategories([]);
     }
   }
 
@@ -157,36 +157,36 @@ export default function PurchaseOrderEditPage() {
     [items]
   );
 
-  function updateItemQty(productId: string, qty: number) {
+  function updateItemQty(categoryId: string, qty: number) {
     setItems((prev) =>
       prev.map((it) =>
-        it.productId === productId ? { ...it, quantity: Math.max(1, qty) } : it
+        it.categoryId === categoryId ? { ...it, quantity: Math.max(1, qty) } : it
       )
     );
   }
 
-  function updateItemPrice(productId: string, price: number) {
+  function updateItemPrice(categoryId: string, price: number) {
     setItems((prev) =>
       prev.map((it) =>
-        it.productId === productId ? { ...it, price: Math.max(0, price) } : it
+        it.categoryId === categoryId ? { ...it, price: Math.max(0, price) } : it
       )
     );
   }
 
-  function removeItem(productId: string) {
-    setItems((prev) => prev.filter((it) => it.productId !== productId));
+  function removeItem(categoryId: string) {
+    setItems((prev) => prev.filter((it) => it.categoryId !== categoryId));
   }
 
   function addItem() {
-  if (!newProductId || newQty <= 0) return;
+  if (!newCategoryId || newQty <= 0) return;
 
-  const product = products.find((p) => p.id === newProductId);
-  if (!product) return;
+  const category = categories.find((p) => p.id === newCategoryId);
+  if (!category) return;
 
-  const price = newPrice ? parseFloat(newPrice) : product.price;
+  const price = newPrice ? parseFloat(newPrice) : category.price;
 
   setItems((prev) => {
-    const existingIndex = prev.findIndex((it) => it.productId === newProductId);
+    const existingIndex = prev.findIndex((it) => it.categoryId === newCategoryId);
 
     if (existingIndex >= 0) {
       // Update existing item instead of duplicating
@@ -203,8 +203,8 @@ export default function PurchaseOrderEditPage() {
     return [
       ...prev,
       {
-        productId: product.id,
-        product,
+        categoryId: category.id,
+        category,
         quantity: Number(newQty),
         price: Number(price),
       },
@@ -235,7 +235,7 @@ export default function PurchaseOrderEditPage() {
           status,
           note,
           items: items.map((it) => ({
-            productId: it.productId,
+            categoryId: it.categoryId,
             quantity: Number(it.quantity),
             price: Number(it.price),
           })),
@@ -359,13 +359,13 @@ export default function PurchaseOrderEditPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                   <div className="md:col-span-2">
-                    <Label>Product</Label>
-                    <Select value={newProductId} onValueChange={setNewProductId}>
+                    <Label>Category</Label>
+                    <Select value={newCategoryId} onValueChange={setNewProductId}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select product" />
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {products.map((p) => (
+                        {categories.map((p) => (
                           <SelectItem key={p.id} value={p.id}>
                             <div className="flex flex-col">
                               <span>{p.name}</span>
@@ -398,7 +398,7 @@ export default function PurchaseOrderEditPage() {
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <Button type="button" onClick={addItem} disabled={!newProductId}>
+                    <Button type="button" onClick={addItem} disabled={!newCategoryId}>
   <Plus className="h-4 w-4 mr-2" /> Add Item
 </Button>
 
@@ -409,7 +409,7 @@ export default function PurchaseOrderEditPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Product</TableHead>
+                        <TableHead>Category</TableHead>
                         <TableHead>Category</TableHead>
                         <TableHead>Ordered</TableHead>
                         <TableHead>Price</TableHead>
@@ -419,17 +419,17 @@ export default function PurchaseOrderEditPage() {
                     </TableHeader>
                     <TableBody>
                       {items.map((it) => (
-                        <TableRow key={it.productId}>
-                          <TableCell className="font-medium">{it.product.name}</TableCell>
+                        <TableRow key={it.categoryId}>
+                          <TableCell className="font-medium">{it.category.name}</TableCell>
                           <TableCell>
-                            <Badge variant="secondary">{it.product.category}</Badge>
+                            <Badge variant="secondary">{it.category.name}</Badge>
                           </TableCell>
                           <TableCell className="w-24">
                             <Input
   type="number"
   min={1}
   value={Number(it.quantity) || 1}
-  onChange={(e) => updateItemQty(it.productId, parseInt(e.target.value) || 1)}
+  onChange={(e) => updateItemQty(it.categoryId, parseInt(e.target.value) || 1)}
 />
 
 
@@ -441,7 +441,7 @@ export default function PurchaseOrderEditPage() {
   type="number"
   step="0.01"
   value={Number(it.price) || 0}
-  onChange={(e) => updateItemPrice(it.productId, parseFloat(e.target.value) || 0)}
+  onChange={(e) => updateItemPrice(it.categoryId, parseFloat(e.target.value) || 0)}
   className="w-24"
 />
 </TableCell>
@@ -451,7 +451,7 @@ export default function PurchaseOrderEditPage() {
                               type="button"
                               variant="ghost"
                               className="text-red-600"
-                              onClick={() => removeItem(it.productId)}
+                              onClick={() => removeItem(it.categoryId)}
                             >
                               <X className="h-4 w-4" />
                             </Button>

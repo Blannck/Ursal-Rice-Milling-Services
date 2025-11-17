@@ -8,7 +8,7 @@ export interface BackorderReminderEmailData {
   purchaseOrderId: string;
   orderDate: string;
   items: Array<{
-    productName: string;
+    categoryName: string;
     quantity: number;
     expectedDate?: string;
   }>;
@@ -37,7 +37,7 @@ export function generateBackorderReminderEmail(data: BackorderReminderEmailData)
     .map(
       (item) => `
     <tr>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.productName}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.categoryName}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${
         item.expectedDate || "ASAP"
@@ -95,7 +95,7 @@ export function generateBackorderReminderEmail(data: BackorderReminderEmailData)
               <table role="presentation" style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 4px;">
                 <thead>
                   <tr style="background-color: #f9fafb;">
-                    <th style="padding: 12px; text-align: left; font-size: 14px; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Product</th>
+                    <th style="padding: 12px; text-align: left; font-size: 14px; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Rice Category</th>
                     <th style="padding: 12px; text-align: center; font-size: 14px; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Quantity</th>
                     <th style="padding: 12px; text-align: center; font-size: 14px; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb;">Expected Date</th>
                   </tr>

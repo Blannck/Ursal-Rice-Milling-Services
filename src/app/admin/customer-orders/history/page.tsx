@@ -1,20 +1,16 @@
 import React from "react";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent } from "@/components/ui/card";
-import { Package } from "lucide-react";
-import ManageOrdersClient from "./manage-orders-client";
+import OrdersHistoryClient from "./history-client";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOrdersPage() {
-  // Fetch only orders that are NOT fully fulfilled (active orders)
+export default async function OrdersHistoryPage() {
+  // Fetch only fulfilled orders (orders where all deliveries are fulfilled)
   const orders = await prisma.order.findMany({
     where: {
-      NOT: {
-        deliveries: {
-          every: {
-            status: "fulfilled"
-          }
+      deliveries: {
+        every: {
+          status: "fulfilled"
         }
       }
     },
@@ -42,7 +38,7 @@ export default async function AdminOrdersPage() {
       },
     },
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
   });
 
@@ -53,7 +49,7 @@ export default async function AdminOrdersPage() {
     <div className="min-h-screen">
       <div className="border-transparent mt-20 w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <ManageOrdersClient orders={serializedOrders} />
+          <OrdersHistoryClient orders={serializedOrders} />
         </div>
       </div>
     </div>

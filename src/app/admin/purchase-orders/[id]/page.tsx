@@ -50,7 +50,7 @@ interface PurchaseOrder {
   updatedAt: string;
   items: Array<{
     id: string;
-    product: {
+    category: {
       id: string;
       name: string;
       category: string;
@@ -165,17 +165,33 @@ useEffect(() => {
 
 const fetchLocations = async () => {
   try {
+    console.log("Fetching storage locations...");
     const res = await fetch("/api/admin/storage-locations");
     const data = await res.json();
+    console.log("Storage locations response:", data);
+    
     if (data.success && data.locations) {
-      const activeLocations = data.locations.filter((loc: any) => loc.isActive);
-      setLocations(activeLocations);
+      // Use all locations if they exist, don't filter by isActive for receiving
+      const availableLocations = data.locations;
+      console.log("Available locations:", availableLocations);
+      setLocations(availableLocations);
       
       // Set first warehouse as default
-      const firstWarehouse = activeLocations.find((loc: any) => loc.type === "WAREHOUSE");
+      const firstWarehouse = availableLocations.find((loc: any) => loc.type === "WAREHOUSE");
       if (firstWarehouse) {
         setSelectedLocationId(firstWarehouse.id);
+        console.log("Default location set to:", firstWarehouse.name);
+      } else {
+        // If no warehouse, just use the first location
+        if (availableLocations.length > 0) {
+          setSelectedLocationId(availableLocations[0].id);
+          console.log("Default location set to first available:", availableLocations[0].name);
+        } else {
+          console.warn("No locations found in database");
+        }
       }
+    } else {
+      console.error("Failed to fetch locations:", data);
     }
   } catch (e) {
     console.error("Failed to fetch locations", e);
@@ -479,6 +495,12 @@ const handleSubmitReturn = async () => {
                       <p>{purchaseOrder.supplier.address}</p>
                     </div>
                   )}
+                  <div className="md:col-span-2">
+                    <label className="text-sm text-black">Delivery Location</label>
+                    <p className="text-lg font-semibold">
+                      Purok Bagong Silang, Barangay Poblacion, Santo Niño, South Cotabato
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -541,7 +563,7 @@ const handleSubmitReturn = async () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Product</TableHead>
+                      <TableHead>Category</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Ordered</TableHead>
                       <TableHead>Received</TableHead>
@@ -555,18 +577,18 @@ const handleSubmitReturn = async () => {
                         <TableCell>
                           <div>
                             <div className="font-medium">
-                              {item.product.name}
+                              {item.category.name}
                             </div>
-                            {item.product.description && (
+                            {item.category.description && (
                               <div className="text-sm text-black">
-                                {item.product.description}
+                                {item.category.description}
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">
-                            {item.product.category}
+                            {item.category.name}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-medium">
@@ -712,7 +734,7 @@ const handleSubmitReturn = async () => {
                     {purchaseOrder.items.map((item) => (
                       <div key={item.id} className="flex flex-col space-y-1">
                         <span className="font-semibold text-gray-800">
-                          {item.product.name}
+                          {item.category.name}
                         </span>
                         <span className="text-sm text-black">
                           {item.receivedQty ?? 0} / {item.orderedQty ?? 0}{" "}
@@ -843,7 +865,7 @@ const handleSubmitReturn = async () => {
                           <div key={bo.id} className="p-3 bg-white rounded-lg border border-gray-200">
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex-1">
-                                <p className="font-medium text-black">{bo.purchaseOrderItem?.product?.name || "Unknown Product"}</p>
+                                <p className="font-medium text-black">{bo.purchaseOrderItem?.category?.name || "Unknown Category"}</p>
                                 <p className="text-sm text-gray-600">Quantity: {bo.quantity}</p>
                                 {bo.expectedDate && (
                                   <p className="text-sm text-gray-600">
@@ -965,7 +987,7 @@ const handleSubmitReturn = async () => {
                     return (
                       <div key={item.id}>
                         <p className="text-sm font-medium text-black mb-1">
-                          {item.product.name} — Return up to {maxReturnable}
+                          {item.category.name} — Return up to {maxReturnable}
                         </p>
                         <Input
                           type="number"

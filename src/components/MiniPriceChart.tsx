@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 
 interface PriceHistory {
   id: string;
-  productId: string;
+  categoryId: string;
   oldPrice: number;
   newPrice: number;
   changedBy: string;

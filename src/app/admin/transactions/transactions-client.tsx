@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
-type Product = {
+type Category = {
   id: string;
   name: string;
   category: string;
@@ -47,7 +47,7 @@ type StorageLocation = {
 
 type Transaction = {
   id: string;
-  productId: string;
+  categoryId: string;
   kind: string;
   quantity: number;
   unitPrice: number | null;
@@ -56,22 +56,22 @@ type Transaction = {
   purchaseOrderId: string | null;
   createdBy: string | null;
   createdAt: Date;
-  product: Product | null;
+  category: Category | null;
   location: StorageLocation | null;
 };
 
 export default function TransactionsClient({
   transactions,
-  products,
+  categories,
   locations,
 }: {
   transactions: Transaction[];
-  products: Product[];
+  categories: Category[];
   locations: StorageLocation[];
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const [productFilter, setProductFilter] = useState<string>("ALL");
+  const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [locationFilter, setLocationFilter] = useState<string>("ALL");
   const [dateRange, setDateRange] = useState<string>("ALL");
 
@@ -104,10 +104,10 @@ export default function TransactionsClient({
       // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
-        const matchesProduct = transaction.product?.name.toLowerCase().includes(searchLower);
+        const matchesCategory = transaction.category?.name.toLowerCase().includes(searchLower);
         const matchesNote = transaction.note?.toLowerCase().includes(searchLower);
         const matchesLocation = transaction.location?.name.toLowerCase().includes(searchLower);
-        if (!matchesProduct && !matchesNote && !matchesLocation) {
+        if (!matchesCategory && !matchesNote && !matchesLocation) {
           return false;
         }
       }
@@ -117,8 +117,8 @@ export default function TransactionsClient({
         return false;
       }
 
-      // Product filter
-      if (productFilter !== "ALL" && transaction.productId !== productFilter) {
+      // Category filter
+      if (categoryFilter !== "ALL" && transaction.categoryId !== categoryFilter) {
         return false;
       }
 
@@ -158,7 +158,7 @@ export default function TransactionsClient({
 
       return true;
     });
-  }, [transactions, searchTerm, typeFilter, productFilter, locationFilter, dateRange]);
+  }, [transactions, searchTerm, typeFilter, categoryFilter, locationFilter, dateRange]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -213,7 +213,7 @@ export default function TransactionsClient({
     const headers = [
       "Date",
       "Type",
-      "Product",
+      "Rice Category",
       "Category",
       "Quantity",
       "Location",
@@ -225,8 +225,8 @@ export default function TransactionsClient({
     const rows = filteredTransactions.map((t) => [
       new Date(t.createdAt).toLocaleString(),
       t.kind,
-      t.product?.name || "Unknown",
-      t.product?.category || "-",
+      t.category?.name || "Unknown",
+      t.category?.category || "-",
       t.quantity,
       t.location?.name || "-",
       t.unitPrice || 0,
@@ -251,7 +251,7 @@ export default function TransactionsClient({
   const clearFilters = () => {
     setSearchTerm("");
     setTypeFilter("ALL");
-    setProductFilter("ALL");
+    setCategoryFilter("ALL");
     setLocationFilter("ALL");
     setDateRange("ALL");
   };
@@ -386,16 +386,16 @@ export default function TransactionsClient({
               </SelectContent>
             </Select>
 
-            {/* Product Filter */}
-            <Select value={productFilter} onValueChange={setProductFilter}>
+            {/* Category Filter */}
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="All Products" />
+                <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Products</SelectItem>
-                {products.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name}
+                <SelectItem value="ALL">All Categories</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -462,7 +462,7 @@ export default function TransactionsClient({
                     <TableRow  >
                       <TableHead>Date & Time</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Product</TableHead>
+                      <TableHead>Rice Category</TableHead>
                       <TableHead className="text-center">Quantity</TableHead>
                       <TableHead>Location</TableHead>
                       <TableHead className="text-right">Unit Price</TableHead>
@@ -499,10 +499,10 @@ export default function TransactionsClient({
                           <TableCell>
                             <div>
                               <p className="font-medium">
-                                {transaction.product?.name || "Unknown Product"}
+                                {transaction.category?.name || "Unknown Category"}
                               </p>
                               <p className="text-xs text-black">
-                                {transaction.product?.category || "-"}
+                                {transaction.category?.category || "-"}
                               </p>
                             </div>
                           </TableCell>

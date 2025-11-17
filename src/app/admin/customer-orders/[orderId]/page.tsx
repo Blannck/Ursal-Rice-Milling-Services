@@ -12,7 +12,7 @@ export default async function OrderDetailsPage({ params }: { params: { orderId: 
     include: {
       items: {
         include: {
-          product: true,
+          category: true,
         },
       },
       deliveries: {
@@ -21,7 +21,7 @@ export default async function OrderDetailsPage({ params }: { params: { orderId: 
             include: {
               orderItem: {
                 include: {
-                  product: true,
+                  category: true,
                 },
               },
             },

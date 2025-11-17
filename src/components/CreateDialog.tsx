@@ -18,7 +18,8 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import toast from "react-hot-toast";
 import ImageUpload from "./ImageUpload";
-import { createProduct } from "@/actions/product.aciton";
+import { createCategory } from "@/actions/product.aciton";
+import { Plus } from "lucide-react";
 
 export default function CreateDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,10 +29,10 @@ export default function CreateDialog() {
     downloadUrl: "",
     price: 1,
     reorderPoint: 0,
-    category: "",
     userId: "",
     imageUrl: "",
-    isMilledRice: false // Always create unmilled rice products by default
+    isMilledRice: false, // Always create unmilled rice categories by default
+    isHidden: true // Hide from Manage Products page by default
   });
 
   const handleChange = (field: string, value: string | number | boolean) => {
@@ -42,15 +43,29 @@ export default function CreateDialog() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    console.log("Submitting product with data:", formData);
+    console.log("Submitting category with data:", formData);
     
     try {
-      const newProduct = await createProduct(formData);
-      console.log("Product created successfully:", newProduct);
-      toast.success("Product created successfully");
-
+      const newCategory = await createCategory(formData);
+      console.log("Category created successfully:", newCategory);
+      
       // Close dialog first
       setIsOpen(false);
+
+      // Show success notification with custom styling
+      toast.success(`✅ Category "${formData.name}" created successfully!`, {
+        duration: 4000,
+        position: 'top-center',
+        style: {
+          background: '#10b981',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+        icon: '🎉',
+      });
 
       // Reset form
       setFormData({
@@ -59,20 +74,31 @@ export default function CreateDialog() {
         downloadUrl: "",
         price: 1,
         reorderPoint: 0,
-        category: "",
         userId: "",
         imageUrl: "",
-        isMilledRice: false
+        isMilledRice: false,
+        isHidden: true
       });
 
-      // Force a page refresh to show the new product with its image
+      // Force a page refresh to show the new category with its image
       setTimeout(() => {
         window.location.reload();
       }, 300);
 
     } catch (error) {
-      console.error("Error creating product", error);
-      toast.error("Failed to create product");
+      console.error("Error creating category", error);
+      toast.error("❌ Failed to create category. Please try again.", {
+        duration: 4000,
+        position: 'top-center',
+        style: {
+          background: '#ef4444',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+      });
     }
   };
 
@@ -81,41 +107,34 @@ export default function CreateDialog() {
       <AlertDialogTrigger asChild>
         <Button
           variant="default"
-          className="ml-auto font-bold flex items-center gap-2"
+          className="font-bold flex items-center gap-2"
           asChild
         >
-          <span>Add Product</span>
+          <span>
+            <Plus className="h-4 w-4" />
+            Add Category
+          </span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
-          <AlertDialogTitle>Add a Product</AlertDialogTitle>
+          <AlertDialogTitle>Add a Category</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
-            Fill out the form below to add a new product to your inventory.
+            Fill out the form below to add a new rice category to your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
+          <div>
+            <Label htmlFor="name">Category Name</Label>
+            <Input
               id="name"
               type="text"
-              placeholder="Enter name"
+              placeholder="e.g., Ordinary, Toner, or RC-160"
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
               required
-              />
-            </div>
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Combobox
-
-                value={formData.category}
-                onChange={(val) => handleChange("category", val)}
-              />
-            </div>
+            />
           </div>
           <Label htmlFor="description">Description</Label>
           <Textarea

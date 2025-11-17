@@ -32,7 +32,7 @@ interface Location {
   };
 }
 
-interface Product {
+interface Category {
   id: string;
   name: string;
   category: string;
@@ -49,7 +49,7 @@ interface Product {
 interface InventoryItem {
   id: string;
   quantity: number;
-  product: Product & { supplier?: { name: string } | null };
+  category: Category & { supplier?: { name: string } | null };
   location: {
     id: string;
     name: string;
@@ -61,11 +61,11 @@ interface InventoryItem {
 
 interface InventoryClientProps {
   initialLocations: Location[];
-  initialProducts: Product[];
+  initialCategories: Category[];
   initialInventoryItems: InventoryItem[];
 }
 
-export function InventoryClient({ initialLocations, initialProducts, initialInventoryItems }: InventoryClientProps) {
+export function InventoryClient({ initialLocations, initialCategories, initialInventoryItems }: InventoryClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchLocation, setSearchLocation] = React.useState("");
@@ -92,19 +92,19 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
   // Filter inventory items
   const filteredInventory = initialInventoryItems.filter(
     (item) =>
-      item.product.name.toLowerCase().includes(searchInventory.toLowerCase()) ||
+      item.category.name.toLowerCase().includes(searchInventory.toLowerCase()) ||
       item.location.name.toLowerCase().includes(searchInventory.toLowerCase())
   );
 
   // Calculate inventory summary
   const totalLocations = initialLocations.length;
-  const totalProducts = new Set(initialInventoryItems.map((i) => i.product.id)).size;
-  const unmilledItems = initialInventoryItems.filter(item => !item.product.isMilledRice);
-  const milledItems = initialInventoryItems.filter(item => item.product.isMilledRice);
+  const totalCategories = new Set(initialInventoryItems.map((i) => i.category.id)).size;
+  const unmilledItems = initialInventoryItems.filter(item => !item.category.isMilledRice);
+  const milledItems = initialInventoryItems.filter(item => item.category.isMilledRice);
   const totalUnmilledQuantity = unmilledItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalMilledQuantity = milledItems.reduce((sum, item) => sum + item.quantity, 0);
   const lowStockItems = initialInventoryItems.filter(
-    (item) => item.product.reorderPoint && item.quantity <= item.product.reorderPoint
+    (item) => item.category.reorderPoint && item.quantity <= item.category.reorderPoint
   );
 
   const handleDeleteLocation = async (locationId: string) => {
@@ -210,12 +210,11 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
           </TableRow>
         ) : (
           items.map((item) => {
-            const isLowStock = item.product.reorderPoint && item.quantity <= item.product.reorderPoint;
+            const isLowStock = item.category.reorderPoint && item.quantity <= item.category.reorderPoint;
 
             return (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.product.name}</TableCell>
-                <TableCell>{item.product.category}</TableCell>
+                <TableCell className="font-medium">{item.category.name}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Badge className={getLocationTypeColor(item.location.type)} variant="secondary">
@@ -228,7 +227,7 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
                   </div>
                 </TableCell>
                 <TableCell><span className="font-mono">{item.quantity}</span></TableCell>
-                <TableCell><span className="font-mono">{item.product.reorderPoint}</span></TableCell>
+                <TableCell><span className="font-mono">{item.category.reorderPoint}</span></TableCell>
                 <TableCell>
                   {isLowStock ? (
                     <Badge variant="destructive">Low Stock</Badge>
@@ -250,7 +249,7 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-white mt-1">Manage storage locations and product inventory</p>
+          <p className="text-white mt-1">Manage storage locations and category inventory</p>
         </div>
       </div>
 
@@ -268,12 +267,12 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products Stored</CardTitle>
+            <CardTitle className="text-sm font-medium">Categories Stored</CardTitle>
             <Package className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-black">Unique products in inventory</p>
+            <div className="text-2xl font-bold">{totalCategories}</div>
+            <p className="text-xs text-black">Unique categories in inventory</p>
           </CardContent>
         </Card>
 
@@ -328,11 +327,11 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
               Adjust Stock
             </Button>
             <MillingOperationDialog 
-              products={initialProducts} 
+              categories={initialCategories} 
               locations={initialLocations} 
               inventoryItems={initialInventoryItems}
             />
-            <AssignInventoryDialog products={initialProducts} locations={initialLocations} />
+            <AssignInventoryDialog categories={initialCategories} locations={initialLocations} />
             <CreateLocationDialog locations={initialLocations} />
           </div>
         </div>
@@ -343,13 +342,13 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
               <div className="flex mb-5 items-center justify-between">
                 <div>
                   <CardTitle>Unmilled Rice Inventory</CardTitle>
-                  <CardDescription className="text-black">View and manage unmilled rice products</CardDescription>
+                  <CardDescription className="text-black">View and manage unmilled rice categories</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search products or locations..."
+                      placeholder="Search categories or locations..."
                       className="pl-8 w-[300px]"
                       value={searchInventory}
                       onChange={(e) => setSearchInventory(e.target.value)}
@@ -359,7 +358,7 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
               </div>
             </CardHeader>
             <CardContent>
-              {renderInventoryTable(filteredInventory.filter(item => !item.product.isMilledRice))}
+              {renderInventoryTable(filteredInventory.filter(item => !item.category.isMilledRice))}
             </CardContent>
           </Card>
         </TabsContent>
@@ -370,13 +369,13 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
               <div className="flex mb-5 items-center justify-between">
                 <div>
                   <CardTitle>Milled Rice Inventory</CardTitle>
-                  <CardDescription className="text-black">View and manage milled rice products</CardDescription>
+                  <CardDescription className="text-black">View and manage milled rice categories</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search products or locations..."
+                      placeholder="Search categories or locations..."
                       className="pl-8 w-[300px]"
                       value={searchInventory}
                       onChange={(e) => setSearchInventory(e.target.value)}
@@ -386,7 +385,7 @@ export function InventoryClient({ initialLocations, initialProducts, initialInve
               </div>
             </CardHeader>
             <CardContent>
-              {renderInventoryTable(filteredInventory.filter(item => item.product.isMilledRice))}
+              {renderInventoryTable(filteredInventory.filter(item => item.category.isMilledRice))}
             </CardContent>
           </Card>
         </TabsContent>

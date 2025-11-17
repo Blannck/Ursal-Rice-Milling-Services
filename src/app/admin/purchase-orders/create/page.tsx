@@ -39,7 +39,7 @@ interface Supplier {
   isActive: boolean;
 }
 
-interface Product {
+interface Category {
   id: string;
   name: string;
   category: string;
@@ -48,8 +48,8 @@ interface Product {
 }
 
 interface OrderItem {
-  productId: string;
-  product: Product;
+  categoryId: string;
+  category: Category;
   quantity: number;
   price: number;
 }
@@ -57,7 +57,7 @@ interface OrderItem {
 export default function CreatePurchaseOrderPage() {
   const router = useRouter();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
@@ -80,9 +80,9 @@ export default function CreatePurchaseOrderPage() {
 
   useEffect(() => {
     if (selectedSupplierId) {
-      fetchSupplierProducts(selectedSupplierId);
+      fetchSupplierCategories(selectedSupplierId);
     } else {
-      setProducts([]);
+      setCategories([]);
     }
     // Clear items when supplier changes
     setOrderItems([]);
@@ -114,40 +114,40 @@ export default function CreatePurchaseOrderPage() {
     }
   };
 
-  const fetchSupplierProducts = async (supplierId: string) => {
+  const fetchSupplierCategories = async (supplierId: string) => {
     try {
-      console.log("Fetching products for supplier:", supplierId); // Debug log
+      console.log("Fetching categories for supplier:", supplierId); // Debug log
       const response = await fetch(`/api/admin/products?supplierId=${supplierId}`);
-      console.log("Products response status:", response.status); // Debug log
+      console.log("Categories response status:", response.status); // Debug log
       
       const data = await response.json();
-      console.log("Products data:", data); // Debug log
+      console.log("Categories data:", data); // Debug log
       
-      if (data.success && data.products) {
-        setProducts(data.products);
-        console.log("Products loaded:", data.products.length); // Debug log
+      if (data.success && data.categories) {
+        setCategories(data.categories);
+        console.log("Categories loaded:", data.categories.length); // Debug log
       } else {
-        console.error("Products API response:", data);
-        alert(data.error || "Failed to fetch products");
-        setProducts([]);
+        console.error("Categories API response:", data);
+        alert(data.error || "Failed to fetch categories");
+        setCategories([]);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
-      alert("Failed to fetch products");
-      setProducts([]);
+      console.error("Error fetching categories:", error);
+      alert("Failed to fetch categories");
+      setCategories([]);
     }
   };
 
   const addOrderItem = () => {
     if (!selectedProductId || quantity <= 0) return;
     
-    const product = products.find(p => p.id === selectedProductId);
-    if (!product) return;
+    const category = categories.find(p => p.id === selectedProductId);
+    if (!category) return;
     
     // Check if item already exists
-    const existingIndex = orderItems.findIndex(item => item.productId === selectedProductId);
+    const existingIndex = orderItems.findIndex(item => item.categoryId === selectedProductId);
     
-    const price = customPrice ? parseFloat(customPrice) : product.price;
+    const price = customPrice ? parseFloat(customPrice) : category.price;
     
     if (existingIndex >= 0) {
       // Update existing item
@@ -161,8 +161,8 @@ export default function CreatePurchaseOrderPage() {
     } else {
       // Add new item
       const newItem: OrderItem = {
-        productId: selectedProductId,
-        product: product,
+        categoryId: selectedProductId,
+        category: category,
         quantity: quantity,
         price: price,
       };
@@ -175,26 +175,26 @@ export default function CreatePurchaseOrderPage() {
     setCustomPrice("");
   };
 
-  const removeOrderItem = (productId: string) => {
-    setOrderItems(orderItems.filter(item => item.productId !== productId));
+  const removeOrderItem = (categoryId: string) => {
+    setOrderItems(orderItems.filter(item => item.categoryId !== categoryId));
   };
 
-  const updateItemQuantity = (productId: string, newQuantity: number) => {
+  const updateItemQuantity = (categoryId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeOrderItem(productId);
+      removeOrderItem(categoryId);
       return;
     }
     
     setOrderItems(orderItems.map(item => 
-      item.productId === productId 
+      item.categoryId === categoryId 
         ? { ...item, quantity: newQuantity }
         : item
     ));
   };
 
-  const updateItemPrice = (productId: string, newPrice: number) => {
+  const updateItemPrice = (categoryId: string, newPrice: number) => {
     setOrderItems(orderItems.map(item => 
-      item.productId === productId 
+      item.categoryId === categoryId 
         ? { ...item, price: newPrice }
         : item
     ));
@@ -219,7 +219,7 @@ export default function CreatePurchaseOrderPage() {
         supplierId: selectedSupplierId,
         note,
         items: orderItems.map(item => ({
-          productId: item.productId,
+          categoryId: item.categoryId,
           quantity: item.quantity,
           price: item.price,
         })),
@@ -237,7 +237,7 @@ export default function CreatePurchaseOrderPage() {
           monthlyTerms: paymentType === "MONTHLY" ? monthlyTerms : null,
           dueDate: dueDate ? new Date(dueDate).toISOString() : null,
           items: orderItems.map(item => ({
-            productId: item.productId,
+            categoryId: item.categoryId,
             quantity: item.quantity,
             price: item.price,
           })),
@@ -371,22 +371,22 @@ if (data?.ok || data?.success) {
                     </div>
                   )}
 
-                  <div>
-                    <Label htmlFor="dueDate">Due Date</Label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="bg-white"
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                    <p className="text-xs  mt-1">
-                      {paymentType === "MONTHLY" 
-                        ? `First installment due date (${monthlyTerms} monthly payments)` 
-                        : "Final payment due date"}
-                    </p>
-                  </div>
+                  {paymentType === "MONTHLY" && (
+                    <div>
+                      <Label htmlFor="dueDate">First Payment Due Date</Label>
+                      <Input
+                        id="dueDate"
+                        type="date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                        className="bg-white"
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                      <p className="text-xs mt-1">
+                        Total of {monthlyTerms} monthly payments will be due
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -395,23 +395,23 @@ if (data?.ok || data?.success) {
                 <Card>
                   <CardHeader className="mb-5">
                     <CardTitle>Add Items</CardTitle>
-                    <CardDescription className="text-black">Select products to include in this purchase order</CardDescription>
+                    <CardDescription className="text-black">Select rice categories to include in this purchase order</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
-                        <Label>Product</Label>
+                        <Label>Category</Label>
                         <Select value={selectedProductId} onValueChange={setSelectedProductId}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select product" />
+                            <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                           <SelectContent>
-                            {products.map((product) => (
-                              <SelectItem  className="" key={product.id} value={product.id}>
+                            {categories.map((category) => (
+                              <SelectItem  className="" key={category.id} value={category.id}>
                                 <div className="flex flex-col text-left">
-                                  <span>{product.name}</span>
+                                  <span>{category.name}</span>
                                   <span className="text-sm ">
-                                    {product.category} - ₱{product.price}
+                                    ₱{category.price}
                                   </span>
                                 </div>
                               </SelectItem>
@@ -421,7 +421,7 @@ if (data?.ok || data?.success) {
                       </div>
                       
                       <div>
-                        <Label>Ordered</Label>
+                        <Label>Kilos</Label>
                         <Input
                           type="number"
                           min="1"
@@ -429,18 +429,7 @@ if (data?.ok || data?.success) {
                           onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                         />
                       </div>
-                      
-                      <div>
-                        <Label>Custom Price</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder=""
-                          value={customPrice}
-                          onChange={(e) => setCustomPrice(e.target.value)}
-                        />
-                      </div>
-                      
+                    
                       <Button type="button" onClick={addOrderItem}>
                         <Plus className="h-4 w-4 mr-2" />
                         Add Item
@@ -461,7 +450,6 @@ if (data?.ok || data?.success) {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Product</TableHead>
                           <TableHead>Category</TableHead>
                           <TableHead>Kilos</TableHead>
                           <TableHead>Price</TableHead>
@@ -471,19 +459,16 @@ if (data?.ok || data?.success) {
                       </TableHeader>
                       <TableBody>
                         {orderItems.map((item) => (
-                          <TableRow key={item.productId}>
+                          <TableRow key={item.categoryId}>
                             <TableCell className="font-medium">
-                              {item.product.name}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="secondary">{item.product.category}</Badge>
+                              {item.category.name}
                             </TableCell>
                             <TableCell>
                               <Input
                                 type="number"
                                 min="1"
                                 value={item.quantity}
-                                onChange={(e) => updateItemQuantity(item.productId, parseInt(e.target.value) || 1)}
+                                onChange={(e) => updateItemQuantity(item.categoryId, parseInt(e.target.value) || 1)}
                                 className="w-20"
                               />
                             </TableCell>
@@ -492,7 +477,7 @@ if (data?.ok || data?.success) {
                                 type="number"
                                 step="0.01"
                                 value={item.price}
-                                onChange={(e) => updateItemPrice(item.productId, parseFloat(e.target.value) || 0)}
+                                onChange={(e) => updateItemPrice(item.categoryId, parseFloat(e.target.value) || 0)}
                                 className="w-24"
                               />
                             </TableCell>
@@ -504,7 +489,7 @@ if (data?.ok || data?.success) {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeOrderItem(item.productId)}
+                                onClick={() => removeOrderItem(item.categoryId)}
                                 className="text-red-600 hover:text-red-700"
                               >
                                 <X className="h-4 w-4" />

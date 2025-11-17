@@ -10,10 +10,10 @@ async function getInventoryReportData() {
   // Ensure user is admin
   await assertAdmin();
 
-  // Fetch all inventory items with product and location details
+  // Fetch all inventory items with category and location details
   const inventoryItems = await prisma.inventoryItem.findMany({
     include: {
-      product: {
+      category: {
         include: {
           supplier: true,
         },
@@ -25,18 +25,16 @@ async function getInventoryReportData() {
       },
     },
     orderBy: [
-      { product: { category: "asc" } },
-      { product: { name: "asc" } },
+      { category: { name: "asc" } },
     ],
   });
 
-  // Get all products for category statistics
-  const products = await prisma.product.findMany({
+  // Get all categories for category statistics
+  const categories = await prisma.category.findMany({
     where: { isHidden: false },
     select: {
       id: true,
       name: true,
-      category: true,
       price: true,
       reorderPoint: true,
       isMilledRice: true,
@@ -65,7 +63,7 @@ async function getInventoryReportData() {
 
   return {
     inventoryItems,
-    products,
+    categories,
     locations,
   };
 }
@@ -79,7 +77,7 @@ export default async function InventoryReportPage() {
         <Suspense fallback={<div>Loading inventory report...</div>}>
           <InventoryReportClient
             inventoryItems={data.inventoryItems}
-            products={data.products}
+            categories={data.categories}
             locations={data.locations}
           />
         </Suspense>

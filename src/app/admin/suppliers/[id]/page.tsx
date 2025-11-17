@@ -18,7 +18,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
   // fetch supplier and recent items in parallel
   const [supplier, items] = await Promise.all([
     prisma.supplier.findUnique({ where: { id } }),
-    prisma.product.findMany({
+    prisma.category.findMany({
       where: { supplierId: id },
       orderBy: { createdAt: "desc" },
       take: 20,
@@ -59,20 +59,19 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
           <div className="mt-1 text-black text-lg">{new Date(supplier.updatedAt).toLocaleString()}</div>
         </div>
         <div className="rounded-xl bg-custom-white border-transparent p-4">
-          <div className="text-xs text-black">Recent Products</div>
+          <div className="text-xs text-black">Recent Categories</div>
           <div className="mt-1 text-black text-lg">{items.length}</div>
         </div>
       </div>
 
       {/* recent items */}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Recent Products</h2>
+        <h2 className="text-xl font-semibold">Recent Categories</h2>
         <div className="overflow-hidden rounded-xl border-transparent bg-white text-black">
           <table className="w-full text-sm">
             <thead className="bg-custom-green text-white">
               <tr>
                 <th className="px-3 py-2 text-left">Name</th>
-                <th className="px-3 py-2 text-left">Category</th>
                 <th className="px-3 py-2 text-left">Price</th>
                 <th className="px-3 py-2 text-left">Created</th>
               </tr>
@@ -81,15 +80,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
               {items.map((p) => (
                 <tr key={p.id} className="border-t border-gray-700">
                   <td className="px-3 py-2">{p.name}</td>
-                  <td className="px-3 py-2">{p.category}</td>
                   <td className="px-3 py-2">₱ {p.price.toFixed(2)}</td>
                   <td className="px-3 py-2">{new Date(p.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
               {!items.length && (
                 <tr>
-                  <td className="px-3 py-8 text-center text-black" colSpan={4}>
-                    No products yet for this supplier
+                  <td className="px-3 py-8 text-center text-black" colSpan={3}>
+                    No categories yet for this supplier
                   </td>
                 </tr>
               )}

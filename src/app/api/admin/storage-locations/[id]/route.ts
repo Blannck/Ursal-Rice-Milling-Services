@@ -21,7 +21,7 @@ export async function GET(
         children: true,
         inventoryItems: {
           include: {
-            product: {
+            category: {
               include: {
                 supplier: true,
               },
@@ -30,7 +30,7 @@ export async function GET(
         },
         transactions: {
           include: {
-            product: {
+            category: {
               select: {
                 id: true,
                 name: true,

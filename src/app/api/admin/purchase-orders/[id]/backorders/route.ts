@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         status: { in: statuses },
       },
       include: {
-        purchaseOrderItem: { include: { product: true } },
+        purchaseOrderItem: { include: { category: true } },
       },
       orderBy: { createdAt: "desc" },
     });

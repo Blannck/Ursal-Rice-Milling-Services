@@ -36,7 +36,7 @@ type OrderItem = {
   id: string;
   quantity: number;
   price: number;
-  product: {
+  category: {
     id: string;
     name: string;
     category: string;
@@ -69,7 +69,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
     const cats = new Set<string>();
     orders.forEach((order) => {
       order.items.forEach((item) => {
-        cats.add(item.product.category);
+        cats.add(item.category.name);
       });
     });
     return Array.from(cats);
@@ -116,7 +116,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
         // If category filter is active, only include items from that category
-        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+        if (categoryFilter === "all" || item.category.name === categoryFilter) {
           const itemRevenue = item.quantity * item.price;
           grossSales += itemRevenue;
           // Net sales = Gross sales (no returns/discounts for customer orders)
@@ -168,7 +168,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
     let previousGrossSales = 0;
     previousOrders.forEach((order) => {
       order.items.forEach((item) => {
-        if (categoryFilter === "all" || item.product.category === categoryFilter) {
+        if (categoryFilter === "all" || item.category.name === categoryFilter) {
           previousGrossSales += item.quantity * item.price;
         }
       });
@@ -178,33 +178,32 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       ? ((grossSales - previousGrossSales) / previousGrossSales) * 100 
       : 0;
 
-    // Top products - category aware
-    const productSales = new Map<string, { name: string; category: string; quantity: number; revenue: number; isMilledRice: boolean }>();
+    // Top categories - category aware
+    const categorySales = new Map<string, { name: string; quantity: number; revenue: number; isMilledRice: boolean }>();
     
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
         // Apply category filter
-        if (categoryFilter === "all" || item.product.category === categoryFilter) {
-          const existing = productSales.get(item.product.id);
+        if (categoryFilter === "all" || item.category.name === categoryFilter) {
+          const existing = categorySales.get(item.category.id);
           const revenue = item.quantity * item.price;
           
           if (existing) {
             existing.quantity += item.quantity;
             existing.revenue += revenue;
           } else {
-            productSales.set(item.product.id, {
-              name: item.product.name,
-              category: item.product.category,
+            categorySales.set(item.category.id, {
+              name: item.category.name,
               quantity: item.quantity,
               revenue,
-              isMilledRice: item.product.isMilledRice,
+              isMilledRice: item.category.isMilledRice,
             });
           }
         }
       });
     });
 
-    const topProducts = Array.from(productSales.values())
+    const topCategories = Array.from(categorySales.values())
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10);
 
@@ -212,8 +211,8 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
     const categoryRevenue = new Map<string, number>();
     filteredOrders.forEach((order) => {
       order.items.forEach((item) => {
-        if (categoryFilter === "all" || item.product.category === categoryFilter) {
-          const category = item.product.category;
+        if (categoryFilter === "all" || item.category.name === categoryFilter) {
+          const category = item.category.name;
           const revenue = item.quantity * item.price;
           categoryRevenue.set(category, (categoryRevenue.get(category) || 0) + revenue);
         }
@@ -234,7 +233,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       let dayRevenue = 0;
       dayOrders.forEach((order) => {
         order.items.forEach((item) => {
-          if (categoryFilter === "all" || item.product.category === categoryFilter) {
+          if (categoryFilter === "all" || item.category.name === categoryFilter) {
             dayRevenue += item.quantity * item.price;
           }
         });
@@ -256,7 +255,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       processingOrders,
       partialOrders,
       growthRate,
-      topProducts,
+      topCategories,
       categoryRevenue: Array.from(categoryRevenue.entries())
         .map(([category, revenue]) => ({ category, revenue }))
         .sort((a, b) => b.revenue - a.revenue),
@@ -495,7 +494,7 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       <Card>
         <CardHeader className="mb-5">
           <CardTitle>Revenue by Category</CardTitle>
-          <p className="text-sm text-black">Sales breakdown by product category</p>
+          <p className="text-sm text-black">Sales breakdown by category category</p>
         </CardHeader>
         <CardContent>
           {stats.categoryRevenue.length === 0 ? (
@@ -524,17 +523,17 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
         </CardContent>
       </Card>
 
-      {/* Top Products */}
+      {/* Top Categories */}
       <Card>
         <CardHeader className="mb-5">
-          <CardTitle>Top Selling Products</CardTitle>
+          <CardTitle>Top Selling Categories</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Rank</TableHead>
-                <TableHead>Product Name</TableHead>
+                <TableHead>Category Name</TableHead>
                 <TableHead>Rice Type</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Units Sold</TableHead>
@@ -543,31 +542,31 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {stats.topProducts.length === 0 ? (
+              {stats.topCategories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-black">
                     No sales data available
                   </TableCell>
                 </TableRow>
               ) : (
-                stats.topProducts.map((product, index) => (
+                stats.topCategories.map((category, index) => (
                   <TableRow key={index}>
                     <TableCell>
                       <Badge variant={index < 3 ? "default" : "default"}>#{index + 1}</Badge>
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell>
-                      <Badge variant={product.isMilledRice ? "secondary" : "tertiary"}>
-                        {product.isMilledRice ? " Milled" : " Unmilled"}
+                      <Badge variant={category.isMilledRice ? "secondary" : "tertiary"}>
+                        {category.isMilledRice ? " Milled" : " Unmilled"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell className="text-right">{(product.quantity / 50).toFixed(2)} sacks</TableCell>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell className="text-right">{(category.quantity / 50).toFixed(2)} sacks</TableCell>
                     <TableCell className="text-right">
-                      ₱{product.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₱{category.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-right">
-                      {((product.revenue / stats.grossSales) * 100).toFixed(1)}%
+                      {((category.revenue / stats.grossSales) * 100).toFixed(1)}%
                     </TableCell>
                   </TableRow>
                 ))

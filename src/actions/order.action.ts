@@ -5,7 +5,16 @@ import { getUserEmail, getUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
 import { stackServerApp } from "@/lib/stack";
 
-export async function createOrderFromCart(selectedCartItemIds: string[]) {
+export async function createOrderFromCart(
+  selectedCartItemIds: string[],
+  customerData?: {
+    customerName: string;
+    customerPhone: string;
+    deliveryAddress: string;
+    deliveryType: string;
+    paymentMethod?: string;
+  }
+) {
   try {
     const userId = await getUserId();
     const email = await getUserEmail();
@@ -20,14 +29,14 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
         userId,
         id: { in: selectedCartItemIds },
       },
-      include: { product: true },
+      include: { category: true },
     });
 
     if (cartItems.length === 0)
       throw new Error("Selected cart items not found");
 
     const total = cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum, item) => sum + item.category.price * item.quantity,
       0
     );
 
@@ -44,18 +53,23 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
           total,
           status: 'processing',
           fulfillmentStatus: 'pending',
+          customerName: customerData?.customerName,
+          customerPhone: customerData?.customerPhone,
+          deliveryAddress: customerData?.deliveryAddress,
+          deliveryType: customerData?.deliveryType,
+          paymentMethod: customerData?.paymentMethod,
           items: {
             create: cartItems.map((item) => {
               // Calculate kg to deduct for milled rice
-              const kgNeeded = item.product.isMilledRice ? item.quantity * 50 : item.quantity;
+              const kgNeeded = item.category.isMilledRice ? item.quantity * 50 : item.quantity;
               
               return {
                 userId,
-                productId: item.productId,
+                categoryId: item.categoryId,
                 quantity: item.quantity,
                 quantityFulfilled: 0,
                 quantityPending: item.quantity, // Initially all pending
-                price: item.product.price,
+                price: item.category.price,
               };
             }),
           },
@@ -63,7 +77,7 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
         include: {
           items: {
             include: {
-              product: true,
+              category: true,
             },
           },
         },
@@ -102,29 +116,29 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
       // ✅ CHECK STOCK AND CREATE DELIVERIES
       const deliveriesToCreate: Array<{
         deliveryNumber: number;
-        items: Array<{ orderItemId: string; quantity: number; productId: string; productName: string }>;
+        items: Array<{ orderItemId: string; quantity: number; categoryId: string; categoryName: string }>;
       }> = [];
 
       let hasBackorder = false;
 
       for (const orderItem of newOrder.items) {
-        const kgToDeduct = orderItem.product.isMilledRice ? orderItem.quantity * 50 : orderItem.quantity;
+        const kgToDeduct = orderItem.category.isMilledRice ? orderItem.quantity * 50 : orderItem.quantity;
         
-        console.log(`\n   📦 Checking stock: ${orderItem.product.name} x ${orderItem.quantity}${orderItem.product.isMilledRice ? ' sacks (' + kgToDeduct + ' kg)' : ' kg'}`);
+        console.log(`\n   📦 Checking stock: ${orderItem.category.name} x ${orderItem.quantity}${orderItem.category.isMilledRice ? ' sacks (' + kgToDeduct + ' kg)' : ' kg'}`);
 
         // Get total available stock
         const inventoryItems = await tx.inventoryItem.findMany({
           where: {
-            productId: orderItem.productId,
+            categoryId: orderItem.categoryId,
             quantity: { gt: 0 },
           },
           orderBy: { createdAt: 'asc' },
         });
 
         const totalAvailableKg = inventoryItems.reduce((sum, inv) => sum + inv.quantity, 0);
-        const availableQuantity = orderItem.product.isMilledRice ? Math.floor(totalAvailableKg / 50) : totalAvailableKg;
+        const availableQuantity = orderItem.category.isMilledRice ? Math.floor(totalAvailableKg / 50) : totalAvailableKg;
 
-        console.log(`      Available: ${availableQuantity} ${orderItem.product.isMilledRice ? 'sacks (' + totalAvailableKg + ' kg)' : 'kg'}`);
+        console.log(`      Available: ${availableQuantity} ${orderItem.category.isMilledRice ? 'sacks (' + totalAvailableKg + ' kg)' : 'kg'}`);
 
         if (availableQuantity >= orderItem.quantity) {
           // Full stock available - add to first delivery
@@ -134,8 +148,8 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
           deliveriesToCreate[0].items.push({
             orderItemId: orderItem.id,
             quantity: orderItem.quantity,
-            productId: orderItem.productId,
-            productName: orderItem.product.name,
+            categoryId: orderItem.categoryId,
+            categoryName: orderItem.category.name,
           });
         } else if (availableQuantity > 0) {
           // Partial stock - split into two deliveries
@@ -148,8 +162,8 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
           deliveriesToCreate[0].items.push({
             orderItemId: orderItem.id,
             quantity: availableQuantity,
-            productId: orderItem.productId,
-            productName: orderItem.product.name,
+            categoryId: orderItem.categoryId,
+            categoryName: orderItem.category.name,
           });
 
           // Second delivery: backorder
@@ -159,8 +173,8 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
           deliveriesToCreate[1].items.push({
             orderItemId: orderItem.id,
             quantity: orderItem.quantity - availableQuantity,
-            productId: orderItem.productId,
-            productName: orderItem.product.name,
+            categoryId: orderItem.categoryId,
+            categoryName: orderItem.category.name,
           });
 
           console.log(`      ⚠️  Partial stock: ${availableQuantity} available, ${orderItem.quantity - availableQuantity} backordered`);
@@ -174,8 +188,8 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
           deliveriesToCreate[1].items.push({
             orderItemId: orderItem.id,
             quantity: orderItem.quantity,
-            productId: orderItem.productId,
-            productName: orderItem.product.name,
+            categoryId: orderItem.categoryId,
+            categoryName: orderItem.category.name,
           });
 
           console.log(`      ❌ No stock available - full backorder`);
@@ -186,7 +200,7 @@ export async function createOrderFromCart(selectedCartItemIds: string[]) {
       for (const deliveryData of deliveriesToCreate) {
         if (deliveryData.items.length > 0) {
           const itemsDescription = deliveryData.items
-            .map(item => `${item.productName} x ${item.quantity}`)
+            .map(item => `${item.categoryName} x ${item.quantity}`)
             .join(', ');
 
           await tx.delivery.create({
@@ -255,7 +269,7 @@ export async function getOrders() {
       include: {
         items: {
           include: {
-            product: true,
+            category: true,
           },
         },
         deliveries: {
@@ -264,7 +278,7 @@ export async function getOrders() {
               include: {
                 orderItem: {
                   include: {
-                    product: true,
+                    category: true,
                   },
                 },
               },

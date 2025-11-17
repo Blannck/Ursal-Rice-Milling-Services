@@ -36,7 +36,7 @@ export async function PATCH(
           include: {
             orderItem: {
               include: {
-                product: true,
+                category: true,
               },
             },
           },
@@ -56,12 +56,12 @@ export async function PATCH(
       const stockErrors: string[] = [];
 
       for (const item of deliveryData.items) {
-        const product = item.orderItem.product;
+        const category = item.orderItem.category;
         
-        // Get available inventory for this product
+        // Get available inventory for this category
         const inventoryItems = await prisma.inventoryItem.findMany({
           where: {
-            productId: product.id,
+            categoryId: category.id,
             quantity: { gt: 0 },
           },
           orderBy: { createdAt: "asc" }, // FIFO
@@ -73,18 +73,18 @@ export async function PATCH(
         );
 
         // Calculate needed stock (convert to kg for milled rice)
-        const neededKg = product.isMilledRice ? item.quantity * 50 : item.quantity;
+        const neededKg = category.isMilledRice ? item.quantity * 50 : item.quantity;
         
         if (availableStock < neededKg) {
-          if (product.isMilledRice) {
+          if (category.isMilledRice) {
             const availableSacks = Math.floor(availableStock / 50);
             const neededSacks = item.quantity;
             stockErrors.push(
-              `Insufficient stock for ${product.name}. Available: ${availableSacks} sacks (${availableStock} kg), Needed: ${neededSacks} sacks (${neededKg} kg)`
+              `Insufficient stock for ${category.name}. Available: ${availableSacks} sacks (${availableStock} kg), Needed: ${neededSacks} sacks (${neededKg} kg)`
             );
           } else {
             stockErrors.push(
-              `Insufficient stock for ${product.name}. Available: ${availableStock} units, Needed: ${neededKg} units`
+              `Insufficient stock for ${category.name}. Available: ${availableStock} units, Needed: ${neededKg} units`
             );
           }
         }

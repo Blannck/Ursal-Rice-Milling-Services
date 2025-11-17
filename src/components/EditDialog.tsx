@@ -18,20 +18,19 @@ import { useState, useEffect } from "react";
 import { Textarea } from "./ui/textarea";
 import toast from "react-hot-toast";
 import ImageUpload from "./ImageUpload";
-import { editProduct, getProductById } from "@/actions/product.aciton";
+import { editCategory, getCategoryById } from "@/actions/product.aciton";
 import MiniPriceChart from "./MiniPriceChart";
 
-type ProductWithHistory = NonNullable<Awaited<ReturnType<typeof getProductById>>>;
+type CategoryWithHistory = NonNullable<Awaited<ReturnType<typeof getCategoryById>>>;
 
 interface EditDialogProps {
-  product: {
+  category: {
     id: string;
     name: string;
     description: string | null;
     downloadUrl: string | null;
     price: number;
     reorderPoint: number | null;
-    category: string;
     userId: string;
     imageUrl: string | null;
   };
@@ -40,29 +39,28 @@ interface EditDialogProps {
   onUpdated?: (updated: any) => void;
 }
 
-export default function EditDialog({ product, onUpdated }: EditDialogProps) {
-  const [fullProduct, setFullProduct] = useState<ProductWithHistory | null>(null);
+export default function EditDialog({ category, onUpdated }: EditDialogProps) {
+  const [fullCategory, setFullCategory] = useState<CategoryWithHistory | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState(() => ({
-    name: product.name.trim(),
-    description: (product.description || "").trim(),
-    downloadUrl: product.downloadUrl || "",
-    price: product.price,
-    reorderPoint: product.reorderPoint || 0,
-    category: product.category.trim(),
-    userId: product.userId.trim(),
-    imageUrl: product.imageUrl || "",
+    name: category.name.trim(),
+    description: (category.description || "").trim(),
+    downloadUrl: category.downloadUrl || "",
+    price: category.price,
+    reorderPoint: category.reorderPoint || 0,
+    userId: category.userId.trim(),
+    imageUrl: category.imageUrl || "",
     priceChangeReason: "",
   }));
 
   useEffect(() => {
-    if (isOpen && !fullProduct) {
-      getProductById(product.id).then((data) => {
-        if (data) setFullProduct(data);
+    if (isOpen && !fullCategory) {
+      getCategoryById(category.id).then((data) => {
+        if (data) setFullCategory(data);
       });
     }
-  }, [isOpen, product.id, fullProduct]);
+  }, [isOpen, category.id, fullCategory]);
 
   const handleChange = (field: string, value: string | number) => {
     setFormData({ ...formData, [field]: value });
@@ -71,39 +69,38 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (formData.price !== product.price && !formData.priceChangeReason.trim()) {
+    if (formData.price !== category.price && !formData.priceChangeReason.trim()) {
       toast.error("Please provide a reason for the price change");
       return;
     }
 
     try {
-      const updatedProduct = await editProduct(product.id, {
+      const updatedCategory = await editCategory(category.id, {
         ...formData,
         priceChangeReason: formData.priceChangeReason,
       });
 
-      toast.success("Product edited successfully");
+      toast.success("Category edited successfully");
 
-      // ⭐ NEW: Tell parent to update ProductCard immediately
-      onUpdated?.(updatedProduct);
+      // ⭐ NEW: Tell parent to update CategoryCard immediately
+      onUpdated?.(updatedCategory);
 
-      setFullProduct(null);
+      setFullCategory(null);
       setIsOpen(false);
 
       setFormData({
-        name: product.name.trim(),
-        description: (product.description || "").trim(),
-        downloadUrl: product.downloadUrl || "",
-        price: product.price,
-        reorderPoint: product.reorderPoint || 0,
-        category: product.category.trim(),
-        userId: product.userId.trim(),
-        imageUrl: product.imageUrl || "",
+        name: category.name.trim(),
+        description: (category.description || "").trim(),
+        downloadUrl: category.downloadUrl || "",
+        price: category.price,
+        reorderPoint: category.reorderPoint || 0,
+        userId: category.userId.trim(),
+        imageUrl: category.imageUrl || "",
         priceChangeReason: "",
       });
     } catch (error) {
-      console.error("Error editing product", error);
-      toast.error("Failed to edit product");
+      console.error("Error editing category", error);
+      toast.error("Failed to edit category");
     }
   };
 
@@ -124,38 +121,29 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
 
       <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
-          <AlertDialogTitle>Edit Product</AlertDialogTitle>
+          <AlertDialogTitle>Edit Category</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
-            Update the details of this product in your inventory.
+            Update the details of this rice category in your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter name"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Combobox
-                value={formData.category}
-                onChange={(val) => handleChange("category", val)}
-              />
-            </div>
+          <div>
+            <Label htmlFor="name">Category Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="e.g., Ordinary, Toner, or RC-160"
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+            />
           </div>
 
           <Label htmlFor="description">Description</Label>
           <Textarea
             className="bg-white"
             id="description"
-            placeholder="Type product description here."
+            placeholder="Type category description here."
             rows={5}
             value={formData.description}
             onChange={(e) => handleChange("description", e.target.value)}
@@ -185,16 +173,16 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
             </div>
           </div>
 
-          {fullProduct?.priceHistory && fullProduct.priceHistory.length > 0 && (
+          {fullCategory?.priceHistory && fullCategory.priceHistory.length > 0 && (
             <div className="my-4">
               <MiniPriceChart
-                priceHistory={fullProduct.priceHistory}
-                currentPrice={product.price}
+                priceHistory={fullCategory.priceHistory}
+                currentPrice={category.price}
               />
             </div>
           )}
 
-          {formData.price !== product.price && (
+          {formData.price !== category.price && (
             <div>
               <Label htmlFor="priceChangeReason">
                 Price Change Reason <span className="text-red-500">(Required)</span>

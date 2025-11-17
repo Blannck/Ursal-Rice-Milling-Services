@@ -48,7 +48,7 @@ type InventoryItem = {
   };
 };
 
-type Product = {
+type Category = {
   id: string;
   name: string;
   category: string;
@@ -71,21 +71,21 @@ const ADJUSTMENT_REASONS = [
   "System Error Correction",
   "Quality Control Rejection",
   "Sample/Demo Usage",
-  "Expired Products",
+  "Expired Categories",
   "Returns Processing",
   "Other (specify below)",
 ];
 
 export default function AdjustmentsClient({
-  products,
+  categories,
   locations,
 }: {
-  products: Product[];
+  categories: Category[];
   locations: StorageLocation[];
 }) {
   const router = useRouter();
   
-  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const [adjustmentType, setAdjustmentType] = useState<"ADD" | "REMOVE" | "SET">("ADD");
   const [quantity, setQuantity] = useState<string>("");
@@ -95,20 +95,20 @@ export default function AdjustmentsClient({
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Get selected product
-  const selectedProduct = useMemo(
-    () => products.find((p) => p.id === selectedProductId),
-    [products, selectedProductId]
+  // Get selected category
+  const selectedCategory = useMemo(
+    () => categories.find((p) => p.id === selectedCategoryId),
+    [categories, selectedCategoryId]
   );
 
   // Get current quantity at selected location
   const currentQuantity = useMemo(() => {
-    if (!selectedProduct || !selectedLocationId) return 0;
-    const inventoryItem = selectedProduct.inventoryItems.find(
+    if (!selectedCategory || !selectedLocationId) return 0;
+    const inventoryItem = selectedCategory.inventoryItems.find(
       (item) => item.locationId === selectedLocationId
     );
     return inventoryItem?.quantity || 0;
-  }, [selectedProduct, selectedLocationId]);
+  }, [selectedCategory, selectedLocationId]);
 
   // Calculate new quantity
   const newQuantity = useMemo(() => {
@@ -127,7 +127,7 @@ export default function AdjustmentsClient({
 
   // Check if adjustment is valid
   const isValidAdjustment = useMemo(() => {
-    if (!selectedProductId || !selectedLocationId || !quantity || !reason) {
+    if (!selectedCategoryId || !selectedLocationId || !quantity || !reason) {
       return false;
     }
     if (adjustmentType === "REMOVE" && newQuantity < 0) {
@@ -140,11 +140,11 @@ export default function AdjustmentsClient({
       return false;
     }
     return true;
-  }, [selectedProductId, selectedLocationId, quantity, reason, customReason, adjustmentType, newQuantity]);
+  }, [selectedCategoryId, selectedLocationId, quantity, reason, customReason, adjustmentType, newQuantity]);
 
-  const handleProductChange = (productId: string) => {
-    setSelectedProductId(productId);
-    setSelectedLocationId(""); // Reset location when product changes
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    setSelectedLocationId(""); // Reset location when category changes
   };
 
   const handleSubmit = async () => {
@@ -162,7 +162,7 @@ export default function AdjustmentsClient({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productId: selectedProductId,
+          categoryId: selectedCategoryId,
           locationId: selectedLocationId,
           adjustmentType,
           quantity: parseInt(quantity),
@@ -183,7 +183,7 @@ export default function AdjustmentsClient({
       });
 
       // Reset form
-      setSelectedProductId("");
+      setSelectedCategoryId("");
       setSelectedLocationId("");
       setQuantity("");
       setReason("");
@@ -236,9 +236,9 @@ export default function AdjustmentsClient({
 
   // Show ALL active locations (not just ones with existing inventory)
   const availableLocations = useMemo(() => {
-    if (!selectedProduct) return [];
+    if (!selectedCategory) return [];
     return locations; // Show all locations instead of filtering by existing inventory
-  }, [selectedProduct, locations]);
+  }, [selectedCategory, locations]);
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -278,21 +278,21 @@ export default function AdjustmentsClient({
             <CardTitle>Adjustment Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Product Selection */}
+            {/* Category Selection */}
             <div className="space-y-2">
-              <Label htmlFor="product">Product *</Label>
-              <Select value={selectedProductId} onValueChange={handleProductChange}>
-                <SelectTrigger id="product">
-                  <SelectValue placeholder="Select a product" />
+              <Label htmlFor="category">Rice Category *</Label>
+              <Select value={selectedCategoryId} onValueChange={handleCategoryChange}>
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products.map((product) => {
+                  {categories.map((category) => {
                     // Calculate actual stock from inventory items
-                    const actualStock = product.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
+                    const actualStock = category.inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
                     return (
-                      <SelectItem key={product.id} value={product.id}>
+                      <SelectItem key={category.id} value={category.id}>
                         <div className="flex items-center justify-between gap-4 w-full">
-                          <span>{product.name}</span>
+                          <span>{category.name}</span>
                           <Badge variant="secondary" className="text-xs">
                             Stock: {actualStock}
                           </Badge>
@@ -310,7 +310,7 @@ export default function AdjustmentsClient({
               <Select
                 value={selectedLocationId}
                 onValueChange={setSelectedLocationId}
-                disabled={!selectedProductId}
+                disabled={!selectedCategoryId}
               >
                 <SelectTrigger id="location">
                   <SelectValue placeholder="Select a location" />
@@ -322,7 +322,7 @@ export default function AdjustmentsClient({
                     </div>
                   ) : (
                     availableLocations.map((location) => {
-                      const item = selectedProduct?.inventoryItems.find(
+                      const item = selectedCategory?.inventoryItems.find(
                         (i) => i.locationId === location.id
                       );
                       const qty = item?.quantity || 0;
@@ -452,29 +452,29 @@ export default function AdjustmentsClient({
             <CardTitle>Adjustment Preview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {!selectedProductId || !selectedLocationId ? (
+            {!selectedCategoryId || !selectedLocationId ? (
               <div className="text-center py-12 ">
                 <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Select a product and location to preview adjustment</p>
+                <p>Select a category and location to preview adjustment</p>
               </div>
             ) : (
               <>
-                {/* Product Info */}
+                {/* Category Info */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm ">
                     <Package className="h-4 w-4" />
-                    <span>Product</span>
+                    <span>Rice Category</span>
                   </div>
                   <div className="bg-white border border-black text-black p-4 rounded-lg">
-                    <p className="font-semibold text-lg">{selectedProduct?.name}</p>
-                    <p className="text-sm ">{selectedProduct?.category}</p>
+                    <p className="font-semibold text-lg">{selectedCategory?.name}</p>
+                    <p className="text-sm ">{selectedCategory?.category}</p>
                     <div className="flex items-center gap-2 mt-2">
                       {(() => {
-                        const actualStock = selectedProduct?.inventoryItems.reduce((sum, item) => sum + item.quantity, 0) || 0;
+                        const actualStock = selectedCategory?.inventoryItems.reduce((sum, item) => sum + item.quantity, 0) || 0;
                         return (
                           <>
                             <Badge variant="secondary">Total Stock: {actualStock}</Badge>
-                            {selectedProduct && actualStock <= selectedProduct.reorderPoint && (
+                            {selectedCategory && actualStock <= selectedCategory.reorderPoint && (
                               <Badge className="bg-red-100 text-red-800">Low Stock</Badge>
                             )}
                           </>
@@ -574,7 +574,7 @@ export default function AdjustmentsClient({
             <AlertDialogDescription className="space-y-2">
               <p className="text-black">You are about to adjust the inventory with the following details:</p>
               <div className="bg-white text-black p-4 rounded-lg mt-2 space-y-1 text-sm">
-                <p><strong>Product:</strong> {selectedProduct?.name}</p>
+                <p><strong>Rice Category:</strong> {selectedCategory?.name}</p>
                 <p><strong>Location:</strong> {availableLocations.find(l => l.id === selectedLocationId)?.name}</p>
                 <p><strong>Type:</strong> {adjustmentType}</p>
                 <p><strong>Current Quantity:</strong> {currentQuantity}</p>

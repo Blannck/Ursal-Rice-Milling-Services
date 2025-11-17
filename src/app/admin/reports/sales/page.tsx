@@ -21,11 +21,10 @@ async function getSalesReportData() {
     include: {
       items: {
         include: {
-          product: {
+          category: {
             select: {
               id: true,
               name: true,
-              category: true,
               isMilledRice: true,
             },
           },

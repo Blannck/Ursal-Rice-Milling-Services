@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
 
-// Add a product to cart
-export async function addToCart(productId: string, quantity: number = 1) {
+// Add a category to cart
+export async function addToCart(categoryId: string, quantity: number = 1) {
   try {
     const userId = await getUserId();
     if (!userId) {
@@ -16,7 +16,7 @@ export async function addToCart(productId: string, quantity: number = 1) {
     const existingCartItem = await prisma.cartItem.findFirst({
       where: {
         userId,
-        productId,
+        categoryId,
       },
     });
 
@@ -37,7 +37,7 @@ export async function addToCart(productId: string, quantity: number = 1) {
       cartItem = await prisma.cartItem.create({
         data: {
           userId,
-          productId,
+          categoryId,
           quantity,
         },
       });
@@ -61,7 +61,7 @@ export async function getCartItems() {
       const cartItems = await prisma.cartItem.findMany({
         where: { userId },
         include: {
-          product: true, // include product details
+          category: true, // include category details
         },
       });
   
@@ -73,8 +73,8 @@ export async function getCartItems() {
     }
 }
 
-// Get a single cart item by productId
-export async function getCartItemByProductId(productId: string) {
+// Get a single cart item by categoryId
+export async function getCartItemByProductId(categoryId: string) {
     try {
       const userId = await getUserId();
       if (!userId) return null;
@@ -82,16 +82,16 @@ export async function getCartItemByProductId(productId: string) {
       const cartItem = await prisma.cartItem.findFirst({
         where: {
           userId,
-          productId,
+          categoryId,
         },
         include: {
-          product: true,
+          category: true,
         },
       });
   
       return cartItem;
     } catch (error) {
-      console.error("Error fetching cart item by productId:", error);
+      console.error("Error fetching cart item by categoryId:", error);
       return null;
     }
 }

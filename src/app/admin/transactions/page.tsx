@@ -7,7 +7,7 @@ export default async function TransactionsPage() {
   // Fetch all inventory transactions with related data
   const transactions = await prisma.inventoryTransaction.findMany({
     include: {
-      product: true,
+      category: true,
       location: true,
     },
     orderBy: {
@@ -15,15 +15,14 @@ export default async function TransactionsPage() {
     },
   });
 
-  // Fetch products for filter dropdown
-  const products = await prisma.product.findMany({
+  // Fetch categories for filter dropdown
+  const categories = await prisma.category.findMany({
     where: {
       isHidden: false,
     },
     select: {
       id: true,
       name: true,
-      category: true,
     },
     orderBy: {
       name: "asc",
@@ -50,7 +49,7 @@ export default async function TransactionsPage() {
     < div className="border-transparent w-11/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
     <TransactionsClient
       transactions={transactions}
-      products={products}
+      categories={categories}
       locations={locations}
     />
     </div>

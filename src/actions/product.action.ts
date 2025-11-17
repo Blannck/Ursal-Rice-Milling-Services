@@ -6,12 +6,12 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { stackServerApp } from "@/lib/stack";
 
-// Get all products with optional search (visible to everyone)
-export async function getProducts() {
+// Get all categories with optional search (visible to everyone)
+export async function getCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: {
-        isMilledRice: true // Only fetch milled rice products
+        isMilledRice: true // Only fetch milled rice categories
       },
       orderBy: {
         createdAt: "desc",
@@ -19,20 +19,20 @@ export async function getProducts() {
     });
     
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
     console.error("Error fetching products:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get visible products only (for public products page)
-export async function getVisibleProducts() {
+// Get visible categories only (for public categories page)
+export async function getVisibleCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         isHidden: false,
       },
@@ -42,20 +42,20 @@ export async function getVisibleProducts() {
     });
     
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
     console.error("Error fetching visible products:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get unmilled rice products
-export async function getUnmilledProducts() {
+// Get unmilled rice categories
+export async function getUnmilledCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         isMilledRice: false,
       },
@@ -65,20 +65,20 @@ export async function getUnmilledProducts() {
     });
     
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
     console.error("Error fetching unmilled products:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get milled rice products
-export async function getMilledProducts() {
+// Get milled rice categories
+export async function getMilledCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         isMilledRice: true,
       },
@@ -88,20 +88,20 @@ export async function getMilledProducts() {
     });
     
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
     console.error("Error fetching milled products:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get product by ID
-export async function getProductById(id: string) {
+// Get category by ID
+export async function getCategoryById(id: string) {
   try {
-    const product = await prisma.product.findUnique({
+    const category = await prisma.category.findUnique({
       where: { id },
       include: {
         priceHistory: {
@@ -111,28 +111,28 @@ export async function getProductById(id: string) {
         }
       }
     });
-    return product;
+    return category;
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;
   }
 }
 
-// Toggle product visibility
-export async function toggleProductVisibility(productId: string) {
+// Toggle category visibility
+export async function toggleCategoryVisibility(categoryId: string) {
   try {
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
       select: { isHidden: true },
     });
 
-    if (!product) {
+    if (!category) {
       return { success: false, error: "Product not found" };
     }
 
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: { isHidden: !product.isHidden },
+    const updatedCategory = await prisma.category.update({
+      where: { id: categoryId },
+      data: { isHidden: !category.isHidden },
     });
 
     revalidatePath("/admin/myproducts");
@@ -140,8 +140,8 @@ export async function toggleProductVisibility(productId: string) {
 
     return {
       success: true,
-      isHidden: updatedProduct.isHidden,
-      message: updatedProduct.isHidden
+      isHidden: updatedCategory.isHidden,
+      message: updatedCategory.isHidden
         ? "Product hidden successfully"
         : "Product visible successfully",
     };
@@ -151,7 +151,7 @@ export async function toggleProductVisibility(productId: string) {
   }
 }
 
-export async function createProduct(data: Prisma.ProductCreateInput & { millingYieldRate?: number }) {
+export async function createCategory(data: Prisma.CategoryCreateInput & { millingYieldRate?: number }) {
   console.log("Creating product:", data);
   
   try {
@@ -168,7 +168,7 @@ export async function createProduct(data: Prisma.ProductCreateInput & { millingY
       return null;
     }
 
-    const newProduct = await prisma.product.create({
+    const newCategory = await prisma.category.create({
       data: {
         ...data,
         userId: user.id,
@@ -176,47 +176,47 @@ export async function createProduct(data: Prisma.ProductCreateInput & { millingY
     });
 
     revalidatePath("/products");
-    return newProduct;
+    return newCategory;
   } catch (error) {
     console.error("Error creating product:", error);
     throw error;
   }
 }
 
-// Update a product
-export async function editProduct(
+// Update a category
+export async function editCategory(
   id: string, 
-  data: Prisma.ProductUpdateInput & { 
+  data: Prisma.CategoryUpdateInput & { 
     priceChangeReason?: string;
     millingYieldRate?: number;
   }
 ) {
   try {
     const currentUserId = await getUserId();
-    const { priceChangeReason, ...productData } = data;
+    const { priceChangeReason, ...categoryData } = data;
 
-    const oldProduct = await prisma.product.findUnique({
+    const oldCategory = await prisma.category.findUnique({
       where: { id },
       select: { price: true }
     });
 
-    const newPrice = typeof productData.price === 'number' ? productData.price : oldProduct?.price;
-    const priceChanged = oldProduct && newPrice !== undefined && newPrice !== oldProduct.price;
+    const newPrice = typeof categoryData.price === 'number' ? categoryData.price : oldCategory?.price;
+    const priceChanged = oldCategory && newPrice !== undefined && newPrice !== oldCategory.price;
 
     const result = await prisma.$transaction(async (tx) => {
-      const updatedProduct = await tx.product.update({
+      const updatedCategory = await tx.category.update({
         where: { id },
         data: {
-          ...productData,
+          ...categoryData,
           userId: currentUserId,
         },
       });
 
-      if (priceChanged && oldProduct) {
+      if (priceChanged && oldCategory) {
         await tx.priceHistory.create({
           data: {
-            productId: id,
-            oldPrice: oldProduct.price,
+            categoryId: id,
+            oldPrice: oldCategory.price,
             newPrice: newPrice as number,
             changedBy: currentUserId || 'system',
             reason: priceChangeReason || 'Price updated',
@@ -224,7 +224,7 @@ export async function editProduct(
         });
       }
 
-      return updatedProduct;
+      return updatedCategory;
     });
 
     revalidatePath("/products");
@@ -239,19 +239,19 @@ export async function editProduct(
   }
 }
 
-// Delete a product and clean up any empty orders
-export async function deleteProduct(id: string) {
+// Delete a category and clean up any empty orders
+export async function deleteCategory(id: string) {
   try {
     console.log("Deleting:", id);
     const currentUserId = await getUserId();
     if (!currentUserId) return;
 
     await prisma.cartItem.deleteMany({
-      where: { productId: id },
+      where: { categoryId: id },
     });
 
     const orderItems = await prisma.orderItem.findMany({
-      where: { productId: id },
+      where: { categoryId: id },
       select: { orderId: true },
     });
 
@@ -259,7 +259,7 @@ export async function deleteProduct(id: string) {
       new Set(orderItems.map((item) => item.orderId))
     );
 
-    const deletedProduct = await prisma.product.delete({
+    const deletedCategory = await prisma.category.delete({
       where: { id },
     });
 
@@ -276,9 +276,9 @@ export async function deleteProduct(id: string) {
     }
 
     revalidatePath("/products");
-    return deletedProduct;
+    return deletedCategory;
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error("Error deleting category:", error);
     throw error;
   }
 }

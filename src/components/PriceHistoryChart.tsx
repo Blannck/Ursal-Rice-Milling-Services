@@ -14,12 +14,12 @@ interface PriceHistoryData {
 }
 
 interface PriceHistoryChartProps {
-  productName: string;
+  categoryName: string;
   priceHistory: PriceHistoryData[];
   currentPrice: number;
 }
 
-export default function PriceHistoryChart({ productName, priceHistory, currentPrice }: PriceHistoryChartProps) {
+export default function PriceHistoryChart({ categoryName, priceHistory, currentPrice }: PriceHistoryChartProps) {
   // Prepare data for chart
   const chartData = priceHistory.map((entry) => ({
     date: format(new Date(entry.createdAt), 'MMM dd, yyyy'),
@@ -48,7 +48,7 @@ export default function PriceHistoryChart({ productName, priceHistory, currentPr
   return (
     <Card className="w-full ">
       <CardHeader className='mb-5'>
-        <CardTitle>Price History: {productName}</CardTitle>
+        <CardTitle>Price History: {categoryName}</CardTitle>
         <CardDescription className="text-black">
           Track price changes over time
           {priceHistory.length > 0 && (

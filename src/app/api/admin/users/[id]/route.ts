@@ -22,7 +22,7 @@ const appUser = u?.primaryEmail
 const orders = await prisma.order.findMany({
 where: { userId: id },
 orderBy: { createdAt: "desc" },
-include: { items: { include: { product: true } } },
+include: { items: { include: { category: true } } },
 });
 
 

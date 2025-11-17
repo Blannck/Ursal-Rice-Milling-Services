@@ -51,14 +51,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       for (const l of lines) {
         const poi = await tx.purchaseOrderItem.findUnique({ 
           where: { id: l.purchaseOrderItemId },
-          include: { product: true }
+          include: { category: true }
         })
         if (!poi) throw new Error("PO line not found")
 
         const remaining = poi.orderedQty - poi.receivedQty
         const receivedNow = Math.max(0, Math.min(remaining, Number(l.receivedNow) || 0))
         if (receivedNow > 0) {
-          console.log(`   📦 ${poi.product?.name || "Unknown"}: Ordered ${poi.orderedQty}, Previously Received ${poi.receivedQty}, Now Receiving ${receivedNow}`);
+          console.log(`   📦 ${poi.category?.name || "Unknown"}: Ordered ${poi.orderedQty}, Previously Received ${poi.receivedQty}, Now Receiving ${receivedNow}`);
           
           await tx.purchaseOrderItem.update({
             where: { id: poi.id },
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           // ✅ CREATE OR UPDATE INVENTORY ITEM AT SELECTED LOCATION
           const existingInventory = await tx.inventoryItem.findUnique({
             where: {
-              productId_locationId: {
-                productId: poi.productId,
+              categoryId_locationId: {
+                categoryId: poi.categoryId,
                 locationId: targetLocation.id,
               },
             },
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           } else {
             const created = await tx.inventoryItem.create({
               data: {
-                productId: poi.productId,
+                categoryId: poi.categoryId,
                 locationId: targetLocation.id,
                 quantity: receivedNow,
               },
@@ -135,19 +135,19 @@ if (fullyReceived) {
 }
 
 
-          await tx.product.update({
-            where: { id: poi.productId },
+          await tx.category.update({
+            where: { id: poi.categoryId },
             data: {
               stockOnHand: { increment: receivedNow },
               stockOnOrder: { decrement: receivedNow },
             },
           })
           
-          console.log(`   📊 Product stockOnHand updated: +${receivedNow}`);
+          console.log(`   📊 Category stockOnHand updated: +${receivedNow}`);
 
           await tx.inventoryTransaction.create({
             data: {
-              productId: poi.productId,
+              categoryId: poi.categoryId,
               locationId: targetLocation.id,
               kind: "STOCK_IN",
               quantity: receivedNow,
@@ -223,7 +223,7 @@ const backorders = await prisma.backorder.findMany({
     status: { in: ["Open", "Reminded"] },
   },
   include: {
-    purchaseOrderItem: { include: { product: true } },
+    purchaseOrderItem: { include: { category: true } },
   },
   orderBy: { createdAt: "desc" },
 });

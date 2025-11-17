@@ -22,7 +22,7 @@ export default async function DeliveryInvoicePage({
         include: {
           items: {
             include: {
-              product: true,
+              category: true,
             },
           },
         },
@@ -31,7 +31,7 @@ export default async function DeliveryInvoicePage({
         include: {
           orderItem: {
             include: {
-              product: true,
+              category: true,
             },
           },
         },
@@ -46,12 +46,12 @@ export default async function DeliveryInvoicePage({
   // For backorder deliveries (deliveryNumber > 1), check stock availability
   if (delivery.deliveryNumber > 1 && delivery.status === 'pending') {
     for (const item of delivery.items) {
-      const product = item.orderItem.product;
+      const category = item.orderItem.category;
       
-      // Get available inventory for this product
+      // Get available inventory for this category
       const inventoryItems = await prisma.inventoryItem.findMany({
         where: {
-          productId: product.id,
+          categoryId: category.id,
           quantity: { gt: 0 },
         },
       });
@@ -62,7 +62,7 @@ export default async function DeliveryInvoicePage({
       );
 
       // Calculate needed stock (convert to kg for milled rice)
-      const neededKg = product.isMilledRice ? item.quantity * 50 : item.quantity;
+      const neededKg = category.isMilledRice ? item.quantity * 50 : item.quantity;
       
       if (availableStock < neededKg) {
         // Stock not available - show unavailable page
@@ -122,12 +122,12 @@ export default async function DeliveryInvoicePage({
       id: item.id,
       userId: item.orderItem.userId,
       orderId: item.orderItem.orderId,
-      productId: item.orderItem.productId,
+      categoryId: item.orderItem.categoryId,
       quantity: item.quantity,
       quantityFulfilled: item.orderItem.quantityFulfilled,
       quantityPending: item.orderItem.quantityPending,
       price: item.orderItem.price,
-      product: item.orderItem.product,
+      category: item.orderItem.category,
     })),
     deliveryNumber: delivery.deliveryNumber,
     deliveryStatus: delivery.status,
@@ -144,7 +144,7 @@ export default async function DeliveryInvoicePage({
           },
         },
         include: {
-          product: true,
+          category: true,
           location: true,
         },
         orderBy: {
@@ -155,7 +155,7 @@ export default async function DeliveryInvoicePage({
 
   const serializedTransactions = stockOutTransactions.map((txn) => ({
     id: txn.id,
-    productId: txn.productId,
+    categoryId: txn.categoryId,
     quantity: txn.quantity,
     location: txn.location
       ? {

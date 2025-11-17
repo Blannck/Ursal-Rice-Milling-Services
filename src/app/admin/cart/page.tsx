@@ -1,5 +1,5 @@
 import { getCartItems } from "@/actions/cart.action";
-import { getProducts } from "@/actions/product.aciton";
+import { getCategories } from "@/actions/product.aciton";
 import CartTable from "@/components/CartTable";
 import { stackServerApp } from "@/lib/stack";
 import { SignUp } from "@stackframe/stack";
@@ -20,7 +20,7 @@ async function Cart() {
             <div className="mb-8 mt-7">
               <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
               <p className="text-white">
-                Review your selected items and proceed to checkout when ready.
+                Review your selected products and proceed to checkout when ready.
               </p>
             </div>
             <CartTable cartItems={cartItems} />

@@ -31,7 +31,7 @@ export async function POST(
             include: {
               orderItem: {
                 include: {
-                  product: true,
+                  category: true,
                 },
               },
             },
@@ -59,16 +59,16 @@ export async function POST(
       // Process each delivery item
       for (const deliveryItem of delivery.items) {
         const orderItem = deliveryItem.orderItem;
-        const product = orderItem.product;
+        const category = orderItem.category;
 
         // Calculate kg to deduct
-        const kgToDeduct = product.isMilledRice
+        const kgToDeduct = category.isMilledRice
           ? deliveryItem.quantity * 50
           : deliveryItem.quantity;
 
         console.log(
-          `\n   📦 Fulfilling: ${product.name} x ${deliveryItem.quantity}${
-            product.isMilledRice
+          `\n   📦 Fulfilling: ${category.name} x ${deliveryItem.quantity}${
+            category.isMilledRice
               ? " sacks (" + kgToDeduct + " kg)"
               : " kg"
           }`
@@ -77,7 +77,7 @@ export async function POST(
         // Get inventory items (FIFO)
         const inventoryItems = await tx.inventoryItem.findMany({
           where: {
-            productId: product.id,
+            categoryId: category.id,
             quantity: { gt: 0 },
           },
           include: { location: true },
@@ -90,15 +90,15 @@ export async function POST(
         );
 
         if (totalAvailableKg < kgToDeduct) {
-          if (product.isMilledRice) {
+          if (category.isMilledRice) {
             const availableSacks = Math.floor(totalAvailableKg / 50);
             const neededSacks = Math.ceil(kgToDeduct / 50);
             throw new Error(
-              `Insufficient stock for ${product.name}. Available: ${availableSacks} sacks (${totalAvailableKg} kg), Needed: ${neededSacks} sacks (${kgToDeduct} kg)`
+              `Insufficient stock for ${category.name}. Available: ${availableSacks} sacks (${totalAvailableKg} kg), Needed: ${neededSacks} sacks (${kgToDeduct} kg)`
             );
           } else {
             throw new Error(
-              `Insufficient stock for ${product.name}. Available: ${totalAvailableKg} kg, Needed: ${kgToDeduct} kg`
+              `Insufficient stock for ${category.name}. Available: ${totalAvailableKg} kg, Needed: ${kgToDeduct} kg`
             );
           }
         }
@@ -117,13 +117,13 @@ export async function POST(
 
           await tx.inventoryTransaction.create({
             data: {
-              productId: product.id,
+              categoryId: category.id,
               locationId: inventoryItem.locationId,
               kind: "STOCK_OUT",
               quantity: toDeduct,
               unitPrice: orderItem.price,
               note: `Delivery ${delivery.deliveryNumber} fulfillment for Order #${delivery.orderId.slice(0, 8)}${
-                product.isMilledRice ? ` (${deliveryItem.quantity} sacks)` : ""
+                category.isMilledRice ? ` (${deliveryItem.quantity} sacks)` : ""
               }`,
               createdBy: user.id,
             },
@@ -136,9 +136,9 @@ export async function POST(
           remainingToFulfill -= toDeduct;
         }
 
-        // Update product stock
-        await tx.product.update({
-          where: { id: product.id },
+        // Update category stock
+        await tx.category.update({
+          where: { id: category.id },
           data: {
             stockOnHand: { decrement: kgToDeduct },
             stockAllocated: { increment: kgToDeduct },

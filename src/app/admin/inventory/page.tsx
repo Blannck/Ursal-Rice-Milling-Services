@@ -13,7 +13,7 @@ async function getInventoryData() {
   
   console.log(`🔄 Fetching inventory data at ${new Date().toISOString()}`);
   
-  const [locations, products, inventoryItems] = await Promise.all([
+  const [locations, categories, inventoryItems] = await Promise.all([
     prisma.storageLocation.findMany({
       where: { isActive: true },
       include: {
@@ -27,8 +27,8 @@ async function getInventoryData() {
       },
       orderBy: [{ type: "asc" }, { name: "asc" }],
     }),
-    prisma.product.findMany({
-      where: { isHidden: false },
+    prisma.category.findMany({
+      // Remove isHidden filter to show all categories in inventory management
       include: {
         supplier: true,
       },
@@ -36,7 +36,7 @@ async function getInventoryData() {
     }),
     prisma.inventoryItem.findMany({
       include: {
-        product: {
+        category: {
           include: {
             supplier: true,
           },
@@ -49,7 +49,7 @@ async function getInventoryData() {
 
   console.log(`📊 Fetched ${inventoryItems.length} inventory items, Total Qty: ${inventoryItems.reduce((sum, item) => sum + item.quantity, 0)}`);
 
-  return { locations, products, inventoryItems };
+  return { locations, categories, inventoryItems };
 }
 
 export default async function InventoryManagementPage() {
@@ -61,7 +61,7 @@ export default async function InventoryManagementPage() {
       <Suspense fallback={<div>Loading...</div>}>
         <InventoryClient
           initialLocations={data.locations}
-          initialProducts={data.products}
+          initialCategories={data.categories}
           initialInventoryItems={data.inventoryItems}
         />
       </Suspense>

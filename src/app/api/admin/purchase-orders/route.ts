@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     items: {
   select: {
     id: true,
-    productId: true,
+    categoryId: true,
     orderedQty: true,
     receivedQty: true,
     returnedQty: true,
@@ -76,38 +76,38 @@ export async function GET(request: Request) {
 
    const purchaseOrders = await Promise.all(
   purchaseOrdersRaw.map(async (order) => {
-    const itemsWithProducts = await Promise.all(
+    const itemsWithCategories = await Promise.all(
       order.items.map(async (it) => {
-        const product = await prisma.product.findUnique({
-          where: { id: it.productId },
+        const category = await prisma.category.findUnique({
+          where: { id: it.categoryId },
           select: { name: true },
         }).catch(() => null);
 
         return {
           ...it,
-          product: product || { name: "Product Deleted" },
+          category: category || { name: "Category Deleted" },
         };
       })
     );
-     const backorderLines = itemsWithProducts
+     const backorderLines = itemsWithCategories
       .map((it) => it.backorders?.filter(b => b.status !== "Closed") || [])
       .flat();
 
-    const pendingQty = itemsWithProducts.reduce(
+    const pendingQty = itemsWithCategories.reduce(
   (sum, it) => sum + Math.max((it.orderedQty ?? 0) - (it.receivedQty ?? 0), 0),
   0
 );
 
-const pendingLines = itemsWithProducts.filter(
+const pendingLines = itemsWithCategories.filter(
   it => (it.receivedQty ?? 0) < (it.orderedQty ?? 0)
 ).length;
 
     const backorderQty = backorderLines.reduce((s, b) => s + (b.quantity || 0), 0);
-    const returnQty = itemsWithProducts.reduce((s, it) => s + (it.returnedQty || 0), 0);
+    const returnQty = itemsWithCategories.reduce((s, it) => s + (it.returnedQty || 0), 0);
 
     return {
       ...order,
-      items: itemsWithProducts,
+      items: itemsWithCategories,
       meta: {
         backorderQty: pendingQty,
         backorderLinesCount: pendingLines,
@@ -163,12 +163,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate items and check if products exist
+    // Validate items and check if categories exist
     for (const it of items) {
-      if (!it.productId || !/^[0-9a-fA-F]{24}$/.test(it.productId)) {
-        console.error("Invalid product ID format:", it.productId);
+      if (!it.categoryId || !/^[0-9a-fA-F]{24}$/.test(it.categoryId)) {
+        console.error("Invalid category ID format:", it.categoryId);
         return NextResponse.json(
-          { ok: false, error: "Invalid product ID format" },
+          { ok: false, error: "Invalid category ID format" },
           { status: 400 }
         );
       }
@@ -180,15 +180,15 @@ export async function POST(request: Request) {
         );
       }
 
-      // Check if product exists
-      const productExists = await prisma.product.findUnique({
-        where: { id: it.productId },
+      // Check if category exists
+      const categoryExists = await prisma.category.findUnique({
+        where: { id: it.categoryId },
         select: { id: true }
       });
 
-      if (!productExists) {
+      if (!categoryExists) {
         return NextResponse.json(
-          { ok: false, error: `Product with ID ${it.productId} not found` },
+          { ok: false, error: `Category with ID ${it.categoryId} not found` },
           { status: 400 }
         );
       }
@@ -245,7 +245,7 @@ export async function POST(request: Request) {
       await tx.purchaseOrderItem.createMany({
   data: items.map((it: any) => ({
     purchaseOrderId: order.id,
-    productId: it.productId,
+    categoryId: it.categoryId,
     orderedQty: Number(it.quantity),
     price: Number(it.price),
   })),
@@ -253,13 +253,13 @@ export async function POST(request: Request) {
 
 for (const it of items) {
   const qty = Number(it.quantity)
-  await tx.product.update({
-    where: { id: it.productId },
+  await tx.category.update({
+    where: { id: it.categoryId },
     data: { stockOnOrder: { increment: qty } },
   })
   await tx.inventoryTransaction.create({
     data: {
-      productId: it.productId,
+      categoryId: it.categoryId,
       kind: "PO_ON_ORDER",
       quantity: qty,
       unitPrice: Number(it.price),

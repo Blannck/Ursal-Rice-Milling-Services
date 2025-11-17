@@ -10,11 +10,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const supplier = await prisma.supplier.findUnique({
       where: { id: params.id },
       include: {
-        products: {
+        categories: {
           select: {
             id: true,
             name: true,
-            category: true,
             price: true,
           }
         },
@@ -35,7 +34,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   try {
     await assertAdmin();
     const body = await req.json();
-    const { name, email, phone, address, note, isActive, productIds } = body;
+    const { name, email, phone, address, note, isActive, categoryIds } = body;
 
     // Check if supplier exists
     const existing = await prisma.supplier.findUnique({
@@ -80,10 +79,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       data: updateData,
     });
 
-    // Handle product associations only if productIds is provided
-    if (productIds !== undefined && Array.isArray(productIds)) {
-      // First, remove this supplier from all products that were previously associated
-      await prisma.product.updateMany({
+    // Handle category associations only if categoryIds is provided
+    if (categoryIds !== undefined && Array.isArray(categoryIds)) {
+      // First, remove this supplier from all categories that were previously associated
+      await prisma.category.updateMany({
         where: {
           supplierId: params.id,
         },
@@ -92,12 +91,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         },
       });
 
-      // Then associate the newly selected products
-      if (productIds.length > 0) {
-        await prisma.product.updateMany({
+      // Then associate the newly selected categories
+      if (categoryIds.length > 0) {
+        await prisma.category.updateMany({
           where: {
             id: {
-              in: productIds,
+              in: categoryIds,
             },
           },
           data: {
@@ -117,8 +116,8 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   try {
     await assertAdmin();
     
-    // First, remove supplier association from products
-    await prisma.product.updateMany({
+    // First, remove supplier association from categories
+    await prisma.category.updateMany({
       where: {
         supplierId: params.id,
       },

@@ -13,7 +13,7 @@ export async function GET(
           include: {
             orderItem: {
               include: {
-                product: true,
+                category: true,
               },
             },
           },
@@ -36,12 +36,12 @@ export async function GET(
     // For backorders, check if stock is available
     if (delivery.deliveryNumber > 1) {
       for (const item of delivery.items) {
-        const product = item.orderItem.product;
+        const category = item.orderItem.category;
         
-        // Get available inventory for this product
+        // Get available inventory for this category
         const inventoryItems = await prisma.inventoryItem.findMany({
           where: {
-            productId: product.id,
+            categoryId: category.id,
             quantity: { gt: 0 },
           },
         });
@@ -52,12 +52,12 @@ export async function GET(
         );
 
         // Calculate needed stock (convert to kg for milled rice)
-        const neededKg = product.isMilledRice ? item.quantity * 50 : item.quantity;
+        const neededKg = category.isMilledRice ? item.quantity * 50 : item.quantity;
         
         if (availableStock < neededKg) {
           return NextResponse.json({ 
             available: false,
-            reason: `Insufficient stock for ${product.name}`,
+            reason: `Insufficient stock for ${category.name}`,
           });
         }
       }

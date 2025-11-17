@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       include: {
         purchaseOrderItem: {
           include: {
-            product: true,
+            category: true,
             purchaseOrder: {
               include: {
                 supplier: true,
@@ -41,10 +41,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     const purchaseOrder = backorder.purchaseOrderItem.purchaseOrder;
     const supplier = purchaseOrder.supplier;
-    const product = backorder.purchaseOrderItem.product;
+    const category = backorder.purchaseOrderItem.category;
 
-    if (!product) {
-      return NextResponse.json({ ok: false, error: "Product not found" }, { status: 404 });
+    if (!category) {
+      return NextResponse.json({ ok: false, error: "Category not found" }, { status: 404 });
     }
 
     // Update backorder status
@@ -63,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       purchaseOrderId: purchaseOrder.id,
       items: [
         {
-          productName: product.name,
+          categoryName: category.name,
           quantity: backorder.quantity,
         },
       ],
@@ -88,7 +88,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
               }),
           items: [
             {
-              productName: product.name,
+              categoryName: category.name,
               quantity: backorder.quantity,
               expectedDate: backorder.expectedDate
                 ? new Date(backorder.expectedDate).toLocaleDateString("en-PH")

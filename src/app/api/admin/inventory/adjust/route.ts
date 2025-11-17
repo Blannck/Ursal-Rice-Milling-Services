@@ -8,12 +8,12 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { productId, locationId, adjustmentType, quantity, reason, createdBy } = body;
+    const { categoryId, locationId, adjustmentType, quantity, reason, createdBy } = body;
 
     // Validation
-    if (!productId || !locationId || !adjustmentType || !quantity || !reason) {
+    if (!categoryId || !locationId || !adjustmentType || !quantity || !reason) {
       return NextResponse.json(
-        { error: "Product, location, adjustment type, quantity, and reason are required" },
+        { error: "Category, location, adjustment type, quantity, and reason are required" },
         { status: 400 }
       );
     }
@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
       // Get current inventory item
       const inventoryItem = await tx.inventoryItem.findUnique({
         where: {
-          productId_locationId: {
-            productId,
+          categoryId_locationId: {
+            categoryId,
             locationId,
           },
         },
         include: {
-          product: true,
+          category: true,
           location: true,
         },
       });
@@ -83,8 +83,8 @@ export async function POST(req: NextRequest) {
       // Update inventory item quantity
       const updatedInventoryItem = await tx.inventoryItem.update({
         where: {
-          productId_locationId: {
-            productId,
+          categoryId_locationId: {
+            categoryId,
             locationId,
           },
         },
@@ -92,14 +92,14 @@ export async function POST(req: NextRequest) {
           quantity: newQuantity,
         },
         include: {
-          product: true,
+          category: true,
           location: true,
         },
       });
 
-      // Update product stockOnHand
-      await tx.product.update({
-        where: { id: productId },
+      // Update category stockOnHand
+      await tx.category.update({
+        where: { id: categoryId },
         data: {
           stockOnHand: {
             increment: quantityChange,
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
       // Create inventory transaction record
       await tx.inventoryTransaction.create({
         data: {
-          productId,
+          categoryId,
           kind: "ADJUSTMENT",
           quantity: quantityChange,
           locationId,

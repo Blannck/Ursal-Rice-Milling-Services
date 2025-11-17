@@ -12,14 +12,14 @@ export async function GET(request: Request) {
     await assertAdmin();
 
     const { searchParams } = new URL(request.url);
-    const productId = searchParams.get("productId");
+    const categoryId = searchParams.get("categoryId");
     const locationId = searchParams.get("locationId");
     const lowStock = searchParams.get("lowStock") === "true";
 
     const where: any = {};
 
-    if (productId) {
-      where.productId = productId;
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
 
     if (locationId) {
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     const items = await prisma.inventoryItem.findMany({
       where,
       include: {
-        product: {
+        category: {
           include: {
             supplier: true,
           },
@@ -46,8 +46,8 @@ export async function GET(request: Request) {
     if (lowStock) {
       filteredItems = items.filter(
         (item) =>
-          item.product.reorderPoint &&
-          item.quantity <= item.product.reorderPoint
+          item.category.reorderPoint &&
+          item.quantity <= item.category.reorderPoint
       );
     }
 
@@ -65,13 +65,13 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Assign product to location (create or update inventory item) or transfer between locations
+// POST - Assign category to location (create or update inventory item) or transfer between locations
 export async function POST(request: Request) {
   try {
     await assertAdmin();
 
     const body = await request.json();
-    const { productId, locationId, sourceLocationId, targetLocationId, quantity, notes, isTransfer } = body;
+    const { categoryId, locationId, sourceLocationId, targetLocationId, quantity, notes, isTransfer } = body;
 
     const qty = parseInt(quantity);
     if (isNaN(qty) || qty <= 0) {
@@ -81,14 +81,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if product exists
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
+    // Check if category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
     });
 
-    if (!product) {
+    if (!category) {
       return NextResponse.json(
-        { success: false, error: "Product not found" },
+        { success: false, error: "Category not found" },
         { status: 404 }
       );
     }
@@ -106,8 +106,8 @@ export async function POST(request: Request) {
         // Get source inventory
         const sourceItem = await tx.inventoryItem.findUnique({
           where: {
-            productId_locationId: {
-              productId,
+            categoryId_locationId: {
+              categoryId,
               locationId: sourceLocationId,
             },
           },
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
         // Record STOCK_OUT transaction from source
         await tx.inventoryTransaction.create({
           data: {
-            productId,
+            categoryId,
             locationId: sourceLocationId,
             kind: "STOCK_OUT",
             quantity: qty,
@@ -146,8 +146,8 @@ export async function POST(request: Request) {
         // Increase quantity at target location (or create new item)
         const targetItem = await tx.inventoryItem.findUnique({
           where: {
-            productId_locationId: {
-              productId,
+            categoryId_locationId: {
+              categoryId,
               locationId: targetLocationId,
             },
           },
@@ -159,23 +159,23 @@ export async function POST(request: Request) {
           updatedTargetItem = await tx.inventoryItem.update({
             where: { id: targetItem.id },
             data: { quantity: targetItem.quantity + qty },
-            include: { product: true, location: true },
+            include: { category: true, location: true },
           });
         } else {
           updatedTargetItem = await tx.inventoryItem.create({
             data: {
-              productId,
+              categoryId,
               locationId: targetLocationId,
               quantity: qty,
             },
-            include: { product: true, location: true },
+            include: { category: true, location: true },
           });
         }
 
         // Record STOCK_IN transaction at target
         await tx.inventoryTransaction.create({
           data: {
-            productId,
+            categoryId,
             locationId: targetLocationId,
             kind: "STOCK_IN",
             quantity: qty,
@@ -216,8 +216,8 @@ export async function POST(request: Request) {
     // Check if inventory item already exists
     const existingItem = await prisma.inventoryItem.findUnique({
       where: {
-        productId_locationId: {
-          productId,
+        categoryId_locationId: {
+          categoryId,
           locationId: targetLocation,
         },
       },
@@ -235,7 +235,7 @@ export async function POST(request: Request) {
           quantity: existingItem.quantity + qty,
         },
         include: {
-          product: true,
+          category: true,
           location: true,
         },
       });
@@ -243,7 +243,7 @@ export async function POST(request: Request) {
       // Create transaction record
       await prisma.inventoryTransaction.create({
         data: {
-          productId,
+          categoryId,
           locationId: targetLocation,
           kind: "STOCK_IN",
           quantity: qty,
@@ -254,12 +254,12 @@ export async function POST(request: Request) {
       // Create new inventory item
       inventoryItem = await prisma.inventoryItem.create({
         data: {
-          productId,
+          categoryId,
           locationId: targetLocation,
           quantity: qty,
         },
         include: {
-          product: true,
+          category: true,
           location: true,
         },
       });
@@ -267,7 +267,7 @@ export async function POST(request: Request) {
       // Create transaction record
       await prisma.inventoryTransaction.create({
         data: {
-          productId,
+          categoryId,
           locationId: targetLocation,
           kind: "STOCK_IN",
           quantity: qty,
@@ -279,12 +279,12 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       inventoryItem,
-      message: existingItem ? "Inventory updated" : "Product assigned to location",
+      message: existingItem ? "Inventory updated" : "Category assigned to location",
     });
   } catch (error: any) {
     console.error("POST /api/admin/inventory error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to assign product to location" },
+      { success: false, error: error.message || "Failed to assign category to location" },
       { status: 500 }
     );
   }

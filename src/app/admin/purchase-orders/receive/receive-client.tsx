@@ -32,7 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Package, MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
-interface Product {
+interface Category {
   id: string;
   name: string;
   category: string;
@@ -44,7 +44,7 @@ interface PurchaseOrderItem {
   receivedQty: number;
   price: number;
   lineStatus: string;
-  product: Product | null;
+  category: Category | null;
 }
 
 interface PurchaseOrder {
@@ -305,7 +305,7 @@ export function ReceiveShipmentClient({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">Receive</TableHead>
-                  <TableHead>Product</TableHead>
+                  <TableHead>Category</TableHead>
                   <TableHead>Ordered</TableHead>
                   <TableHead>Received</TableHead>
                   <TableHead>Remaining</TableHead>
@@ -333,9 +333,9 @@ export function ReceiveShipmentClient({
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{item.product?.name || "Unknown Product"}</p>
+                          <p className="font-medium">{item.category?.name || "Unknown Category"}</p>
                           <p className="text-sm text-black">
-                            {item.product?.category || "-"}
+                            {item.category?.category || "-"}
                           </p>
                         </div>
                       </TableCell>

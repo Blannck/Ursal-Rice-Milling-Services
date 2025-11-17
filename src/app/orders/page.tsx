@@ -49,7 +49,7 @@ export default async function OrdersPage() {
               <ShoppingBag className="h-16 w-16 mx-auto te mb-6" />
               <h3 className="text-xl font-semibold  mb-2">No orders yet</h3>
               <p className=" max-w-sm mx-auto">
-                Your purchased digital products will appear here once you make
+                Your purchased digital categories will appear here once you make
                 your first order.
               </p>
             </CardContent>
@@ -180,7 +180,7 @@ export default async function OrdersPage() {
 
               <CardContent className="p-0">
                 {order.items.map((item, index) => {
-                  const { product, quantity, price } = item;
+                  const { category, quantity, price } = item;
                   const subtotal = price * quantity;
 
                   return (
@@ -192,7 +192,7 @@ export default async function OrdersPage() {
                               src={
                                  "/sack.png"
                               }
-                              alt={product.name}
+                              alt={category.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -201,16 +201,16 @@ export default async function OrdersPage() {
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-semibold  mb-1 text-lg">
-                                  {product.name}
+                                  {category.name}
                                 </h3>
-                                {product.description && (
+                                {category.description && (
                                   <p className="text-sm  mb-3 line-clamp-2">
-                                    {product.description}
+                                    {category.description}
                                   </p>
                                 )}
                                 <div className="flex items-center gap-4 text-sm">
                                   <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
-                                    {product.category}
+                                    {category.name}
                                   </span>
                                   <span className="">
                                     Qty:{" "}
@@ -236,13 +236,13 @@ export default async function OrdersPage() {
                               </div>
 
                               <div className="flex flex-col gap-2 flex-shrink-0">
-                                {product.downloadUrl ? (
+                                {category.downloadUrl ? (
                                   <Button
                                     asChild
                                     className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                                   >
                                     <a
-                                      href={product.downloadUrl}
+                                      href={category.downloadUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="flex items-center gap-2"

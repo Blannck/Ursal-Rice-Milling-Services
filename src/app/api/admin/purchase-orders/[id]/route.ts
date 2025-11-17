@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         supplier: true,
         items: { 
           include: { 
-            product: true 
+            category: true 
           } 
         },
       },
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   await tx.purchaseOrderItem.createMany({
     data: items.map((item: any) => ({
       purchaseOrderId: params.id,
-      productId: item.productId,
+      categoryId: item.categoryId,
       orderedQty: Number(item.quantity), 
       price: Number(item.price),
             })),
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         supplier: true,
         items: {
           include: {
-            product: true,
+            category: true,
           },
         },
       },

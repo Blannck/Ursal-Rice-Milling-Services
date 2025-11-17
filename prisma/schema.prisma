@@ -13,22 +13,21 @@ datasource db {
 }
 
 model CartItem {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String  @db.ObjectId
-  quantity  Int     @default(1)
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String   @db.ObjectId
+  quantity   Int      @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Product {
+model Category {
   id                 String                 @id @default(auto()) @map("_id") @db.ObjectId
   userId             String
   name               String
   description        String?
-  category           String
   price              Float
   imageUrl           String?
   downloadUrl        String?
@@ -52,9 +51,9 @@ model Product {
 }
 
 model PriceHistory {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String   @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String   @db.ObjectId
   
   oldPrice  Float
   newPrice  Float
@@ -63,7 +62,7 @@ model PriceHistory {
   
   createdAt DateTime @default(now())
   
-  @@index([productId])
+  @@index([categoryId])
   @@index([createdAt])
 }
 
@@ -75,6 +74,14 @@ model Order {
   status            String         @default("processing") // "processing", "partial", "completed", "cancelled"
   shipmentStatus    String         @default("Processing Order") // "Processing Order", "In Transit", "Delivered"
   fulfillmentStatus String         @default("pending") // "pending", "partial", "fulfilled"
+  
+  // Customer information
+  customerName      String?
+  customerPhone     String?
+  deliveryAddress   String?
+  deliveryType      String?        // "Pickup" or "Delivery"
+  paymentMethod     String?        // "COD" or "GCash"
+  
   createdAt         DateTime       @default(now())
   updatedAt         DateTime?      @updatedAt
 
@@ -83,16 +90,16 @@ model Order {
 }
 
 model OrderItem {
-  id               String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String
-  product          Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId        String  @db.ObjectId
-  order            Order   @relation(fields: [orderId], references: [id])
-  orderId          String  @db.ObjectId
-  quantity         Int     // Total quantity ordered
-  quantityFulfilled Int?   @default(0) // Quantity fulfilled so far
-  quantityPending  Int?    // Quantity still pending (backorder)
-  price            Float
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String
+  category          Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId        String   @db.ObjectId
+  order             Order    @relation(fields: [orderId], references: [id])
+  orderId           String   @db.ObjectId
+  quantity          Int      // Total quantity ordered
+  quantityFulfilled Int?     @default(0) // Quantity fulfilled so far
+  quantityPending   Int?     // Quantity still pending (backorder)
+  price             Float
   
   deliveryItems DeliveryItem[]
 }
@@ -153,7 +160,7 @@ model Supplier {
   isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  products       Product[]
+  categories     Category[]
   purchaseOrders PurchaseOrder[]
 
   @@index([name])
@@ -181,8 +188,8 @@ model PurchaseOrderItem {
   id              String               @id @default(auto()) @map("_id") @db.ObjectId
   purchaseOrder   PurchaseOrder        @relation(fields: [purchaseOrderId], references: [id])
   purchaseOrderId String               @db.ObjectId
-  product         Product?             @relation(fields: [productId], references: [id])
-  productId       String               @db.ObjectId
+  category        Category?            @relation(fields: [categoryId], references: [id])
+  categoryId      String               @db.ObjectId
   orderedQty      Int
   receivedQty     Int                  @default(0)
   returnedQty     Int                  @default(0)
@@ -194,7 +201,7 @@ model PurchaseOrderItem {
   returnItems     PurchaseReturnItem[]
 
   @@index([purchaseOrderId])
-  @@index([productId])
+  @@index([categoryId])
 }
 
 model PurchaseOrderAttachment {
@@ -242,22 +249,22 @@ model PurchaseReturnItem {
 }
 
 model InventoryTransaction {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  product             Product  @relation(fields: [productId], references: [id])
-  productId           String   @db.ObjectId
-  kind                String // STOCK_IN | STOCK_OUT | RETURN_IN | RETURN_OUT | ADJUSTMENT | PO_ON_ORDER | MILLING_IN | MILLING_OUT
-  purchaseOrderId     String?  @db.ObjectId
-  purchaseOrderItemId String?  @db.ObjectId
-  purchaseReturnId    String?  @db.ObjectId
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  category            Category            @relation(fields: [categoryId], references: [id])
+  categoryId          String              @db.ObjectId
+  kind                String              // STOCK_IN | STOCK_OUT | RETURN_IN | RETURN_OUT | ADJUSTMENT | PO_ON_ORDER | MILLING_IN | MILLING_OUT
+  purchaseOrderId     String?             @db.ObjectId
+  purchaseOrderItemId String?             @db.ObjectId
+  purchaseReturnId    String?             @db.ObjectId
   quantity            Int
   unitPrice           Float?
   note                String?
-  location            StorageLocation? @relation(fields: [locationId], references: [id])
-  locationId          String?          @db.ObjectId
+  location            StorageLocation?    @relation(fields: [locationId], references: [id])
+  locationId          String?             @db.ObjectId
   createdBy           String?
-  createdAt           DateTime @default(now())
+  createdAt           DateTime            @default(now())
 
-  @@index([productId])
+  @@index([categoryId])
   @@index([purchaseOrderId])
   @@index([locationId])
   @@index([kind])
@@ -286,16 +293,16 @@ model StorageLocation {
 
 model InventoryItem {
   id         String          @id @default(auto()) @map("_id") @db.ObjectId
-  product    Product         @relation(fields: [productId], references: [id])
-  productId  String          @db.ObjectId
+  category   Category        @relation(fields: [categoryId], references: [id])
+  categoryId String          @db.ObjectId
   location   StorageLocation @relation(fields: [locationId], references: [id])
   locationId String          @db.ObjectId
   quantity   Int             @default(0)
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 
-  @@unique([productId, locationId])
-  @@index([productId])
+  @@unique([categoryId, locationId])
+  @@index([categoryId])
   @@index([locationId])
 }
 

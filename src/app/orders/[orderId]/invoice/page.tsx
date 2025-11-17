@@ -13,7 +13,7 @@ export default async function InvoicePage({
     include: {
       items: {
         include: {
-          product: true,
+          category: true,
         },
       },
     },
@@ -32,7 +32,7 @@ export default async function InvoicePage({
       },
     },
     include: {
-      product: true,
+      category: true,
       location: true,
     },
     orderBy: {
@@ -48,7 +48,7 @@ export default async function InvoicePage({
 
   const serializedTransactions = stockOutTransactions.map((txn) => ({
     id: txn.id,
-    productId: txn.productId,
+    categoryId: txn.categoryId,
     quantity: txn.quantity,
     location: txn.location
       ? {

@@ -7,7 +7,7 @@ export interface BackorderReminderSMSData {
   supplierPhone: string;
   purchaseOrderId: string;
   items: Array<{
-    productName: string;
+    categoryName: string;
     quantity: number;
   }>;
   companyName?: string;
@@ -20,7 +20,7 @@ export function generateBackorderReminderSMS(data: BackorderReminderSMSData): st
   const { supplierName, purchaseOrderId, items, companyName = "Ursal Rice Milling" } = data;
 
   const itemsList = items
-    .map((item) => `${item.productName} (${item.quantity} units)`)
+    .map((item) => `${item.categoryName} (${item.quantity} units)`)
     .join(", ");
 
   return `

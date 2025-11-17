@@ -76,9 +76,9 @@ export default function MobileNavbar({
             </Button>
 
             <Button {...commonBtnProps}>
-              <Link href="/products">
-                <Package className="w-5 h-5" />
-                Products
+              <Link href="/categories">
+                <Package className="h-5 w-5" />
+                Categories
               </Link>
             </Button>
 
@@ -93,7 +93,7 @@ export default function MobileNavbar({
               <>
                 <Button {...commonBtnProps}>
                   <Link href="/admin/myproducts">
-                    <Settings className="w-5 h-5" />
+                    <Settings className="h-5 w-5" />
                     Manage Products
                   </Link>
                 </Button>

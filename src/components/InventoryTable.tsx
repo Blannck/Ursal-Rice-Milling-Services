@@ -45,22 +45,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateDialog from "./CreateDialog";
 import EditDialog from "./EditDialog";
-import { getProducts, toggleProductVisibility } from "@/actions/product.aciton";
+import { getCategories, toggleCategoryVisibility } from "@/actions/product.aciton";
 import { formatDate } from "@/lib/utils";
 
-type Products = Awaited<ReturnType<typeof getProducts>>;
+type Categories = Awaited<ReturnType<typeof getCategories>>;
 
 interface InventoryTableProps {
-  products: Products;
+  categories: Categories;
 }
 
-export default function InventoryTable({ products }: InventoryTableProps) {
+export default function InventoryTable({ categories }: InventoryTableProps) {
   const router = useRouter();
 
   // 🔥 MINIMAL PATCH #1: Local state to apply edits immediately
-  const [productsState, setProductsState] = useState(products.userProducts);
+  const [categoriesState, setCategoriesState] = useState(categories.userCategories);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,16 +67,16 @@ export default function InventoryTable({ products }: InventoryTableProps) {
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
-  const categories = Array.from(new Set(productsState?.map((p) => p.category) || []));
+  const categoryTypes = Array.from(new Set(categoriesState?.map((p) => p.name) || []));
 
-  // 🔥 MINIMAL PATCH #2: Filter using productsState instead of products.userProducts
-  const filteredProducts = productsState
-    ?.filter((product) => {
+  // 🔥 MINIMAL PATCH #2: Filter using categoriesState instead of categories.userCategories
+  const filteredCategories = categoriesState
+    ?.filter((category) => {
       const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        category.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedCategory === "all" || product.category === selectedCategory;
+        selectedCategory === "all" || category.name === selectedCategory;
       return matchesSearch && matchesCategory;
     })
     ?.sort((a, b) => {
@@ -97,37 +96,37 @@ export default function InventoryTable({ products }: InventoryTableProps) {
       }
     });
 
-  const totalProducts = productsState.length;
-  const visibleProducts = productsState.filter((p) => !p.isHidden).length;
-  const hiddenProducts = totalProducts - visibleProducts;
-  const totalValue = productsState.reduce((sum, p) => sum + p.price, 0);
-  const avgPrice = totalProducts > 0 ? totalValue / totalProducts : 0;
+  const totalCategories = categoriesState.length;
+  const visibleCategories = categoriesState.filter((p) => !p.isHidden).length;
+  const hiddenCategories = totalCategories - visibleCategories;
+  const totalValue = categoriesState.reduce((sum, p) => sum + p.price, 0);
+  const avgPrice = totalCategories > 0 ? totalValue / totalCategories : 0;
 
-  const handleToggleVisibility = async (productId: string, e: React.MouseEvent) => {
+  const handleToggleVisibility = async (categoryId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setLoadingStates((prev) => ({ ...prev, [productId]: true }));
+    setLoadingStates((prev) => ({ ...prev, [categoryId]: true }));
 
     try {
-      const result = await toggleProductVisibility(productId);
+      const result = await toggleCategoryVisibility(categoryId);
 
       if (result.success) {
         router.refresh();
       } else {
-        alert(result.error || "Failed to update product visibility");
+        alert(result.error || "Failed to update category visibility");
       }
     } catch (error) {
       console.error("Error toggling visibility:", error);
-      alert("An error occurred while updating product visibility");
+      alert("An error occurred while updating category visibility");
     } finally {
-      setLoadingStates((prev) => ({ ...prev, [productId]: false }));
+      setLoadingStates((prev) => ({ ...prev, [categoryId]: false }));
     }
   };
 
-  const handleProductClick = (product: any) => {
-    const slugifiedName = product.name.toLowerCase().replace(/\s+/g, "-");
-    const slug = `${product.id}--${slugifiedName}`;
-    const productUrl = `/admin/products/${slug}`;
-    router.push(productUrl);
+  const handleCategoryClick = (category: any) => {
+    const slugifiedName = category.name.toLowerCase().replace(/\s+/g, "-");
+    const slug = `${category.id}--${slugifiedName}`;
+    const categoryUrl = `/admin/categories/${slug}`;
+    router.push(categoryUrl);
   };
 
   return (
@@ -138,10 +137,9 @@ export default function InventoryTable({ products }: InventoryTableProps) {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold ">Product Dashboard</h1>
-              <p className=" mt-1">Manage your digital product inventory</p>
+              <h1 className="text-3xl font-bold ">Manage Products</h1>
+              <p className=" mt-1">Manage your product categories</p>
             </div>
-            <CreateDialog />
           </div>
         </div>
 
@@ -149,22 +147,22 @@ export default function InventoryTable({ products }: InventoryTableProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-sm ">
             <CardContent className="p-6">
-              <p className="text-sm font-medium ">Total Products</p>
-              <p className="text-3xl font-bold ">{totalProducts}</p>
+              <p className="text-sm font-medium ">Total Categories</p>
+              <p className="text-3xl font-bold ">{totalCategories}</p>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-sm ">
             <CardContent className="p-6">
               <p className="text-sm font-medium ">Visible</p>
-              <p className="text-3xl font-bold text-green-600">{visibleProducts}</p>
+              <p className="text-3xl font-bold text-green-600">{visibleCategories}</p>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-sm ">
             <CardContent className="p-6">
               <p className="text-sm font-medium ">Hidden</p>
-              <p className="text-3xl font-bold text-orange-600">{hiddenProducts}</p>
+              <p className="text-3xl font-bold text-orange-600">{hiddenCategories}</p>
             </CardContent>
           </Card>
 
@@ -193,7 +191,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                 <div className="relative  bg-white flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
                   <Input
-                    placeholder="Search products..."
+                    placeholder="Search categories..."
                     className="pl-10  focus:border-blue-500 focus:ring-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -207,7 +205,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {categories.filter(cat => cat && cat.trim()).map((category) => (
+                    {categoryTypes.filter(cat => cat && cat.trim()).map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -256,16 +254,15 @@ export default function InventoryTable({ products }: InventoryTableProps) {
           </CardContent>
         </Card>
 
-        {/* products */}
-        {filteredProducts && filteredProducts.length > 0 ? (
+        {/* categories */}
+        {filteredCategories && filteredCategories.length > 0 ? (
           viewMode === "table" ? (
             <Card className=" border border-transparent rounded-sm ">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
                     <TableRow className=" text-white">
-                      <TableHead className="font-semibold text-white">Product</TableHead>
-                      <TableHead className="font-semibold text-white ">Category</TableHead>
+                      <TableHead className="font-semibold text-white">Category Name</TableHead>
                       <TableHead className="font-semibold text-white">Price</TableHead>
                       <TableHead className="font-semibold text-white">Status</TableHead>
                       <TableHead className="font-semibold text-white">Created</TableHead>
@@ -275,53 +272,47 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                   </TableHeader>
                   <TableBody>
 
-                    {filteredProducts.map((product) => (
+                    {filteredCategories.map((category) => (
                       <TableRow
-                        key={product.id}
+                        key={category.id}
                         className=" cursor-pointer transition-colors"
-                        onClick={() => handleProductClick(product)}
+                        onClick={() => handleCategoryClick(category)}
                       >
                         <TableCell className="py-4">
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg overflow-hidden">
                               <img
                                 src={ "/sack.png"}
-                                alt={product.name}
+                                alt={category.name}
                                 className="w-full h-full object-cover"
                               />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm text-black">{product.name}</p>
+                              <p className="text-sm text-black">{category.name}</p>
                               <p className="text-sm text-black truncate">
-                                ID: {product.id.slice(0, 8)}...
+                                ID: {category.id.slice(0, 8)}...
                               </p>
                             </div>
                           </div>
                         </TableCell>
 
-                        <TableCell>
-                          <Badge variant="secondary" className=" border-0">
-                            {product.category}
-                          </Badge>
-                        </TableCell>
-
                         <TableCell className="font-semibold">
-                          ₱{product.price.toLocaleString("en-PH", {
+                          ₱{category.price.toLocaleString("en-PH", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </TableCell>
 
                         <TableCell>
-                          <Badge variant={product.isHidden ? "destructive" : "default"}>
-                            {product.isHidden ? "Hidden" : "Visible"}
+                          <Badge variant={category.isHidden ? "destructive" : "default"}>
+                            {category.isHidden ? "Hidden" : "Visible"}
                           </Badge>
                         </TableCell>
 
-                        <TableCell>{formatDate(product.createdAt)}</TableCell>
+                        <TableCell>{formatDate(category.createdAt)}</TableCell>
 
                         <TableCell className="text-xs text-blue-700 break-all max-w-xs">
-                          {product.downloadUrl || "No URL"}
+                          {category.downloadUrl || "No URL"}
                         </TableCell>
 
                         <TableCell className="text-right">
@@ -330,7 +321,7 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleProductClick(product)}
+                              onClick={() => handleCategoryClick(category)}
                               className="h-8 w-8 p-0"
                             >
                               <Eye className="h-4 w-4" />
@@ -339,9 +330,9 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             {/* 🔥 MINIMAL PATCH #3 — Apply update to table immediately */}
                             <div className="w-24">
                               <EditDialog
-                                product={product}
+                                category={category}
                                 onUpdated={(updated) => {
-                                  setProductsState((prev) =>
+                                  setCategoriesState((prev) =>
                                     prev.map((p) => (p.id === updated.id ? updated : p))
                                   );
                                 }}
@@ -349,15 +340,15 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                             </div>
 
                             <Button
-                              variant={product.isHidden ? "default" : "outline"}
+                              variant={category.isHidden ? "default" : "outline"}
                               size="lg"
-                              onClick={(e) => handleToggleVisibility(product.id, e)}
-                              disabled={loadingStates[product.id]}
+                              onClick={(e) => handleToggleVisibility(category.id, e)}
+                              disabled={loadingStates[category.id]}
                               className="h-10  px-3"
                             >
-                              {loadingStates[product.id]
+                              {loadingStates[category.id]
                                 ? "..."
-                                : product.isHidden
+                                : category.isHidden
                                 ? <>
                                     <Eye className="h-4 w-4 mr-1" /> Show
                                   </>
@@ -381,43 +372,43 @@ export default function InventoryTable({ products }: InventoryTableProps) {
             // grid view
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
-              {filteredProducts.map((product) => (
+              {filteredCategories.map((category) => (
                 <Card
-                  key={product.id}
+                  key={category.id}
                   className="group cursor-pointer border-0 shadow-sm hover:transition-all duration-300 transform hover:-translate-y-1"
-                  onClick={() => handleProductClick(product)}
+                  onClick={() => handleCategoryClick(category)}
                 >
                   <CardContent className="p-0">
 
                     <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-xl">
                       <img
                         src={"/sack.png"}
-                        alt={product.name}
+                        alt={category.name}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                      <Badge variant={product.isHidden ? "destructive" : "default"} className="absolute top-3 left-3">
-                        {product.isHidden ? "Hidden" : "Visible"}
+                      <Badge variant={category.isHidden ? "destructive" : "default"} className="absolute top-3 left-3">
+                        {category.isHidden ? "Hidden" : "Visible"}
                       </Badge>
 
                       <Badge variant="secondary" className="absolute top-3 right-3 text-white border-0">
-                        {product.category}
+                        {category.name}
                       </Badge>
                     </div>
 
                     <div className="p-6">
                       <div className="space-y-3">
-                        <h3 className="font-semibold text-lg line-clamp-2">{product.name}</h3>
-                        <p className="text-sm text-black mt-1">ID: {product.id.slice(0, 8)}...</p>
+                        <h3 className="font-semibold text-lg line-clamp-2">{category.name}</h3>
+                        <p className="text-sm text-black mt-1">ID: {category.id.slice(0, 8)}...</p>
 
                         <div className="flex items-center justify-between">
-                          <div className="text-2xl font-bold">₱{product.price.toLocaleString()}</div>
+                          <div className="text-2xl font-bold">₱{category.price.toLocaleString()}</div>
                         </div>
 
                         <div className="flex items-center text-sm text-black">
                           <Calendar className="h-4 w-4 mr-1" />
-                          {formatDate(product.createdAt)}
+                          {formatDate(category.createdAt)}
                         </div>
                       </div>
 
@@ -425,9 +416,9 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         <div>
                           {/* 🔥 Minimal Patch — Apply updates immediately in grid view too */}
                           <EditDialog
-                            product={product}
+                            category={category}
                             onUpdated={(updated) => {
-                              setProductsState((prev) =>
+                              setCategoriesState((prev) =>
                                 prev.map((p) => (p.id === updated.id ? updated : p))
                               );
                             }}
@@ -435,15 +426,15 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                         </div>
 
                         <Button
-                          variant={product.isHidden ? "default" : "outline"}
+                          variant={category.isHidden ? "default" : "outline"}
                           size="sm"
-                          onClick={(e) => handleToggleVisibility(product.id, e)}
-                          disabled={loadingStates[product.id]}
+                          onClick={(e) => handleToggleVisibility(category.id, e)}
+                          disabled={loadingStates[category.id]}
                           className="w-full h-10"
                         >
-                          {loadingStates[product.id]
+                          {loadingStates[category.id]
                             ? "Loading..."
-                            : product.isHidden
+                            : category.isHidden
                             ? <>
                                 <Eye className="h-4 w-4 mr-1" /> Show
                               </>
@@ -468,9 +459,9 @@ export default function InventoryTable({ products }: InventoryTableProps) {
               <div className=" rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <Package className="h-10 w-10 text-black" />
               </div>
-              <h3 className="text-xl font-semibold  mb-2">No products found</h3>
+              <h3 className="text-xl font-semibold  mb-2">No categories found</h3>
               <p className="text-gray-500 mb-6">
-                Try adjusting your search or filter criteria, or create your first product.
+                Try adjusting your search or filter criteria.
               </p>
               <div className="flex gap-4 justify-center">
                 <Button
@@ -482,7 +473,6 @@ export default function InventoryTable({ products }: InventoryTableProps) {
                 >
                   Clear filters
                 </Button>
-                <CreateDialog />
               </div>
             </CardContent>
           </Card>

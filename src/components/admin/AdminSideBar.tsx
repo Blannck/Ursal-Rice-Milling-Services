@@ -22,6 +22,7 @@ import {
   FileBarChart,
   BarChart3,
   Wallet,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@stackframe/stack";
@@ -141,7 +142,17 @@ export default function AdminSidebar({ user, app }: Props) {
             href="/admin/customer-orders"
             label="Manage Orders"
             icon={ClipboardList}
-            active={pathname.startsWith("/admin/customer-orders")}
+            active={pathname === "/admin/customer-orders"}
+            collapsed={collapsed}
+          />
+        </div>
+        
+        <div className="px-2 mb-3">
+          <NavItem
+            href="/admin/customer-orders/history"
+            label="Orders History"
+            icon={History}
+            active={pathname.startsWith("/admin/customer-orders/history")}
             collapsed={collapsed}
           />
         </div>
@@ -210,7 +221,7 @@ export default function AdminSidebar({ user, app }: Props) {
           <NavItem
             href="/admin/transactions"
             label="Inventory History"
-            icon={History}
+            icon={Clock}
             active={pathname.startsWith("/admin/transactions")}
             collapsed={collapsed}
           />

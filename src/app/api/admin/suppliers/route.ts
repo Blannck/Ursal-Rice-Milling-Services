@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await assertAdmin();
-    const { name, email, phone, address, note, isActive, productIds } = await req.json();
+    const { name, email, phone, address, note, isActive, categoryIds } = await req.json();
 
     if (!name?.trim()) {
       return NextResponse.json({ ok: false, error: "Name Required" }, { status: 400 });
@@ -37,12 +37,12 @@ export async function POST(req: Request) {
       },
     });
 
-    // Associate products if any were selected
-    if (productIds && Array.isArray(productIds) && productIds.length > 0) {
-      await prisma.product.updateMany({
+    // Associate categories if any were selected
+    if (categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0) {
+      await prisma.category.updateMany({
         where: {
           id: {
-            in: productIds,
+            in: categoryIds,
           },
         },
         data: {

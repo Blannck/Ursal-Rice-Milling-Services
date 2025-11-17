@@ -49,7 +49,7 @@ export async function POST(request: Request) {
         receivedQty: { gt: 0 },
       },
       include: {
-        product: true,
+        category: true,
         purchaseOrder: {
           include: {
             supplier: true,
@@ -66,10 +66,10 @@ export async function POST(request: Request) {
 
     for (const poItem of receivedPOItems) {
       try {
-        // Check if inventory already exists at any location for this product
+        // Check if inventory already exists at any location for this category
         const existingInventory = await prisma.inventoryItem.findMany({
           where: {
-            productId: poItem.productId,
+            categoryId: poItem.categoryId,
           },
           include: {
             location: true,
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         // If inventory quantity matches or exceeds received quantity, skip
         if (totalInventoryQty >= poItem.receivedQty) {
           skipped.push({
-            product: poItem.product?.name || "Unknown",
+            category: poItem.category?.name || "Unknown",
             receivedQty: poItem.receivedQty,
             inventoryQty: totalInventoryQty,
             reason: "Already synced",
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
         // Calculate missing quantity
         const missingQty = poItem.receivedQty - totalInventoryQty;
 
-        console.log(`\n   📦 ${poItem.product?.name || "Unknown"}`);
+        console.log(`\n   📦 ${poItem.category?.name || "Unknown"}`);
         console.log(`      Received: ${poItem.receivedQty}, In Inventory: ${totalInventoryQty}, Missing: ${missingQty}`);
 
         // Check if inventory exists at default location
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
           console.log(`      ✅ Updated inventory at ${defaultLocation.name}: ${inventoryAtDefault.quantity} + ${missingQty} = ${updated.quantity}`);
 
           results.push({
-            product: poItem.product?.name || "Unknown",
+            category: poItem.category?.name || "Unknown",
             action: "updated",
             location: defaultLocation.name,
             previousQty: inventoryAtDefault.quantity,
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
           // Create new inventory at default location
           const created = await prisma.inventoryItem.create({
             data: {
-              productId: poItem.productId,
+              categoryId: poItem.categoryId,
               locationId: defaultLocationId,
               quantity: missingQty,
             },
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
           console.log(`      ✅ Created inventory at ${defaultLocation.name}: ${created.quantity}`);
 
           results.push({
-            product: poItem.product?.name || "Unknown",
+            category: poItem.category?.name || "Unknown",
             action: "created",
             location: defaultLocation.name,
             addedQty: missingQty,
@@ -143,31 +143,31 @@ export async function POST(request: Request) {
           });
         }
 
-        // Update product stockOnHand if needed
-        const product = await prisma.product.findUnique({
-          where: { id: poItem.productId },
+        // Update category stockOnHand if needed
+        const category = await prisma.category.findUnique({
+          where: { id: poItem.categoryId },
         });
 
-        if (product) {
+        if (category) {
           // Calculate what stockOnHand should be
           const expectedStockOnHand = totalInventoryQty + missingQty;
 
-          if (product.stockOnHand !== expectedStockOnHand) {
-            await prisma.product.update({
-              where: { id: poItem.productId },
+          if (category.stockOnHand !== expectedStockOnHand) {
+            await prisma.category.update({
+              where: { id: poItem.categoryId },
               data: {
                 stockOnHand: expectedStockOnHand,
               },
             });
 
-            console.log(`      📊 Updated product stockOnHand: ${product.stockOnHand} → ${expectedStockOnHand}`);
+            console.log(`      📊 Updated category stockOnHand: ${category.stockOnHand} → ${expectedStockOnHand}`);
           }
         }
 
         // Create transaction record for audit trail
         await prisma.inventoryTransaction.create({
           data: {
-            productId: poItem.productId,
+            categoryId: poItem.categoryId,
             locationId: defaultLocationId,
             kind: "STOCK_IN",
             quantity: missingQty,
@@ -178,9 +178,9 @@ export async function POST(request: Request) {
           },
         });
       } catch (error: any) {
-        console.error(`      ❌ Error syncing ${poItem.product?.name}:`, error);
+        console.error(`      ❌ Error syncing ${poItem.category?.name}:`, error);
         errors.push({
-          product: poItem.product?.name || "Unknown",
+          category: poItem.category?.name || "Unknown",
           error: error.message,
         });
       }

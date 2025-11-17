@@ -36,7 +36,7 @@ type Supplier = {
   createdAt: string;
 };
 
-type Product = {
+type Category = {
   id: string;
   name: string;
   category: string;
@@ -60,11 +60,11 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
 
-  // product selection state
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [productSearch, setProductSearch] = useState("");
-  const [loadingProducts, setLoadingProducts] = useState(false);
+  // category selection state
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categorySearch, setProductSearch] = useState("");
+  const [loadingCategories, setLoadingCategories] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -79,34 +79,33 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const paged = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  // Filter products based on search
-  const filteredProducts = useMemo(() => {
-    const searchTerm = productSearch.toLowerCase();
-    return products.filter(product => 
-      product.name.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm)
+  // Filter categories based on search
+  const filteredCategories = useMemo(() => {
+    const searchTerm = categorySearch.toLowerCase();
+    return categories.filter(category => 
+      category.name.toLowerCase().includes(searchTerm)
     );
-  }, [products, productSearch]);
+  }, [categories, categorySearch]);
 
-  // Fetch products when modal opens
+  // Fetch categories when modal opens
   useEffect(() => {
-    if (open && products.length === 0) {
-      fetchProducts();
+    if (open && categories.length === 0) {
+      fetchCategories();
     }
   }, [open]);
 
-  async function fetchProducts() {
-    setLoadingProducts(true);
+  async function fetchCategories() {
+    setLoadingCategories(true);
     try {
       const res = await fetch("/api/admin/products");
       const data = await res.json();
       if (res.ok && data.success) {
-        setProducts(data.products);
+        setCategories(data.categories);
       }
     } catch (error) {
-      console.error("Failed to fetch products:", error);
+      console.error("Failed to fetch categories:", error);
     } finally {
-      setLoadingProducts(false);
+      setLoadingCategories(false);
     }
   }
 
@@ -122,7 +121,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       isActive: true,
       createdAt: new Date().toISOString(),
     });
-    setSelectedProducts([]);
+    setSelectedCategories([]);
     setProductSearch("");
     setOpen(true);
   }
@@ -130,17 +129,17 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
   async function startEdit(s: Supplier, e: React.MouseEvent) {
     e.stopPropagation();
     setEditing(s);
-    setSelectedProducts([]);
+    setSelectedCategories([]);
     setProductSearch("");
     
-    // Fetch current supplier details including associated products
+    // Fetch current supplier details including associated categories
     try {
       const res = await fetch(`/api/admin/suppliers/${s.id}`);
       const data = await res.json();
-      if (res.ok && data.ok && data.data.products) {
-        // Set currently associated products as selected
-        const currentProductIds = data.data.products.map((p: Product) => p.id);
-        setSelectedProducts(currentProductIds);
+      if (res.ok && data.ok && data.data.categories) {
+        // Set currently associated categories as selected
+        const currentProductIds = data.data.categories.map((p: Category) => p.id);
+        setSelectedCategories(currentProductIds);
       }
     } catch (error) {
       console.error("Failed to fetch supplier details:", error);
@@ -149,11 +148,11 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
     setOpen(true);
   }
 
-  function toggleProduct(productId: string) {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
+  function toggleProduct(categoryId: string) {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
     );
   }
 
@@ -166,7 +165,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       address: editing.address,
       note: editing.note,
       isActive: editing.isActive,
-      productIds: selectedProducts,
+      categoryIds: selectedCategories,
     };
 
     if (!editing.id) {
@@ -194,9 +193,9 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       if (!res.ok || !j.ok) return alert(j.error || "Update failed");
       
       // Show success message
-      if (selectedProducts.length > 0) {
+      if (selectedCategories.length > 0) {
         toast.success(
-          `${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''} successfully associated with ${editing.name}!`,
+          `${selectedCategories.length} category${selectedCategories.length > 1 ? 's' : ''} successfully associated with ${editing.name}!`,
           {
             duration: 3000,
             position: "top-center",
@@ -392,50 +391,50 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 <Label>Active</Label>
               </div>
 
-              {/* Product Selection Section */}
+              {/* Category Selection Section */}
               <div className="space-y-3 border-t pt-4">
                 <div>
-                  <Label className="text-base font-medium">Associate Products</Label>
-                  <p className="text-sm text-black">Select products to associate with this supplier</p>
+                  <Label className="text-base font-medium">Associate Categories</Label>
+                  <p className="text-sm text-black">Select rice categories to associate with this supplier</p>
                 </div>
                 
-                {/* Product Search */}
+                {/* Category Search */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Search products..."
-                    value={productSearch}
+                    placeholder="Search categories..."
+                    value={categorySearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     className="pl-10"
                   />
                 </div>
 
-                {/* Product List */}
+                {/* Category List */}
                 <div className="max-h-40 overflow-y-auto bg-white border rounded-md">
-                  {loadingProducts ? (
+                  {loadingCategories ? (
                     <div className="p-4 text-center text-sm text-black">
-                      Loading products...
+                      Loading categories...
                     </div>
-                  ) : filteredProducts.length === 0 ? (
+                  ) : filteredCategories.length === 0 ? (
                     <div className="p-4 text-center text-sm text-black">
-                      {productSearch ? "No products found" : "No products available"}
+                      {categorySearch ? "No categories found" : "No categories available"}
                     </div>
                   ) : (
-                    filteredProducts.map((product) => {
-                      const isSelected = selectedProducts.includes(product.id);
+                    filteredCategories.map((category) => {
+                      const isSelected = selectedCategories.includes(category.id);
                       
                       return (
-                        <div key={product.id} className="flex items-center space-x-3 p-3 hover:bg-custom-orange hover:text-white border-b last:border-b-0">
+                        <div key={category.id} className="flex items-center space-x-3 p-3 hover:bg-custom-orange hover:text-white border-b last:border-b-0">
                           <Checkbox
 
-                            id={`product-${product.id}`}
+                            id={`category-${category.id}`}
                             checked={isSelected}
-                            onCheckedChange={() => toggleProduct(product.id)}
+                            onCheckedChange={() => toggleProduct(category.id)}
                           />
                           <div className="flex-1">
-                            <div className="font-medium text-sm">{product.name}</div>
+                            <div className="font-medium text-sm">{category.name}</div>
                             <div className="text-xs  ">
-                              {product.category} • ₱{product.price.toFixed(2)}
+                              ₱{category.price.toFixed(2)}
                               {isSelected && editing?.id && (
                                 <span className="ml-2 text-green-600">
                                   • Will be associated
@@ -449,11 +448,11 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                   )}
                 </div>
 
-                {/* Selected Products Summary */}
-                {selectedProducts.length > 0 && (
+                {/* Selected Categories Summary */}
+                {selectedCategories.length > 0 && (
                   <div className="text-sm">
                     <div className="font-medium text-black mb-2">
-                      {selectedProducts.length} product{selectedProducts.length === 1 ? '' : 's'} selected
+                      {selectedCategories.length} category{selectedCategories.length === 1 ? '' : 's'} selected
                     </div>
                     {editing?.id && (
                       <div className="text-xs text-muted-foreground">

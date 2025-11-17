@@ -7,10 +7,13 @@ import { Prisma } from "@prisma/client";
 import { stackServerApp } from "@/lib/stack";
 
 
-// Get all products with optional search (visible to everyone)
-export async function getProducts() {
+// Get all categories with optional search (visible to everyone)
+export async function getCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
+      where: {
+        isMilledRice: true // Only show milled rice categories
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -18,22 +21,23 @@ export async function getProducts() {
     
     // Return in the format your component expects
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching categories:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get visible products only (for public products page)
-export async function getVisibleProducts() {
+// Get visible categories only (for public categories page)
+export async function getVisibleCategories() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         isHidden: false,
+        isMilledRice: true // Only show milled rice categories
       },
       orderBy: {
         createdAt: "desc",
@@ -41,20 +45,20 @@ export async function getVisibleProducts() {
     });
     
     return {
-      userProducts: products,
+      userCategories: categories,
     };
   } catch (error) {
-    console.error("Error fetching visible products:", error);
+    console.error("Error fetching visible categories:", error);
     return {
-      userProducts: [],
+      userCategories: [],
     };
   }
 }
 
-// Get product by ID
-export async function getProductById(id: string) {
+// Get category by ID
+export async function getCategoryById(id: string) {
   try {
-    const product = await prisma.product.findUnique({
+    const category = await prisma.category.findUnique({
       where: { id },
       include: {
         priceHistory: {
@@ -64,30 +68,30 @@ export async function getProductById(id: string) {
         }
       }
     });
-    return product;
+    return category;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.error("Error fetching category:", error);
     return null;
   }
 }
 
-// Toggle product visibility (MAIN NEW FUNCTION)
-export async function toggleProductVisibility(productId: string) {
+// Toggle category visibility (MAIN NEW FUNCTION)
+export async function toggleCategoryVisibility(categoryId: string) {
   try {
     // First, get the current state
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
       select: { isHidden: true },
     });
 
-    if (!product) {
+    if (!category) {
       return { success: false, error: "Product not found" };
     }
 
     // Toggle the visibility
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: { isHidden: !product.isHidden },
+    const updatedCategory = await prisma.category.update({
+      where: { id: categoryId },
+      data: { isHidden: !category.isHidden },
     });
 
     // Revalidate relevant pages
@@ -96,10 +100,10 @@ export async function toggleProductVisibility(productId: string) {
 
     return {
       success: true,
-      isHidden: updatedProduct.isHidden,
-      message: updatedProduct.isHidden
-        ? "Product hidden successfully"
-        : "Product visible successfully",
+      isHidden: updatedCategory.isHidden,
+      message: updatedCategory.isHidden
+        ? "Category hidden successfully"
+        : "Category visible successfully",
     };
   } catch (error) {
     console.error("Error toggling product visibility:", error);
@@ -107,7 +111,7 @@ export async function toggleProductVisibility(productId: string) {
   }
 }
 
-export async function createProduct(data: Prisma.ProductCreateInput) {
+export async function createCategory(data: Prisma.CategoryCreateInput) {
   console.log("Creating product:", data);
   
   try {
@@ -124,7 +128,7 @@ export async function createProduct(data: Prisma.ProductCreateInput) {
       return null; // or throw new Error("Unauthorized")
     }
 
-    const newProduct = await prisma.product.create({
+    const newCategory = await prisma.category.create({
       data: {
         ...data,
         userId: user.id,
@@ -132,7 +136,7 @@ export async function createProduct(data: Prisma.ProductCreateInput) {
     });
 
     revalidatePath("/products");
-    return newProduct;
+    return newCategory;
   } catch (error) {
     console.error("Error creating product:", error);
     throw error;
@@ -140,43 +144,43 @@ export async function createProduct(data: Prisma.ProductCreateInput) {
 }
 
 
-// Update a product
-export async function editProduct(
+// Update a category
+export async function editCategory(
   id: string, 
-  data: Prisma.ProductUpdateInput & { priceChangeReason?: string }
+  data: Prisma.CategoryUpdateInput & { priceChangeReason?: string }
 ) {
   try {
     const currentUserId = await getUserId();
 
     // Extract priceChangeReason from data (not part of Prisma schema)
-    const { priceChangeReason, ...productData } = data;
+    const { priceChangeReason, ...categoryData } = data;
 
     // Check if price is being changed
-    const oldProduct = await prisma.product.findUnique({
+    const oldCategory = await prisma.category.findUnique({
       where: { id },
       select: { price: true }
     });
 
-    const newPrice = typeof productData.price === 'number' ? productData.price : oldProduct?.price;
-    const priceChanged = oldProduct && newPrice !== undefined && newPrice !== oldProduct.price;
+    const newPrice = typeof categoryData.price === 'number' ? categoryData.price : oldCategory?.price;
+    const priceChanged = oldCategory && newPrice !== undefined && newPrice !== oldCategory.price;
 
-    // Use transaction to update product and create price history atomically
+    // Use transaction to update category and create price history atomically
     const result = await prisma.$transaction(async (tx) => {
-      // Update the product
-      const updatedProduct = await tx.product.update({
+      // Update the category
+      const updatedCategory = await tx.category.update({
         where: { id },
         data: {
-          ...productData,
+          ...categoryData,
           userId: currentUserId,
         },
       });
 
       // Create price history record if price changed
-      if (priceChanged && oldProduct) {
+      if (priceChanged && oldCategory) {
         await tx.priceHistory.create({
           data: {
-            productId: id,
-            oldPrice: oldProduct.price,
+            categoryId: id,
+            oldPrice: oldCategory.price,
             newPrice: newPrice as number,
             changedBy: currentUserId || 'system',
             reason: priceChangeReason || 'Price updated',
@@ -184,7 +188,7 @@ export async function editProduct(
         });
       }
 
-      return updatedProduct;
+      return updatedCategory;
     });
 
     revalidatePath("/products");
@@ -198,8 +202,8 @@ export async function editProduct(
   }
 }
 
-// Delete a product and clean up any empty orders
-export async function deleteProduct(id: string) {
+// Delete a category and clean up any empty orders
+export async function deleteCategory(id: string) {
   try {
     console.log("Deleting:", id);
     const currentUserId = await getUserId();
@@ -207,12 +211,12 @@ export async function deleteProduct(id: string) {
 
     // 0. Delete CartItems first
     await prisma.cartItem.deleteMany({
-      where: { productId: id },
+      where: { categoryId: id },
     });
 
-    // 1. Find orders that include this product
+    // 1. Find orders that include this category
     const orderItems = await prisma.orderItem.findMany({
-      where: { productId: id },
+      where: { categoryId: id },
       select: { orderId: true },
     });
 
@@ -220,8 +224,8 @@ export async function deleteProduct(id: string) {
       new Set(orderItems.map((item) => item.orderId))
     );
 
-    // 2. Delete the product (this will cascade delete orderItems)
-    const deletedProduct = await prisma.product.delete({
+    // 2. Delete the category (this will cascade delete orderItems)
+    const deletedCategory = await prisma.category.delete({
       where: { id },
     });
 
@@ -239,9 +243,9 @@ export async function deleteProduct(id: string) {
     }
 
     revalidatePath("/products");
-    return deletedProduct;
+    return deletedCategory;
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error("Error deleting category:", error);
     throw error;
   }
 }
