@@ -2,62 +2,113 @@
 
 A comprehensive web-based management system for rice milling operations, featuring inventory management, order processing, supplier relations, and financial tracking.
 
-## 🌾 Features
+## 📦 Project Modules
 
-### Customer Features
-- **Product Browsing**: View available rice products with detailed information
-- **Shopping Cart**: Add products to cart with quantity management
-- **Order Placement**: Multi-step checkout process with customer information collection
-- **Payment Options**: 
-  - Pickup orders (direct placement)
-  - Delivery orders with COD or GCash payment
-  - GCash QR code simulation with 20-second timer
-- **Order Tracking**: View order status and delivery information
-- **Invoice Generation**: Detailed invoices for all orders
+### 1. General (Landing Page)
+- Product browsing and catalog display
+- Company information and services
+- Public-facing interface for customers
+- Responsive design for all devices
 
-### Admin Features
+### 2. User Management
+- User registration and authentication
+- Customer account management
+- Admin controls (block/unblock users)
+- User profile management
+- Secure login with Stack Auth
 
-#### Order Management
-- **Manage Orders**: Track and fulfill customer orders
-- **Delivery Management**: Handle multiple deliveries per order with shipment tracking
-- **Order History**: View completed and fulfilled orders separately
-- **Fulfillment Tracking**: Mark deliveries as fulfilled with status updates
+### 3. Admin Dashboard
+- Centralized control panel for administrators
+- Overview of business metrics and statistics
+- Quick access to all management modules
+- Real-time notifications and alerts
+- System-wide monitoring and reporting
 
-#### Inventory Management
-- **Product Categories**: Create and manage rice categories (milled/unmilled)
-- **Multi-Location Inventory**: Track stock across different warehouse locations
-- **Stock Operations**:
+### 4. Item Management
+- Create and manage rice product categories
+- Milled and unmilled rice classification
+- Product pricing and descriptions
+- Image management for products
+- Price history tracking
+- Product visibility controls (show/hide)
+- Reorder point configuration
+
+### 5. Supplier Management
+- Maintain supplier database
+- Contact information (email, phone, address)
+- Supplier status management (active/inactive)
+- Supplier notes and documentation
+- Link suppliers to purchase orders
+
+### 6. Purchase Order Management
+- Create purchase orders for unmilled rice
+- Select suppliers and products
+- Flexible payment terms:
+  - One-time payment
+  - Monthly payment schedules (3, 6, or 12 months)
+- Receive inventory from purchase orders
+- Track PO status (Pending, Partial, Completed)
+- Delivery location specification
+- Purchase order attachments and documentation
+
+### 7. Inventory Management
+- Multi-location inventory tracking
+- Stock operations:
   - Stock-in from purchase orders
   - Stock transfer between locations
   - Stock adjustments
   - Milling operations (convert unmilled to milled rice)
-- **Inventory Reports**: Detailed stock levels, valuations, and statistics
-- **Reorder Alerts**: Automatic low-stock notifications
+- Real-time stock levels across all locations
+- Inventory reports and statistics
+- Reorder alerts for low stock
+- Detailed stock movement audit trail
+- Location management (warehouses, mills, retail stores)
 
-#### Purchase Orders
-- **Supplier Management**: Maintain supplier information and contacts
-- **PO Creation**: Create purchase orders for unmilled rice
-- **Payment Terms**: Support for one-time and monthly payment schedules
-- **Receiving**: Receive and process incoming inventory
-- **Status Tracking**: Monitor PO status (Pending, Partial, Completed)
+### 8. Sales Order
+- Customer order placement with detailed checkout
+- Shopping cart functionality
+- Multi-step checkout process:
+  - Customer information collection (name, phone, address)
+  - Delivery type selection (Pickup/Delivery)
+  - Payment method selection (COD/GCash)
+- GCash QR code payment simulation
+- Order tracking and status updates
+- Delivery management with shipment tracking
+- Multi-delivery support (partial stock handling)
+- Order fulfillment workflow
+- Invoice generation and printing
+- Order history for completed orders
 
-#### Financial Management
-- **Account Balance**: Track total business finances
-- **Transaction History**: Record all financial activities
-- **Sales Tracking**: Monitor revenue from customer orders
-- **Payables Management**: Track supplier payments and schedules
-- **Monthly Payments**: Automated processing of scheduled supplier payments
+### 9. Finance & Credit Sales Management
+- Account balance tracking
+- Transaction history and logs
+- Sales revenue monitoring
+- Supplier payables management
+- Automated monthly payment processing
+- Credit sales tracking
+- Financial reports and analytics
+- Cash flow management
+- Payment status monitoring
 
-#### Reporting & Analytics
-- **Sales Reports**: Analyze revenue with date filtering and visualizations
-- **Inventory Reports**: Stock levels, valuations, and product statistics
-- **Price History**: Track price changes with historical records
-- **Transaction Logs**: Complete audit trail of all inventory movements
+## 🌾 Key Features
 
-#### User Management
-- **User Accounts**: Manage customer accounts
-- **Admin Controls**: Block/unblock users
-- **Authentication**: Secure login with Stack Auth
+### For Customers
+- Browse rice products with detailed information
+- Add products to shopping cart with quantity management
+- Complete checkout with delivery options
+- Track order status and deliveries
+- View and print invoices
+- Multiple payment methods (COD, GCash)
+
+### For Administrators
+- Complete dashboard with business overview
+- Manage all aspects of the business operations
+- Track inventory across multiple locations
+- Process and fulfill customer orders
+- Manage suppliers and purchase orders
+- Monitor financial transactions and credit sales
+- Generate comprehensive reports
+- Control user access and permissions
 
 ## 🛠️ Tech Stack
 
@@ -167,7 +218,7 @@ scripts/
 └── *.ts           # Utility scripts
 ```
 
-## 🔑 Key Features Explained
+## 🔑 Module Details
 
 ### Multi-Location Inventory
 Track rice inventory across different storage locations (warehouses, mills, retail stores) with real-time stock levels and transfer capabilities.
