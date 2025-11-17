@@ -34,7 +34,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 type Category = {
   id: string;
   name: string;
-  category: string;
   description: string | null;
   imageUrl: string | null;
   downloadUrl: string | null;

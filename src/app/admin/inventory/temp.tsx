@@ -35,7 +35,6 @@ interface Location {
 interface Category {
   id: string;
   name: string;
-  category: string;
   price: number;
   stockOnHand: number;
   reorderPoint: number;

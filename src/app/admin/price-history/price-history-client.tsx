@@ -18,7 +18,6 @@ interface PriceHistory {
 interface Category {
   id: string;
   name: string;
-  category: string;
   price: number;
   priceHistory: PriceHistory[];
 }
@@ -138,7 +137,7 @@ export default function PriceHistoryClient({ categories }: PriceHistoryClientPro
               <div className="mt-4 p-4 bg-white border border-black rounded-lg">
                 <p className="text-sm font-semibold">Current Price</p>
                 <p className="text-3xl font-bold ">₱{selectedProduct.price.toFixed(2)}</p>
-                <p className="text-xs text-black mt-1">Product: {selectedProduct.category}</p>
+                <p className="text-xs text-black mt-1">Product: {selectedProduct.name}</p>
               </div>
               <p className="text-sm text-black mt-4">
                 Edit this product's price in <strong>Manage Products</strong> to start tracking price history.

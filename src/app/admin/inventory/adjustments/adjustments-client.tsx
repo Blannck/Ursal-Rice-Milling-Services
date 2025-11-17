@@ -466,7 +466,6 @@ export default function AdjustmentsClient({
                   </div>
                   <div className="bg-white border border-black text-black p-4 rounded-lg">
                     <p className="font-semibold text-lg">{selectedCategory?.name}</p>
-                    <p className="text-sm ">{selectedCategory?.category}</p>
                     <div className="flex items-center gap-2 mt-2">
                       {(() => {
                         const actualStock = selectedCategory?.inventoryItems.reduce((sum, item) => sum + item.quantity, 0) || 0;

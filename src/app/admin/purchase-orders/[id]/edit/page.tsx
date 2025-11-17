@@ -30,7 +30,6 @@ interface Supplier {
 interface Category {
   id: ID;
   name: string;
-  category: string;
   price: number;
   supplierId: ID;
 }
@@ -370,7 +369,7 @@ export default function PurchaseOrderEditPage() {
                             <div className="flex flex-col">
                               <span>{p.name}</span>
                               <span className="text-xs text-gray-500">
-                                {p.category} • ₱{p.price}
+                                ₱{p.price}
                               </span>
                             </div>
                           </SelectItem>

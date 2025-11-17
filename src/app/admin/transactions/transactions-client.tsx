@@ -35,7 +35,6 @@ import { formatDate } from "@/lib/utils";
 type Category = {
   id: string;
   name: string;
-  category: string;
 };
 
 type StorageLocation = {

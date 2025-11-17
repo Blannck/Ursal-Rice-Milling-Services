@@ -39,7 +39,6 @@ type OrderItem = {
   category: {
     id: string;
     name: string;
-    category: string;
     isMilledRice: boolean;
   };
 };

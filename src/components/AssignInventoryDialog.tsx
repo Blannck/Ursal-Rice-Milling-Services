@@ -27,7 +27,6 @@ import { Package } from "lucide-react";
 interface Category {
   id: string;
   name: string;
-  category: string;
   stockOnHand: number;
 }
 

@@ -35,7 +35,6 @@ import { formatDate } from "@/lib/utils";
 interface Category {
   id: string;
   name: string;
-  category: string;
 }
 
 interface PurchaseOrderItem {
@@ -334,9 +333,6 @@ export function ReceiveShipmentClient({
                       <TableCell>
                         <div>
                           <p className="font-medium">{item.category?.name || "Unknown Category"}</p>
-                          <p className="text-sm text-black">
-                            {item.category?.category || "-"}
-                          </p>
                         </div>
                       </TableCell>
                       <TableCell>{item.orderedQty}</TableCell>

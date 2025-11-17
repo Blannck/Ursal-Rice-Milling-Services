@@ -42,7 +42,6 @@ interface Supplier {
 interface Category {
   id: string;
   name: string;
-  category: string;
   price: number;
   supplierId: string;
 }

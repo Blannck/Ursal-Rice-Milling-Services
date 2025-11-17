@@ -39,7 +39,6 @@ type Supplier = {
 type Category = {
   id: string;
   name: string;
-  category: string;
   price: number;
   supplierId?: string | null;
   supplier?: {
