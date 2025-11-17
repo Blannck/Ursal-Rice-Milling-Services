@@ -158,11 +158,14 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       });
 
       if (response.ok) {
-        router.refresh();
+        const data = await response.json();
         // Update selected order if it's currently displayed
         if (selectedOrder?.id === orderId) {
-          const data = await response.json();
           setSelectedOrder({ ...selectedOrder, shipmentStatus: newStatus, status: data.order.status });
+        }
+        // Only refresh if not viewing order details
+        if (!selectedOrder) {
+          router.refresh();
         }
       }
     } catch (error) {
@@ -173,7 +176,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
   };
 
   const handleFulfillDelivery = async (orderId: string, deliveryId: string) => {
-    if (!confirm("Are you sure you want to fulfill this delivery? Stock will be deducted from inventory.")) {
+    if (!confirm("Are you sure you want to fulfill this delivery?")) {
       return;
     }
 
@@ -189,10 +192,21 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
 
       if (response.ok) {
         alert(`Delivery fulfilled successfully! Order status: ${data.orderStatus}`);
-        router.refresh();
-        // Refresh the selected order
+        // Update the selected order's deliveries and statuses
         if (selectedOrder?.id === orderId) {
-          window.location.reload();
+          const updatedDeliveries = selectedOrder.deliveries.map(d => 
+            d.id === deliveryId 
+              ? { ...d, status: 'fulfilled', fulfilledAt: new Date().toISOString() }
+              : d
+          );
+          setSelectedOrder({
+            ...selectedOrder,
+            status: data.orderStatus,
+            fulfillmentStatus: data.fulfillmentStatus,
+            deliveries: updatedDeliveries
+          });
+        } else {
+          router.refresh();
         }
       } else {
         setErrorDialog({ open: true, message: data.error || "Failed to fulfill delivery" });
@@ -217,9 +231,19 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
       const data = await response.json();
 
       if (response.ok) {
-        router.refresh();
+        // Update the selected order's delivery shipment status
         if (selectedOrder?.id === orderId) {
-          window.location.reload();
+          const updatedDeliveries = selectedOrder.deliveries.map(d => 
+            d.id === deliveryId 
+              ? { ...d, shipmentStatus: newStatus }
+              : d
+          );
+          setSelectedOrder({
+            ...selectedOrder,
+            deliveries: updatedDeliveries
+          });
+        } else {
+          router.refresh();
         }
       } else {
         setErrorDialog({ open: true, message: data.error || "Failed to update shipment status" });

@@ -5,7 +5,17 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const supplierId = searchParams.get("supplierId");
+
+    // Build the query filter
+    const whereFilter: any = {};
+    if (supplierId) {
+      whereFilter.supplierId = supplierId;
+    }
+
     const products = await prisma.product.findMany({
+      where: whereFilter,
       include: {
         supplier: {
           select: {

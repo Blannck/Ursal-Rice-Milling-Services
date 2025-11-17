@@ -349,7 +349,7 @@ export default function CartTable({ cartItems }: CartTableProps) {
                           setCheckingOut(true);
                           const { createOrderFromCart } = await import("@/actions/order.action");
                           await createOrderFromCart(selectedCartItemIds);
-                          toast.success("Order placed successfully! Inventory updated.");
+                          toast.success("Order placed successfully!");
                           router.push("/orders");
                         } catch (error: any) {
                           toast.error(error.message || "Failed to place order");

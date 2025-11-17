@@ -349,9 +349,15 @@ export default async function OrderDetailsPage({
                     <p className="text-sm text-gray-600">Delivery Status</p>
                     <Badge
                       variant="outline"
-                      className={getShipmentStatusColor(shipmentStatus)}
+                      className={getShipmentStatusColor(
+                        order.deliveries && order.deliveries.length > 0
+                          ? order.deliveries[order.deliveries.length - 1].shipmentStatus
+                          : shipmentStatus
+                      )}
                     >
-                      {shipmentStatus}
+                      {order.deliveries && order.deliveries.length > 0
+                        ? order.deliveries[order.deliveries.length - 1].shipmentStatus
+                        : shipmentStatus}
                     </Badge>
                   </div>
                 </div>

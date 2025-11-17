@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -176,6 +177,13 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       });
       const j = await res.json();
       if (!res.ok || !j.ok) return alert(j.error || "Create failed");
+      
+      toast.success("Supplier created successfully!", {
+        duration: 3000,
+        position: "top-center",
+      });
+      setOpen(false);
+      router.refresh();
     } else {
       const res = await fetch(`/api/admin/suppliers/${editing.id}`, {
         method: "PATCH",
@@ -184,9 +192,28 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
       });
       const j = await res.json();
       if (!res.ok || !j.ok) return alert(j.error || "Update failed");
+      
+      // Show success message
+      if (selectedProducts.length > 0) {
+        toast.success(
+          `${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''} successfully associated with ${editing.name}!`,
+          {
+            duration: 3000,
+            position: "top-center",
+            icon: "✅",
+          }
+        );
+      } else {
+        toast.success("Supplier updated successfully!", {
+          duration: 3000,
+          position: "top-center",
+        });
+      }
+      
+      setOpen(false);
+      // Navigate to supplier details page
+      router.push(`/admin/suppliers/${editing.id}`);
     }
-    setOpen(false);
-    router.refresh();
   }
 
   async function toggleActive(id: string, currentStatus: boolean, e: React.MouseEvent) {
