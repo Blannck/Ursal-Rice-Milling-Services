@@ -4,11 +4,11 @@ const prisma = new PrismaClient()
 
 async function listProducts() {
   try {
-    const products = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' }
     })
-    console.log('Products:')
-    products.forEach(p => {
+    console.log('Rice Categories:')
+    categories.forEach(p => {
       console.log(`\n${p.name}:`)
       console.log(`- ID: ${p.id}`)
       console.log(`- Type: ${p.isMilledRice ? 'Milled' : 'Unmilled'} Rice`)
@@ -16,11 +16,11 @@ async function listProducts() {
         console.log(`- Milling Yield Rate: ${p.millingYieldRate}%`)
       }
       console.log(`- Stock on Hand: ${p.stockOnHand}`)
-      console.log(`- Category: ${p.category}`)
+      console.log(`- Description: ${p.description || 'N/A'}`)
       console.log(`- Price: ${p.price}`)
     })
   } catch (error) {
-    console.error('Error listing products:', error)
+    console.error('Error listing categories:', error)
   } finally {
     await prisma.$disconnect()
   }
