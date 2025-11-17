@@ -203,7 +203,7 @@ export default function ManageOrdersClient({ orders }: { orders: Order[] }) {
         if (selectedOrder?.id === orderId) {
           const updatedDeliveries = selectedOrder.deliveries.map(d => 
             d.id === deliveryId 
-              ? { ...d, status: 'fulfilled', fulfilledAt: new Date().toISOString() }
+              ? { ...d, status: 'fulfilled' as const, fulfilledAt: new Date().toISOString() }
               : d
           );
           setSelectedOrder({
