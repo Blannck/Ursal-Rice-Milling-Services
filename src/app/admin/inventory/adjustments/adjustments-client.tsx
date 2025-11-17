@@ -51,7 +51,6 @@ type InventoryItem = {
 type Category = {
   id: string;
   name: string;
-  category: string;
   stockOnHand: number;
   reorderPoint: number;
   inventoryItems: InventoryItem[];
