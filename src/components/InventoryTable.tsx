@@ -125,7 +125,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
   const handleCategoryClick = (category: any) => {
     const slugifiedName = category.name.toLowerCase().replace(/\s+/g, "-");
     const slug = `${category.id}--${slugifiedName}`;
-    const categoryUrl = `/admin/categories/${slug}`;
+    const categoryUrl = `/admin/products/${slug}`;
     router.push(categoryUrl);
   };
 
@@ -147,7 +147,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-sm ">
             <CardContent className="p-6">
-              <p className="text-sm font-medium ">Total Categories</p>
+              <p className="text-sm font-medium ">Total Products</p>
               <p className="text-3xl font-bold ">{totalCategories}</p>
             </CardContent>
           </Card>
@@ -204,7 +204,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">All Products</SelectItem>
                     {categoryTypes.filter(cat => cat && cat.trim()).map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -262,7 +262,7 @@ export default function InventoryTable({ categories }: InventoryTableProps) {
                 <Table>
                   <TableHeader>
                     <TableRow className=" text-white">
-                      <TableHead className="font-semibold text-white">Category Name</TableHead>
+                      <TableHead className="font-semibold text-white">Product Name</TableHead>
                       <TableHead className="font-semibold text-white">Price</TableHead>
                       <TableHead className="font-semibold text-white">Status</TableHead>
                       <TableHead className="font-semibold text-white">Created</TableHead>

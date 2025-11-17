@@ -213,7 +213,7 @@ export default function TransactionsClient({
     const headers = [
       "Date",
       "Type",
-      "Rice Category",
+      "Product Name",
       "Category",
       "Quantity",
       "Location",
@@ -389,10 +389,10 @@ export default function TransactionsClient({
             {/* Category Filter */}
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="All Categories" />
+                <SelectValue placeholder="All Products" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Categories</SelectItem>
+                <SelectItem value="ALL">All Products</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
@@ -462,7 +462,7 @@ export default function TransactionsClient({
                     <TableRow  >
                       <TableHead>Date & Time</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Rice Category</TableHead>
+                      <TableHead>Product Name</TableHead>
                       <TableHead className="text-center">Quantity</TableHead>
                       <TableHead>Location</TableHead>
                       <TableHead className="text-right">Unit Price</TableHead>

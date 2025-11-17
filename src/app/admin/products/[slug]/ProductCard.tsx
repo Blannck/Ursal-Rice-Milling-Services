@@ -62,15 +62,18 @@ export default function ProductCard({ category }: ProductCardProps) {
 
   return (
     <div className=" max-w-7xl">
-      <Link href="/admin/products">
+      <div className="flex bg-black/50 pt-5 pl-5 rounded-t-lg justify-start">
+       <Link href="/admin/products">
         <Button className="mb-5" variant="outline" size="lg">
           Back
         </Button>
       </Link>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8   lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5 ">
-         
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8   lg:gap-12 border-transparent w-12/12 bg-black bg-transparent/50 rounded-b-lg mx-auto px-5 py-5 ">
+        
         {/* Left Column: Image and Details Card */}
         <div className="flex flex-col space-y-8">
+         
           {/* Category Image */}
           <Card className="overflow-hidden border-0 shadow-lg">
             <CardHeader className="p-0">

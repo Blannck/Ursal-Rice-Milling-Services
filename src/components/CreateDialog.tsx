@@ -47,13 +47,13 @@ export default function CreateDialog() {
     
     try {
       const newCategory = await createCategory(formData);
-      console.log("Category created successfully:", newCategory);
+      console.log("Product created successfully:", newCategory);
       
       // Close dialog first
       setIsOpen(false);
 
       // Show success notification with custom styling
-      toast.success(`✅ Category "${formData.name}" created successfully!`, {
+      toast.success(`✅ Product "${formData.name}" created successfully!`, {
         duration: 4000,
         position: 'top-center',
         style: {
@@ -107,26 +107,26 @@ export default function CreateDialog() {
       <AlertDialogTrigger asChild>
         <Button
           variant="default"
-          className="font-bold flex items-center gap-2"
+          className="flex items-center gap-2"
           asChild
         >
           <span>
             <Plus className="h-4 w-4" />
-            Add Category
+            Add Product
           </span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
-          <AlertDialogTitle>Add a Category</AlertDialogTitle>
+          <AlertDialogTitle>Add a Product</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
-            Fill out the form below to add a new rice category to your inventory.
+            Fill out the form below to add a new product to your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div>
-            <Label htmlFor="name">Category Name</Label>
+            <Label htmlFor="name">Product Name</Label>
             <Input
               id="name"
               type="text"

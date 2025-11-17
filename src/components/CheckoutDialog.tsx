@@ -156,12 +156,14 @@ export default function CheckoutDialog({
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value)}
                 rows={3}
+                className="bg-white"
               />
             </div>
 
             <div className="space-y-2">
               <Label>Delivery Type *</Label>
               <RadioGroup
+                className=""
                 value={deliveryType}
                 onValueChange={(value) => setDeliveryType(value as "Pickup" | "Delivery")}
               >
@@ -207,20 +209,20 @@ export default function CheckoutDialog({
                 value={paymentMethod}
                 onValueChange={(value) => setPaymentMethod(value as "COD" | "GCash")}
               >
-                <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                <div className="flex items-center space-x-2 p-3 border bg-white rounded-lg">
                   <RadioGroupItem value="COD" id="cod" />
-                  <Label htmlFor="cod" className="cursor-pointer flex-1">
+                  <Label htmlFor="cod" className=" cursor-pointer flex-1">
                     <div className="font-medium">Cash on Delivery (COD)</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs text-black">
                       Pay when you receive your order
                     </div>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                <div className="flex items-center space-x-2 p-3 border bg-white rounded-lg">
                   <RadioGroupItem value="GCash" id="gcash" />
                   <Label htmlFor="gcash" className="cursor-pointer flex-1">
                     <div className="font-medium">GCash</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs text-black">
                       Pay now via GCash QR code
                     </div>
                   </Label>
@@ -251,7 +253,7 @@ export default function CheckoutDialog({
             <div className="text-center">
               <div className="mb-4">
                 <p className="text-lg font-semibold mb-2">Scan to Pay</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-black">
                   Amount: ₱{totalAmount.toFixed(2)}
                 </p>
               </div>
@@ -273,7 +275,7 @@ export default function CheckoutDialog({
                 </p>
               </div>
 
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-black">
                 Please complete the payment to proceed with your order.
               </div>
             </div>

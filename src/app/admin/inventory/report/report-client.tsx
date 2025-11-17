@@ -241,11 +241,11 @@ export default function InventoryReportClient({
 
   // Export to CSV
   const handleExport = () => {
-    const headers = ["Product Name", "Category", "Unit Price", "Stock Value", "Status", "Locations"];
+    const headers = ["Product Name", "Unit Price", "Stock Value", "Status", "Locations"];
     const rows = baseFilteredData.map((item) => [
       item.category.name,
       item.category.isMilledRice ? "Milled" : "Unmilled",
-      item.category.name,
+      
       item.totalQuantity.toString(),
       item.category.price.toFixed(2),
       item.stockValue.toFixed(2),
@@ -274,7 +274,7 @@ export default function InventoryReportClient({
         <div>
           <h1 className="text-3xl font-bold">Inventory Report</h1>
           <p className="text-white mt-1">
-            Overview of stock levels, values, and categories
+            Overview of stock levels, values, and products
           </p>
         </div>
         <Button onClick={handleExport} variant="outline">
@@ -306,7 +306,7 @@ export default function InventoryReportClient({
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="all">All Products</SelectItem>
                   {categoryTypes.filter(cat => cat && cat.trim()).map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
@@ -339,7 +339,7 @@ export default function InventoryReportClient({
   {/* Total Categories */}
   <Card className="shadow-sm flex flex-col justify-between p-4">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
-      <CardTitle className="text-sm font-medium text-left">Total Categories</CardTitle>
+      <CardTitle className="text-sm font-medium text-left">Total Products</CardTitle>
       <Package className="h-4 w-4 text-black" />
     </CardHeader>
     <CardContent className="p-0">
@@ -447,8 +447,8 @@ export default function InventoryReportClient({
       {/* Category Breakdown */}
       <Card>
         <CardHeader className="mb-5">
-          <CardTitle>Category Breakdown</CardTitle>
-          <p className="text-sm text-black">Stock levels by category category</p>
+          <CardTitle>Product Breakdown</CardTitle>
+          <p className="text-sm text-black">Stock levels by product</p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4 ">
@@ -456,7 +456,7 @@ export default function InventoryReportClient({
               <div key={cat.category} className="border bg-white rounded-lg p-4">
                 <div className="flex items-center  justify-between mb-2">
                   <h3 className="font-semibold text-lg">{cat.category}</h3>
-                  <Badge variant="secondary">{cat.categoryCount} categories</Badge>
+                  <Badge variant="secondary">{cat.categoryCount} products</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
@@ -486,7 +486,7 @@ export default function InventoryReportClient({
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
               <Input
-                placeholder="Search categories or locations..."
+                placeholder="Search products or locations..."
                 className="pl-8 w-[300px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -494,10 +494,10 @@ export default function InventoryReportClient({
             </div>
             <Select value={tableCategoryFilter} onValueChange={setTableCategoryFilter}>
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder="Product" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">All Products</SelectItem>
                 {categoryTypes.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
@@ -506,62 +506,71 @@ export default function InventoryReportClient({
               </SelectContent>
             </Select>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Unit Price</TableHead>
-                <TableHead className="text-right">Stock Value</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Locations</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tableFilteredData.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground">
-                    No milled rice inventory items found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                tableFilteredData.map((item) => (
-                  <TableRow key={item.category.id}>
-                    <TableCell className="font-medium">{item.category.name}</TableCell>
-                    <TableCell>{item.category.name}</TableCell>
-                    <TableCell className="text-right">
-                      ₱{item.category.price.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      ₱{item.stockValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          item.status === "ok"
-                            ? "default"
-                            : item.status === "low"
-                            ? "tertiary"
-                            : "destructive"
-                        }
-                      >
-                        {item.status === "ok" && <TrendingUp className="w-3 h-3 mr-1" />}
-                        {item.status === "low" && <TrendingDown className="w-3 h-3 mr-1" />}
-                        {item.status === "critical" && <AlertTriangle className="w-3 h-3 mr-1" />}
-                        {item.status.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-black">
-                        {item.locations.slice(0, 2).join(", ")}
-                        {item.locations.length > 2 && ` +${item.locations.length - 2} more`}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <Table className="table-fixed w-full">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-1/4">Product Name</TableHead>
+      <TableHead className="w-1/6 ">Unit Price</TableHead>
+      <TableHead className="w-1/6 ">Stock Value</TableHead>
+      <TableHead className="w-1/6">Status</TableHead>
+      <TableHead className="w-1/4">Locations</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    {tableFilteredData.length === 0 ? (
+      <TableRow>
+        <TableCell colSpan={6} className="text-center text-muted-foreground">
+          No milled rice inventory items found
+        </TableCell>
+      </TableRow>
+    ) : (
+      tableFilteredData.map((item) => (
+        <TableRow key={item.category.id}>
+          
+          <TableCell className="truncate">{item.category.name}</TableCell>
+
+          <TableCell className=" whitespace-nowrap">
+            ₱{item.category.price.toFixed(2)}
+          </TableCell>
+
+          <TableCell className=" whitespace-nowrap">
+            ₱{item.stockValue.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </TableCell>
+
+          <TableCell>
+            <Badge
+              variant={
+                item.status === "ok"
+                  ? "default"
+                  : item.status === "low"
+                  ? "tertiary"
+                  : "destructive"
+              }
+            >
+              {item.status === "ok" && <TrendingUp className="w-3 h-3 mr-1" />}
+              {item.status === "low" && <TrendingDown className="w-3 h-3 mr-1" />}
+              {item.status === "critical" && <AlertTriangle className="w-3 h-3 mr-1" />}
+              {item.status.toUpperCase()}
+            </Badge>
+          </TableCell>
+
+          <TableCell className="truncate">
+            <div className="text-sm text-black truncate">
+              {item.locations.slice(0, 2).join(", ")}
+              {item.locations.length > 2 && ` +${item.locations.length - 2} more`}
+            </div>
+          </TableCell>
+
+        </TableRow>
+      ))
+    )}
+  </TableBody>
+</Table>
+
         </CardContent>
       </Card>
     </div>

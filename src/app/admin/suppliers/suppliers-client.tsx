@@ -394,15 +394,15 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
               {/* Category Selection Section */}
               <div className="space-y-3 border-t pt-4">
                 <div>
-                  <Label className="text-base font-medium">Associate Categories</Label>
-                  <p className="text-sm text-black">Select rice categories to associate with this supplier</p>
+                  <Label className="text-base font-medium">Associate Products</Label>
+                  <p className="text-sm text-black">Select products to associate with this supplier</p>
                 </div>
                 
                 {/* Category Search */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Search categories..."
+                    placeholder="Search products..."
                     value={categorySearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     className="pl-10"
@@ -413,7 +413,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 <div className="max-h-40 overflow-y-auto bg-white border rounded-md">
                   {loadingCategories ? (
                     <div className="p-4 text-center text-sm text-black">
-                      Loading categories...
+                      Loading products...
                     </div>
                   ) : filteredCategories.length === 0 ? (
                     <div className="p-4 text-center text-sm text-black">
@@ -452,7 +452,7 @@ export default function SuppliersClient({ initialData }: { initialData: Supplier
                 {selectedCategories.length > 0 && (
                   <div className="text-sm">
                     <div className="font-medium text-black mb-2">
-                      {selectedCategories.length} category{selectedCategories.length === 1 ? '' : 's'} selected
+                      {selectedCategories.length} product{selectedCategories.length === 1 ? '' : 's'} selected
                     </div>
                     {editing?.id && (
                       <div className="text-xs text-muted-foreground">

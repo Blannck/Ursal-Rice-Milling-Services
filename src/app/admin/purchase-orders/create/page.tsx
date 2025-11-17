@@ -400,10 +400,10 @@ if (data?.ok || data?.success) {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
-                        <Label>Category</Label>
+                        <Label>Product</Label>
                         <Select value={selectedProductId} onValueChange={setSelectedProductId}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
+                            <SelectValue placeholder="Select product" />
                           </SelectTrigger>
                           <SelectContent>
                             {categories.map((category) => (
@@ -450,7 +450,7 @@ if (data?.ok || data?.success) {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Category</TableHead>
+                          <TableHead>Product</TableHead>
                           <TableHead>Kilos</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead>Total</TableHead>

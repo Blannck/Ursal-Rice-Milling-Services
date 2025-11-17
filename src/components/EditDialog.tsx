@@ -80,7 +80,7 @@ export default function EditDialog({ category, onUpdated }: EditDialogProps) {
         priceChangeReason: formData.priceChangeReason,
       });
 
-      toast.success("Category edited successfully");
+      toast.success("Product edited successfully");
 
       // ⭐ NEW: Tell parent to update CategoryCard immediately
       onUpdated?.(updatedCategory);
@@ -121,15 +121,15 @@ export default function EditDialog({ category, onUpdated }: EditDialogProps) {
 
       <AlertDialogContent className="text-black bg-custom-white max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader>
-          <AlertDialogTitle>Edit Category</AlertDialogTitle>
+          <AlertDialogTitle>Edit Product</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
-            Update the details of this rice category in your inventory.
+            Update the details of this product  in your inventory.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div>
-            <Label htmlFor="name">Category Name</Label>
+            <Label htmlFor="name">Product Name</Label>
             <Input
               id="name"
               type="text"
@@ -143,7 +143,7 @@ export default function EditDialog({ category, onUpdated }: EditDialogProps) {
           <Textarea
             className="bg-white"
             id="description"
-            placeholder="Type category description here."
+            placeholder="Type product description here."
             rows={5}
             value={formData.description}
             onChange={(e) => handleChange("description", e.target.value)}

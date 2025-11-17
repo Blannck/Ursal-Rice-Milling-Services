@@ -232,7 +232,7 @@ export default function AlertsClient({
     <CardContent className="p-0">
       <div className="text-2xl font-bold text-left">{stats.totalAlerts}</div>
       <p className="text-xs text-black mt-1 text-left">
-        Categories below reorder point
+        Products below reorder point
       </p>
     </CardContent>
   </Card>
@@ -357,10 +357,10 @@ export default function AlertsClient({
                 {/* Category Filter */}
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="All Categories" />
+                    <SelectValue placeholder="All Products" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">All Categories</SelectItem>
+                    <SelectItem value="ALL">All Products</SelectItem>
                     {categoryNames.filter(cat => cat && cat.trim()).map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -399,7 +399,7 @@ export default function AlertsClient({
           {/* Alerts Table */}
           <Card>
             <CardHeader className="mb-5 ">
-              <CardTitle>Low Stock Categories</CardTitle>
+              <CardTitle>Low Stock Products</CardTitle>
             </CardHeader>
             <CardContent>
               {filteredCategories.length === 0 ? (
@@ -415,7 +415,7 @@ export default function AlertsClient({
                       <TableHeader className="sticky top-0 bg-custom-green">
                         <TableRow>
                           <TableHead className=" text-white">Severity</TableHead>
-                          <TableHead className=" text-white">Category</TableHead>
+                          <TableHead className=" text-white">Product</TableHead>
                           <TableHead className=" text-white text-center">Current Stock</TableHead>
                           <TableHead className="text-white text-center">Reorder Point</TableHead>
                           <TableHead className="text-white text-center">On Order</TableHead>

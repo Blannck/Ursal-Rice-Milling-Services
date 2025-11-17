@@ -218,7 +218,7 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Category</TableHead>
+          <TableHead>Product</TableHead>
           <TableHead>Location</TableHead>
           <TableHead>Quantity</TableHead>
           <TableHead>Reorder Point</TableHead>
@@ -274,7 +274,7 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-white mt-1">Manage storage locations and category inventory</p>
+          <p className="text-white mt-1">Manage storage locations and product inventory</p>
         </div>
       </div>
 
@@ -294,12 +294,12 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
   {/* Categories Stored */}
   <Card className="shadow-sm flex flex-col justify-between p-4">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
-      <CardTitle className="text-sm font-medium text-left">Categories Stored</CardTitle>
+      <CardTitle className="text-sm font-medium text-left">Products Stored</CardTitle>
       <Package className="h-4 w-4 text-black" />
     </CardHeader>
     <CardContent className="p-0">
       <div className="text-2xl font-bold text-left">{totalCategories}</div>
-      <p className="text-xs text-black text-left">Unique categories in inventory</p>
+      <p className="text-xs text-black text-left">Unique products in inventory</p>
     </CardContent>
   </Card>
 
@@ -351,7 +351,7 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
       
       <Tabs defaultValue="unmilled" className="space-y-4  w-full">
         <div className="flex items-center justify-between mr-2 mb-4 gap-1">
-          <TabsList className="bg-custom-white rounded-lg ">
+          <TabsList className="bg-custom-white mr-5 rounded-lg ">
             <TabsTrigger className="text-black " value="unmilled">Unmilled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="milled">Milled Items</TabsTrigger>
             <TabsTrigger className="text-black" value="locations">Storage Locations</TabsTrigger>
@@ -389,7 +389,7 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
                   <Input
-                    placeholder="Search categories or locations..."
+                    placeholder="Search products or locations..."
                     className="pl-8 w-[300px]"
                     value={searchInventory}
                     onChange={(e) => setSearchInventory(e.target.value)}
@@ -397,10 +397,10 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
                 </div>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder="Product" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">All Products</SelectItem>
                     {uniqueCategories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -446,10 +446,10 @@ export function InventoryClient({ initialLocations, initialCategories, initialIn
                 </div>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder="Product" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">All Products</SelectItem>
                     {uniqueCategories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}

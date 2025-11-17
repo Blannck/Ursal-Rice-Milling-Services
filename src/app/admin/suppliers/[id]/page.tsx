@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/lib/stack";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/utils";
 
 export default async function SupplierDetailPage({ params }: { params: { id: string } }) {
   // admin guard
@@ -52,14 +53,14 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
         </div>
         <div className="rounded-xl bg-custom-white border-transparent p-4">
           <div className="text-xs text-black">Created</div>
-          <div className="mt-1 text-black text-lg">{new Date(supplier.createdAt).toLocaleString()}</div>
+          <div className="mt-1 text-black text-lg">{formatDate(supplier.createdAt).toLocaleString()}</div>
         </div>
         <div className="rounded-xl bg-custom-white border-transparent p-4">
           <div className="text-xs text-black">Updated</div>
-          <div className="mt-1 text-black text-lg">{new Date(supplier.updatedAt).toLocaleString()}</div>
+          <div className="mt-1 text-black text-lg">{ formatDate(supplier.updatedAt).toLocaleString()}</div>
         </div>
         <div className="rounded-xl bg-custom-white border-transparent p-4">
-          <div className="text-xs text-black">Recent Categories</div>
+          <div className="text-xs text-black">Recent Products</div>
           <div className="mt-1 text-black text-lg">{items.length}</div>
         </div>
       </div>
@@ -81,7 +82,7 @@ export default async function SupplierDetailPage({ params }: { params: { id: str
                 <tr key={p.id} className="border-t border-gray-700">
                   <td className="px-3 py-2">{p.name}</td>
                   <td className="px-3 py-2">₱ {p.price.toFixed(2)}</td>
-                  <td className="px-3 py-2">{new Date(p.createdAt).toLocaleString()}</td>
+                  <td className="px-3 py-2">{formatDate(p.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
               {!items.length && (

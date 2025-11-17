@@ -331,10 +331,10 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
             <div className="flex-1">
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Select product" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="all">All Products</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
@@ -493,8 +493,8 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       {/* Revenue by Category Breakdown */}
       <Card>
         <CardHeader className="mb-5">
-          <CardTitle>Revenue by Category</CardTitle>
-          <p className="text-sm text-black">Sales breakdown by category category</p>
+          <CardTitle>Revenue by Product</CardTitle>
+          <p className="text-sm text-black">Sales breakdown by product </p>
         </CardHeader>
         <CardContent>
           {stats.categoryRevenue.length === 0 ? (
@@ -526,53 +526,58 @@ export default function SalesReportClient({ orders }: SalesReportClientProps) {
       {/* Top Categories */}
       <Card>
         <CardHeader className="mb-5">
-          <CardTitle>Top Selling Categories</CardTitle>
+          <CardTitle>Top Selling Products</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Category Name</TableHead>
-                <TableHead>Rice Type</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Units Sold</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
-                <TableHead className="text-right">% of Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {stats.topCategories.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center text-black">
-                    No sales data available
-                  </TableCell>
-                </TableRow>
-              ) : (
-                stats.topCategories.map((category, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Badge variant={index < 3 ? "default" : "default"}>#{index + 1}</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={category.isMilledRice ? "secondary" : "tertiary"}>
-                        {category.isMilledRice ? " Milled" : " Unmilled"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{category.name}</TableCell>
-                    <TableCell className="text-right">{(category.quantity / 50).toFixed(2)} sacks</TableCell>
-                    <TableCell className="text-right">
-                      ₱{category.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {((category.revenue / stats.grossSales) * 100).toFixed(1)}%
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+         <Table className="table-fixed w-full">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-[70px]">Rank</TableHead>
+      <TableHead className="w-1/3">Product Name</TableHead>
+      <TableHead className="w-1/5 ">Units Sold</TableHead>
+      <TableHead className="w-1/5 ">Revenue</TableHead>
+      <TableHead className="w-1/5 text-right">% of Total</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    {stats.topCategories.length === 0 ? (
+      <TableRow>
+        <TableCell colSpan={7} className="text-center text-black">
+          No sales data available
+        </TableCell>
+      </TableRow>
+    ) : (
+      stats.topCategories.map((category, index) => (
+        <TableRow key={index}>
+          <TableCell className="whitespace-nowrap">
+            <Badge variant="default">#{index + 1}</Badge>
+          </TableCell>
+
+          <TableCell className="font-medium truncate">
+            {category.name}
+          </TableCell>
+
+          <TableCell className=" whitespace-nowrap">
+            {(category.quantity / 50).toFixed(2)} sacks
+          </TableCell>
+
+          <TableCell className=" whitespace-nowrap">
+            ₱{category.revenue.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </TableCell>
+
+          <TableCell className="text-right whitespace-nowrap">
+            {((category.revenue / stats.grossSales) * 100).toFixed(1)}%
+          </TableCell>
+        </TableRow>
+      ))
+    )}
+  </TableBody>
+</Table>
+
         </CardContent>
       </Card>
     </div>
