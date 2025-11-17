@@ -182,7 +182,7 @@ export function MillingOperationDialog({ products, locations, inventoryItems }: 
               placeholder="Enter quantity (e.g., 75, 150, 225)"
             />
             {availableQty > 0 && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-black">
                 Available: {availableQty} kg
               </p>
             )}

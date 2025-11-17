@@ -133,9 +133,9 @@ export default function CardList({ products }: CardListProps) {
             products
           </p>
         </div>
-
+        
         {/* Filters and Controls */}
-        <div className=" rounded-lg shadow-sm border border-transparent py-1 px-1 bg-black/50  mb-8">
+        <div className="  shadow-sm border border-transparent py-2 px-2 rounded-xl bg-black/50  mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -149,9 +149,9 @@ export default function CardList({ products }: CardListProps) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
+             
               {/* Category Filter */}
-              <Select
+              <Select 
                 value={selectedCategory}
                 onValueChange={setSelectedCategory}
               >
@@ -183,6 +183,7 @@ export default function CardList({ products }: CardListProps) {
                   <SelectItem value="newest">Newest First</SelectItem>
                 </SelectContent>
               </Select>
+              
             </div>
           </div>
         </div>

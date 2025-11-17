@@ -59,12 +59,10 @@ export function AssignInventoryDialog({
     targetLocationId: "",
     quantity: "",
     notes: "",
-    isNewStock: true, // New stock vs moving existing stock
   });
 
   const selectedProduct = products.find((p) => p.id === formData.productId);
 
-  // Fetch inventory items when product is selected
   useEffect(() => {
     if (formData.productId) {
       fetch(`/api/admin/inventory?productId=${formData.productId}`)
@@ -90,21 +88,14 @@ export function AssignInventoryDialog({
     setLoading(true);
 
     try {
-      const payload = formData.isNewStock
-        ? {
-            productId: formData.productId,
-            locationId: formData.targetLocationId,
-            quantity: parseInt(formData.quantity),
-            notes: formData.notes || undefined,
-          }
-        : {
-            productId: formData.productId,
-            sourceLocationId: formData.sourceLocationId,
-            targetLocationId: formData.targetLocationId,
-            quantity: parseInt(formData.quantity),
-            notes: formData.notes || undefined,
-            isTransfer: true,
-          };
+      const payload = {
+        productId: formData.productId,
+        sourceLocationId: formData.sourceLocationId,
+        targetLocationId: formData.targetLocationId,
+        quantity: parseInt(formData.quantity),
+        notes: formData.notes || undefined,
+        isTransfer: true, // always move stock
+      };
 
       const response = await fetch("/api/admin/inventory", {
         method: "POST",
@@ -126,7 +117,6 @@ export function AssignInventoryDialog({
         targetLocationId: "",
         quantity: "",
         notes: "",
-        isNewStock: true,
       });
       router.refresh();
     } catch (error) {
@@ -142,27 +132,38 @@ export function AssignInventoryDialog({
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline">
-            <Package className="mr-2 h-4 w-4" />
-            Assign Product
+            <Package className=" h-4 w-4" />
+            Move Stock
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Assign Product to Location</DialogTitle>
+            <DialogTitle>Move Inventory</DialogTitle>
             <DialogDescription>
-              Add new stock or move existing inventory between locations.
+              Move existing stock from one location to another.
             </DialogDescription>
           </DialogHeader>
+
           <div className="grid gap-4 py-4">
+
+            {/* Product Select */}
             <div className="grid gap-2">
               <Label htmlFor="product">
                 Product <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.productId}
-                onValueChange={(value) => setFormData({ ...formData, productId: value, sourceLocationId: "", targetLocationId: "" })}
+                onValueChange={(value) =>
+                  setFormData({
+                    productId: value,
+                    sourceLocationId: "",
+                    targetLocationId: "",
+                    quantity: "",
+                    notes: "",
+                  })
+                }
                 required
               >
                 <SelectTrigger>
@@ -178,65 +179,47 @@ export function AssignInventoryDialog({
               </Select>
             </div>
 
+            {/* From Location */}
             <div className="grid gap-2">
-              <Label>Operation Type</Label>
+              <Label>
+                From Location <span className="text-red-500">*</span>
+              </Label>
               <Select
-                value={formData.isNewStock ? "new" : "move"}
-                onValueChange={(value) => 
-                  setFormData({ 
-                    ...formData, 
-                    isNewStock: value === "new",
-                    sourceLocationId: "",
-                    targetLocationId: "",
-                  })
+                value={formData.sourceLocationId}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, sourceLocationId: value })
                 }
+                required
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select source location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="new">Add New Stock</SelectItem>
-                  <SelectItem value="move">Move Existing Stock</SelectItem>
+                  {inventoryItems.map((item) => (
+                    <SelectItem key={item.locationId} value={item.locationId}>
+                      {item.location.name} ({item.location.code}) – {item.quantity} units available
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+
+              {selectedSourceItem && (
+                <p className="text-sm text-black">
+                  Available: {availableQuantity} units
+                </p>
+              )}
             </div>
 
-            {!formData.isNewStock && (
-              <div className="grid gap-2">
-                <Label htmlFor="sourceLocation">
-                  From Location <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={formData.sourceLocationId}
-                  onValueChange={(value) => setFormData({ ...formData, sourceLocationId: value })}
-                  required={!formData.isNewStock}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select source location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {inventoryItems.map((item) => (
-                      <SelectItem key={item.locationId} value={item.locationId}>
-                        {item.location.name} ({item.location.code}) - {item.quantity} units available
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedSourceItem && (
-                  <p className="text-sm text-muted-foreground">
-                    Available: {availableQuantity} units
-                  </p>
-                )}
-              </div>
-            )}
-
+            {/* To Location */}
             <div className="grid gap-2">
-              <Label htmlFor="targetLocation">
-                {formData.isNewStock ? "Storage Location" : "To Location"} <span className="text-red-500">*</span>
+              <Label>
+                To Location <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.targetLocationId}
-                onValueChange={(value) => setFormData({ ...formData, targetLocationId: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, targetLocationId: value })
+                }
                 required
               >
                 <SelectTrigger>
@@ -247,46 +230,51 @@ export function AssignInventoryDialog({
                     .filter((loc) => loc.id !== formData.sourceLocationId)
                     .map((location) => (
                       <SelectItem key={location.id} value={location.id}>
-                        {location.name} ({location.code}) - {location.type}
+                        {location.name} ({location.code}) – {location.type}
                       </SelectItem>
                     ))}
                 </SelectContent>
               </Select>
             </div>
 
+            {/* Quantity */}
             <div className="grid gap-2">
-              <Label htmlFor="quantity">
+              <Label>
                 Quantity <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="quantity"
                 type="number"
                 min="1"
-                max={!formData.isNewStock ? availableQuantity : undefined}
+                max={availableQuantity}
                 placeholder="e.g., 100"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, quantity: e.target.value })
+                }
                 required
               />
-              {!formData.isNewStock && formData.sourceLocationId && (
-                <p className="text-sm text-muted-foreground">
-                  Maximum: {availableQuantity} units
+              {formData.sourceLocationId && (
+                <p className="text-sm text-black">
+                  Maximum: {availableQuantity}
                 </p>
               )}
             </div>
 
+            {/* Notes */}
             <div className="grid gap-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Label>Notes (Optional)</Label>
               <Textarea
-                id="notes"
-                placeholder="Additional notes about this assignment..."
+                placeholder="Additional notes..."
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 rows={3}
                 className="bg-white"
               />
             </div>
           </div>
+
           <DialogFooter>
             <Button
               type="button"
@@ -297,7 +285,7 @@ export function AssignInventoryDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Assigning..." : "Assign Product"}
+              {loading ? "Processing..." : "Move Stock"}
             </Button>
           </DialogFooter>
         </form>

@@ -211,7 +211,7 @@ export default function EditDialog({ product, onUpdated }: EditDialogProps) {
 
          
 
-          <AlertDialogFooter>
+          <AlertDialogFooter className="mt-5">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction type="submit">Submit</AlertDialogAction>
           </AlertDialogFooter>

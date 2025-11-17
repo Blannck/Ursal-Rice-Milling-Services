@@ -98,7 +98,8 @@ export default async function OrderDetailsPage({
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      < div className=" ">
+      <div className="container  max-w-7xl border-transparent mt-20 w-12/12 bg-black bg-transparent/50 rounded-lg mx-auto px-5 py-5">
         {/* Header */}
         <div className="mb-8">
           <Button asChild variant="ghost" className="mb-4">
@@ -110,7 +111,7 @@ export default async function OrderDetailsPage({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">Order Details</h1>
-              <p className="text-gray-600">
+              <p className="text-white">
                 Order #{order.id.slice(-8).toUpperCase()}
               </p>
             </div>
@@ -319,7 +320,7 @@ export default async function OrderDetailsPage({
 
           {/* Order Information */}
           <Card>
-            <CardHeader>
+            <CardHeader className="mb-5">
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
                 Order Information
@@ -328,25 +329,25 @@ export default async function OrderDetailsPage({
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <Calendar className="h-5 w-5 text-black mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-600">Order Date</p>
+                    <p className="text-sm text-black">Order Date</p>
                     <p className="font-semibold">{formatDate(order.createdAt)}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Clock className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <Clock className="h-5 w-5 text-black mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-600">Order Status</p>
+                    <p className="text-sm text-black">Order Status</p>
                     <Badge variant="outline" className={getStatusColor(order.status)}>
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                     </Badge>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <MapPin className="h-5 w-5 text-black mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-600">Delivery Status</p>
+                    <p className="text-sm text-black">Delivery Status</p>
                     <Badge
                       variant="outline"
                       className={getShipmentStatusColor(
@@ -362,9 +363,9 @@ export default async function OrderDetailsPage({
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Package className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <Package className="h-5 w-5 text-black mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-600">Total Items</p>
+                    <p className="text-sm text-black">Total Items</p>
                     <p className="font-semibold">
                       {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
                     </p>
@@ -384,9 +385,9 @@ export default async function OrderDetailsPage({
                 <div key={item.id}>
                   <div className="p-6">
                     <div className="flex gap-4">
-                      <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border">
+                      <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border">
                         <img
-                          src={item.product.imageUrl || "/placeholder-product.jpg"}
+                          src={"/sack.png"}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                         />
@@ -427,7 +428,7 @@ export default async function OrderDetailsPage({
 
           {/* Order Summary */}
           <Card className="border-2 border-green-200 bg-green-50">
-            <CardHeader>
+            <CardHeader className="mb-5">
               <CardTitle className="text-green-900">Order Summary</CardTitle>
             </CardHeader>
             <CardContent>
@@ -450,6 +451,7 @@ export default async function OrderDetailsPage({
           </Card>
         </div>
       </div>
+    </div>
     </div>
   );
 }
