@@ -398,14 +398,14 @@ export  default async function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     {/* Category Badge */}
-                    <Badge className="absolute top-4 left-4 /90  border-0 font-semibold">
-                      {
-                        productCategories.find(
-                          (cat) => cat.value === product.category
-                        )?.label
-                      }
-                    </Badge>
-
+                     
+                       <Badge
+                                            variant="secondary"
+                                            className="absolute top-5 left-4  border-0 font-semibold"
+                                          >
+                                            {product.category}
+                                          </Badge>
+                      
                     {/* Featured Badge */}
                     <div className="absolute top-4 right-4 bg-gradient-to-r text-white bg-custom-green px-3 py-1 rounded-full text-sm font-semibold flex items-center">
                       <Star className="h-3 w-3 mr-1 fill-current" />
