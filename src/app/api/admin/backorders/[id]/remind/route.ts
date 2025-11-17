@@ -57,33 +57,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     });
 
     // Prepare data for email and SMS
-    const emailData = {
-      supplierName: supplier.name,
-      supplierEmail: supplier.email,
-      purchaseOrderId: purchaseOrder.id,
-      orderDate: purchaseOrder.orderDate
-        ? new Date(purchaseOrder.orderDate).toLocaleDateString("en-PH", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
-        : new Date(purchaseOrder.createdAt).toLocaleDateString("en-PH", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-      items: [
-        {
-          productName: product.name,
-          quantity: backorder.quantity,
-          expectedDate: backorder.expectedDate
-            ? new Date(backorder.expectedDate).toLocaleDateString("en-PH")
-            : undefined,
-        },
-      ],
-      totalAmount: backorder.purchaseOrderItem.price * backorder.quantity,
-    };
-
     const smsData = {
       supplierName: supplier.name,
       supplierPhone: supplier.phone || "",
@@ -97,10 +70,37 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     };
 
     // Send email and SMS notifications (don't fail if they fail)
-    const emailPromise = sendBackorderReminderEmail(emailData).catch((e) => {
-      console.error("Email send failed:", e);
-      return false;
-    });
+    const emailPromise = supplier.email
+      ? sendBackorderReminderEmail({
+          supplierName: supplier.name,
+          supplierEmail: supplier.email,
+          purchaseOrderId: purchaseOrder.id,
+          orderDate: purchaseOrder.orderDate
+            ? new Date(purchaseOrder.orderDate).toLocaleDateString("en-PH", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            : new Date(purchaseOrder.createdAt).toLocaleDateString("en-PH", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }),
+          items: [
+            {
+              productName: product.name,
+              quantity: backorder.quantity,
+              expectedDate: backorder.expectedDate
+                ? new Date(backorder.expectedDate).toLocaleDateString("en-PH")
+                : undefined,
+            },
+          ],
+          totalAmount: backorder.purchaseOrderItem.price * backorder.quantity,
+        }).catch((e) => {
+          console.error("Email send failed:", e);
+          return false;
+        })
+      : Promise.resolve(false);
 
     // Try Semaphore first (Philippine provider), fallback to Twilio
     const smsPromise = sendBackorderReminderSMSViaSemaphore(smsData)
