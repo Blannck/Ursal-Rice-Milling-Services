@@ -65,7 +65,7 @@ type Delivery = {
   id: string;
   orderId: string;
   deliveryNumber: number;
-  status: string;
+  status: "pending" | "fulfilled";
   shipmentStatus: string;
   fulfilledAt: string | null;
   fulfilledBy: string | null;
