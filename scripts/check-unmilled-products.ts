@@ -3,48 +3,48 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Fetching all products...\n');
+  console.log('Fetching all categories...\n');
   
-  const products = await prisma.product.findMany({
+  const categories = await prisma.category.findMany({
     where: { isHidden: false },
     select: {
       id: true,
       name: true,
-      category: true,
+      description: true,
       isMilledRice: true,
       millingYieldRate: true,
     },
     orderBy: { name: 'asc' },
   });
 
-  console.log('Total products:', products.length);
-  console.log('\nAll products:');
-  products.forEach((p, i) => {
+  console.log('Total categories:', categories.length);
+  console.log('\nAll categories:');
+  categories.forEach((p, i) => {
     console.log(`${i + 1}. ${p.name}`);
-    console.log(`   - Category: ${p.category}`);
+    console.log(`   - Description: ${p.description || 'N/A'}`);
     console.log(`   - Is Milled Rice: ${p.isMilledRice}`);
     console.log(`   - Milling Yield Rate: ${p.millingYieldRate || 'N/A'}`);
   });
 
-  const unmilledProducts = products.filter(p => !p.isMilledRice);
-  console.log('\n\n=== UNMILLED PRODUCTS ===');
-  console.log('Count:', unmilledProducts.length);
-  unmilledProducts.forEach((p, i) => {
-    console.log(`${i + 1}. ${p.name} (${p.category})`);
+  const unmilledCategories = categories.filter(p => !p.isMilledRice);
+  console.log('\n\n=== UNMILLED RICE CATEGORIES ===');
+  console.log('Count:', unmilledCategories.length);
+  unmilledCategories.forEach((p, i) => {
+    console.log(`${i + 1}. ${p.name}`);
   });
 
-  const milledProducts = products.filter(p => p.isMilledRice);
-  console.log('\n\n=== MILLED PRODUCTS ===');
-  console.log('Count:', milledProducts.length);
-  milledProducts.forEach((p, i) => {
-    console.log(`${i + 1}. ${p.name} (${p.category})`);
+  const milledCategories = categories.filter(p => p.isMilledRice);
+  console.log('\n\n=== MILLED RICE CATEGORIES ===');
+  console.log('Count:', milledCategories.length);
+  milledCategories.forEach((p, i) => {
+    console.log(`${i + 1}. ${p.name}`);
   });
 
-  // Check inventory items for unmilled products
-  console.log('\n\n=== INVENTORY ITEMS FOR UNMILLED PRODUCTS ===');
+  // Check inventory items for unmilled categories
+  console.log('\n\n=== INVENTORY ITEMS FOR UNMILLED RICE ===');
   const inventoryItems = await prisma.inventoryItem.findMany({
     where: {
-      product: {
+      category: {
         isMilledRice: false,
         isHidden: false,
       },
@@ -53,7 +53,7 @@ async function main() {
       },
     },
     include: {
-      product: {
+      category: {
         select: {
           name: true,
           isMilledRice: true,
@@ -68,9 +68,9 @@ async function main() {
     },
   });
 
-  console.log('Inventory items with unmilled products (quantity > 0):', inventoryItems.length);
+  console.log('Inventory items with unmilled rice (quantity > 0):', inventoryItems.length);
   inventoryItems.forEach((item, i) => {
-    console.log(`${i + 1}. ${item.product.name} - ${item.quantity} kg at ${item.location.name} (${item.location.code})`);
+    console.log(`${i + 1}. ${item.category.name} - ${item.quantity} kg at ${item.location.name} (${item.location.code})`);
   });
 }
 
