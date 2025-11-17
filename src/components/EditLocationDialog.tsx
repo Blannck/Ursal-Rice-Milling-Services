@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { showToast } from "@/lib/toast";
 
 interface Location {
   id: string;
@@ -99,6 +100,7 @@ export function EditLocationDialog({
         return;
       }
 
+      showToast.success("Storage location updated successfully");
       onOpenChange(false);
       router.refresh();
     } catch (error) {

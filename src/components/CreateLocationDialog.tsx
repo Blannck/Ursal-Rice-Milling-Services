@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
 interface CreateLocationDialogProps {
   locations?: Array<{ id: string; name: string; type: string }>;
@@ -68,6 +69,7 @@ export function CreateLocationDialog({ locations = [] }: CreateLocationDialogPro
         return;
       }
 
+      showToast.success("Storage location created successfully");
       setOpen(false);
       setFormData({
         name: "",
